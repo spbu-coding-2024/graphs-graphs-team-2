@@ -1,7 +1,15 @@
 #include <stdio.h>
 #include <stdint.h>
-#include <math.h>
-#include "my_test.h"
+//#include <math.h>
+//#include "my_test.h"
+
+float pow_my(int number,int degree){
+	float return_number=1.0;
+	for(int i=0;i<degree;i++){
+		return_number=return_number*number;
+	}
+	return return_number;
+}
 
 int write_message(FILE* stream, const void *buf, size_t nbyte){
 	uint8_t byte;
@@ -19,7 +27,6 @@ int write_message(FILE* stream, const void *buf, size_t nbyte){
 	for (int k=0;k<(int)nbyte;k++){
 		byte=((uint8_t *)buf)[k];
 		new_byte=0;
-		int i=0;
 		if (count_drawn_numbers==8){
 			putc(drawn_number,stream);
 			if (ferror(stream)){
@@ -34,26 +41,26 @@ int write_message(FILE* stream, const void *buf, size_t nbyte){
 			if (count_drawn_numbers!=0){
 				new_byte=new_byte | drawn_number;
 				drawn_number=0;
-				drawn_number= drawn_number | ((((int)(pow(2,count_drawn_numbers)-1)) & byte)<<(8-count_drawn_numbers));
+				drawn_number= drawn_number | ((((int)(pow_my(2,count_drawn_numbers)-1)) & byte)<<(8-count_drawn_numbers));
 				byte=byte>>count_drawn_numbers;
-				i=count_drawn_numbers;
 			}
 		}
-		for(int j=i;j<8;j++){
+		byte=byte | new_byte;
+		for(int j=0;j<8;j++){
 			if (count_of_one==5){
-				drawn_number=drawn_number | (((int)(pow(2,count_drawn_numbers)) & byte)<<(7-count_drawn_numbers));
+				drawn_number=drawn_number | ((byte & 1)<<(7-count_drawn_numbers));
 				count_drawn_numbers++;
 				byte=byte>>1;
 				count_of_one=0;
 				continue;
 			}
-			if (byte & ((int)pow(2,(7-j)))){
+			if (byte & ((int)pow_my(2,(7-j)))){
 				count_of_one++;
 			}
 			else{
 				count_of_one=0;
 			}
-			new_byte=new_byte | (byte & ((int)pow(2,(7-j))));
+			new_byte=new_byte | (byte & ((int)pow_my(2,(7-j))));
 		}
 		putc(new_byte,stream);
 		count_of_bytes++;
@@ -61,14 +68,14 @@ int write_message(FILE* stream, const void *buf, size_t nbyte){
 	if (count_drawn_numbers!=0){
 		putc(drawn_number | (0x7E>>count_drawn_numbers),stream);
 		count_of_bytes++;
-		putc((0x7E<<(8-count_drawn_numbers)) | (((int)(pow(2,8-count_drawn_numbers)))-1),stream);
+		putc((0x7E<<(8-count_drawn_numbers)) | (((int)(pow_my(2,8-count_drawn_numbers)))-1),stream);
 		count_of_bytes++;
 	}
 	else{
 		putc(0x7E,stream);
 		count_of_bytes++;
 	}
-	return count_of_bytes;
+	return (int)(nbyte);
 }
 
 int read_message(FILE *stream, void *buf){
@@ -88,7 +95,7 @@ int read_message(FILE *stream, void *buf){
 			if (flag_of_start==1){
 				if (count_of_one!=5){
 					count_of_bits++;
-					new_byte=new_byte | (((((int)(pow(2,7-i))) & byte) << i) >> (count_of_bits-1));
+					new_byte=new_byte | (((((int)(pow_my(2,7-i))) & byte) << i) >> (count_of_bits-1));
 					if (count_of_bits==8){
 						((uint8_t *)buf)[count_of_bytes]=new_byte;
 						count_of_bytes++;
@@ -97,7 +104,7 @@ int read_message(FILE *stream, void *buf){
 					}
 				}
 			}
-			if (byte & ((int)pow(2,(7-i)))){
+			if (byte & ((int)pow_my(2,(7-i)))){
 				count_of_one++;
 			}
 			else{
