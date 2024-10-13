@@ -10,6 +10,10 @@ int write_message(FILE* stream, const void *buf, size_t nbyte){
 	int count_of_one=0;
 	int count_of_bytes=0;
 	putc(0x7E,stream);
+	if (ferror(stream)){
+		fprintf(stderr,"Error writing to file!\n");
+		return EOF;
+	}
 	count_of_bytes++;
 	int count_drawn_numbers=0;
 	for (int k=0;k<(int)nbyte;k++){
@@ -18,6 +22,10 @@ int write_message(FILE* stream, const void *buf, size_t nbyte){
 		int i=0;
 		if (count_drawn_numbers==8){
 			putc(drawn_number,stream);
+			if (ferror(stream)){
+				fprintf(stderr,"Error writing to file!\n");
+				return EOF;
+			}
 			count_of_bytes++;
 			drawn_number=0;
 			count_drawn_numbers=0;
@@ -72,6 +80,10 @@ int read_message(FILE *stream, void *buf){
 	uint8_t byte;
 	while(!feof(stream)){
 		byte=getc(stream);
+		if (ferror(stream)){
+			fprintf(stderr,"File reading error!!!\n");
+			return EOF;
+		}
 		for(int i=0;i<8;i++){
 			if (flag_of_start==1){
 				if (count_of_one!=5){
@@ -94,6 +106,10 @@ int read_message(FILE *stream, void *buf){
 						flag_of_start=1;
 					}
 					else{
+						if(count_of_bits!=7){
+							fprintf(stderr,"Payload contains a non-integer number of bytes!!!\n");
+							return EOF;
+						}
 						return count_of_bytes;
 					}
 				}
@@ -101,5 +117,7 @@ int read_message(FILE *stream, void *buf){
 			}
 		}
 	}
+	fprintf(stderr,"The message contains an incorrect bit sequence!!!\n");
+	return EOF;
 }
 
