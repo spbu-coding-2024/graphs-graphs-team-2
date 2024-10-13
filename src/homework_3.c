@@ -62,3 +62,44 @@ int write_message(FILE* stream, const void *buf, size_t nbyte){
 	}
 	return count_of_bytes;
 }
+
+int read_message(FILE *stream, void *buf){
+	int count_of_one=0;
+	int count_of_bits=0;
+	int flag_of_start=0;
+	int new_byte=0;
+	int count_of_bytes=0;
+	uint8_t byte;
+	while(!feof(stream)){
+		byte=getc(stream);
+		for(int i=0;i<8;i++){
+			if (flag_of_start==1){
+				if (count_of_one!=5){
+					count_of_bits++;
+					new_byte=new_byte | (((((int)(pow(2,7-i))) & byte) << i) >> (count_of_bits-1));
+					if (count_of_bits==8){
+						((uint8_t *)buf)[count_of_bytes]=new_byte;
+						count_of_bytes++;
+						new_byte=0;
+						count_of_bits=0;	
+					}
+				}
+			}
+			if (byte & ((int)pow(2,(7-i)))){
+				count_of_one++;
+			}
+			else{
+				if (count_of_one==6){
+					if (flag_of_start==0){
+						flag_of_start=1;
+					}
+					else{
+						return count_of_bytes;
+					}
+				}
+				count_of_one=0;
+			}
+		}
+	}
+}
+
