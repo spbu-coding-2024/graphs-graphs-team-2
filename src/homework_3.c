@@ -2,9 +2,9 @@
 #include <stdint.h>
 //#include <math.h>
 //#include "my_test.h"
-float pow_my(int number,int degree){ // функция возведения числа в степень
+float pow_my(int number, int degree){ // функция возведения числа в степень
 	float return_number = 1.0;
-	for(int i = 0;i < degree;i++){
+	for(int i = 0; i < degree; i++){
 		return_number = return_number*number;
 	}
 	return return_number;
@@ -13,7 +13,7 @@ float pow_my(int number,int degree){ // функция возведения чи
 int write_message(FILE* stream, const void *buf, size_t nbyte){
 	uint8_t byte = 0;
 	uint8_t new_byte = 0;
-	uint8_t drawn_number = 0; // бит(ы) которые будут сьезжать после вставки 0
+	uint8_t drawn_number = 0; // бит(ы) которые будут съезжать после вставки 0
 	int count_drawn_numbers = 0;
 	int count_of_one = 0;
 	putc(0x7E, stream);
@@ -21,7 +21,7 @@ int write_message(FILE* stream, const void *buf, size_t nbyte){
 		fprintf(stderr, "Error writing to file!\n");
 		return EOF;
 	}
-	for (int k = 0;k < (int)nbyte;k++){
+	for(int k = 0; k < (int)nbyte; k++){
 		byte = ((uint8_t *)buf)[k];
 		new_byte = 0;
 		if (count_drawn_numbers == 8){ // если сьехало 8 битов то нужно записать их в отдельный байт 
@@ -36,7 +36,7 @@ int write_message(FILE* stream, const void *buf, size_t nbyte){
 		else{
 			if (count_drawn_numbers != 0){ // если есть съехавшие биты то их нужно записать в следующий байт
 				new_byte = new_byte | drawn_number;
-				drawn_number = 0; //для записи новых сьехавших битов
+				drawn_number = 0; //для записи новых съехавших битов
 				int mask_of_bits_moved = (int)(pow_my(2, count_drawn_numbers) - 1); // получаем 1 на местах съехавших битов
 				int numbers_of_bits_moved = mask_of_bits_moved & byte; // получаем эти биты
 				numbers_of_bits_moved = numbers_of_bits_moved << (8 - count_drawn_numbers); // двигаем их вперед
@@ -45,7 +45,7 @@ int write_message(FILE* stream, const void *buf, size_t nbyte){
 			}
 		}
 		byte = byte | new_byte; //записываем биты которые сьехали с предыдущего байта
-		for(int j = 0;j < 8;j++){
+		for(int j = 0; j < 8; j++){
 			if (count_of_one == 5){
 				drawn_number = drawn_number | ((byte & 1) << (7 - count_drawn_numbers)); // если един стало 5 то последний бит выпадает(двигаем вначало)
 				count_drawn_numbers++;
@@ -90,7 +90,7 @@ int read_message(FILE *stream, void *buf){
 			fprintf(stderr, "File reading error!!!\n");
 			return EOF;
 		}
-		for(int i = 0;i < 8;i++){
+		for(int i = 0; i < 8; i++){
 			if (flag_of_start == 1){ // если до этого был маркер начала
 				if (count_of_one != 5){ // если это не 0 идущий после 5 единиц
 					count_of_bits++;
@@ -126,6 +126,6 @@ int read_message(FILE *stream, void *buf){
 			}
 		}
 	}
-	fprintf(stderr, "The message contains an incorrect bit sequence!!!\n"); // если ничего не встретилмя маркер
+	fprintf(stderr, "The message contains an incorrect bit sequence!!!\n"); // если не встретился маркер
 	return EOF;
 }
