@@ -22,32 +22,22 @@ int write_message(FILE* stream, const void *buf, size_t nbyte){
 		return EOF;
 	}
 	for(int k = 0; k < (int)nbyte; k++){
+		int start_byte = 0;
 		byte = ((uint8_t *)buf)[k];
 		new_byte = 0;
-		if (count_drawn_numbers == 8){ // если сьехало 8 битов то нужно записать их в отдельный байт 
-			putc(drawn_number, stream);
-			if (ferror(stream)){
-				fprintf(stderr, "Error writing to file!\n");
-				return EOF;
-			}
-			drawn_number = 0; // обновляем счетчики(теперь нет съехавших битов)
-			count_drawn_numbers = 0;
+		if (count_drawn_numbers != 0){ // если есть съехавшие биты то их нужно записать в следующий байт
+			start_byte = drawn_number;
+			drawn_number = 0; //для записи новых съехавших битов
+			int mask_of_bits_moved = (int)(pow_my(2, count_drawn_numbers) - 1); // получаем 1 на местах съехавших битов
+			int numbers_of_bits_moved = mask_of_bits_moved & byte; // получаем эти биты
+			numbers_of_bits_moved = numbers_of_bits_moved << (8 - count_drawn_numbers); // двигаем их вперед
+			drawn_number = drawn_number | numbers_of_bits_moved; // записываем их
+			byte = byte >> count_drawn_numbers; //убираем съехавшие биты из byte
 		}
-		else{
-			if (count_drawn_numbers != 0){ // если есть съехавшие биты то их нужно записать в следующий байт
-				new_byte = new_byte | drawn_number;
-				drawn_number = 0; //для записи новых съехавших битов
-				int mask_of_bits_moved = (int)(pow_my(2, count_drawn_numbers) - 1); // получаем 1 на местах съехавших битов
-				int numbers_of_bits_moved = mask_of_bits_moved & byte; // получаем эти биты
-				numbers_of_bits_moved = numbers_of_bits_moved << (8 - count_drawn_numbers); // двигаем их вперед
-				drawn_number = drawn_number | numbers_of_bits_moved; // записываем их
-				byte = byte >> count_drawn_numbers; //убираем съехавшие биты из byte
-			}
-		}
-		byte = byte | new_byte; //записываем биты которые сьехали с предыдущего байта
+		byte = byte | start_byte; //записываем биты которые сьехали с предыдущего байта
 		for(int j = 0; j < 8; j++){
 			if (count_of_one == 5){
-				drawn_number = drawn_number | ((byte & 1) << (7 - count_drawn_numbers)); // если един стало 5 то последний бит выпадает(двигаем вначало)
+				drawn_number = drawn_number | ((byte & 1) << (7 - count_drawn_numbers)); // записываем выпавший бит
 				count_drawn_numbers++;
 				byte = byte >> 1; // двигаем byte на выпавший бит
 				count_of_one = 0;
@@ -58,11 +48,36 @@ int write_message(FILE* stream, const void *buf, size_t nbyte){
 				count_of_one++;
 			}
 			else{
-				count_of_one=0;
+				count_of_one = 0;
 			}
 			new_byte = new_byte | (byte & parsed_bit); // запись бита в new_byte
 		}
 		putc(new_byte, stream);
+		new_byte = 0;
+		if (count_drawn_numbers == 8){ // если съехало 8 битов то нужно записать их в отдельный байт и посчитать единицы и сдвиги в новом байте
+			int analiz_byte = drawn_number; // т к 8 сдвинутых битов образуют байт
+			count_drawn_numbers = 0;
+			drawn_number = 0; // обнуляем счетчики т к теперь нет сдвинутых битов
+			for(int j = 0; j < 8; j++){
+				if (count_of_one == 5){
+					drawn_number = drawn_number | ((analiz_byte & 1) << (7 - count_drawn_numbers)); // записываем выпавший бит
+					count_drawn_numbers++;
+					analiz_byte = analiz_byte >> 1; // двигаем byte на выпавший бит
+					count_of_one = 0;
+					continue; //контин чтобы вписать 0
+				}
+				int parsed_bit = (int)pow_my(2, (7 - j));
+				if (analiz_byte & parsed_bit){ // проверка на 1 в нужном нам бите
+					count_of_one++;
+				}
+				else{
+					count_of_one = 0;
+				}
+				new_byte = new_byte | (analiz_byte & parsed_bit); // запись бита в new_byte
+			}
+			putc(new_byte, stream);
+			new_byte = 0;
+		}
 	}
 	if (count_drawn_numbers != 0){ //если после считывания всех байтов есть сьехавшие биты то нужно добавить маркер окончания и заполнить конец след байта 1
 		int end_marker_in_1_byte = 0x7E >> count_drawn_numbers;
