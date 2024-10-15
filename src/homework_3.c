@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
-//#include <math.h>
-//#include "my_test.h"
+
 float pow_my(int number, int degree){ // функция возведения числа в степень
 	float return_number = 1.0;
 	for(int i = 0; i < degree; i++){
@@ -10,14 +9,14 @@ float pow_my(int number, int degree){ // функция возведения ч�
 	return return_number;
 }
 
+
 int write_message(FILE* stream, const void *buf, size_t nbyte){
 	uint8_t byte = 0;
 	uint8_t new_byte = 0;
 	uint8_t drawn_number = 0; // бит(ы) которые будут съезжать после вставки 0
 	int count_drawn_numbers = 0;
 	int count_of_one = 0;
-	putc(0x7E, stream);
-	if (ferror(stream)){
+	if (putc(0x7E, stream) == EOF){ //записываем маркер начала
 		fprintf(stderr, "Error writing to file!\n");
 		return EOF;
 	}
@@ -26,7 +25,7 @@ int write_message(FILE* stream, const void *buf, size_t nbyte){
 		byte = ((uint8_t *)buf)[k];
 		new_byte = 0;
 		if (count_drawn_numbers != 0){ // если есть съехавшие биты то их нужно записать в следующий байт
-			start_byte = drawn_number;
+			start_byte = drawn_number; // начало поступившего байта - съехавшие с предыдущего
 			drawn_number = 0; //для записи новых съехавших битов
 			int mask_of_bits_moved = (int)(pow_my(2, count_drawn_numbers) - 1); // получаем 1 на местах съехавших битов
 			int numbers_of_bits_moved = mask_of_bits_moved & byte; // получаем эти биты
@@ -36,7 +35,7 @@ int write_message(FILE* stream, const void *buf, size_t nbyte){
 		}
 		byte = byte | start_byte; //записываем биты которые сьехали с предыдущего байта
 		for(int j = 0; j < 8; j++){
-			if (count_of_one == 5){
+			if (count_of_one == 5){ // если нужно вписать 0
 				drawn_number = drawn_number | ((byte & 1) << (7 - count_drawn_numbers)); // записываем выпавший бит
 				count_drawn_numbers++;
 				byte = byte >> 1; // двигаем byte на выпавший бит
@@ -52,7 +51,10 @@ int write_message(FILE* stream, const void *buf, size_t nbyte){
 			}
 			new_byte = new_byte | (byte & parsed_bit); // запись бита в new_byte
 		}
-		putc(new_byte, stream);
+		if (putc(new_byte, stream) == EOF){
+			fprintf(stderr, "Error writing to file!\n");
+			return EOF;
+		}
 		new_byte = 0;
 		if (count_drawn_numbers == 8){ // если съехало 8 битов то нужно записать их в отдельный байт и посчитать единицы и сдвиги в новом байте
 			int analiz_byte = drawn_number; // т к 8 сдвинутых битов образуют байт
@@ -75,19 +77,31 @@ int write_message(FILE* stream, const void *buf, size_t nbyte){
 				}
 				new_byte = new_byte | (analiz_byte & parsed_bit); // запись бита в new_byte
 			}
-			putc(new_byte, stream);
+			if (putc(new_byte, stream) == EOF){
+				fprintf(stderr, "Error writing to file!\n");
+				return EOF;
+			}
 			new_byte = 0;
 		}
 	}
 	if (count_drawn_numbers != 0){ //если после считывания всех байтов есть сьехавшие биты то нужно добавить маркер окончания и заполнить конец след байта 1
 		int end_marker_in_1_byte = 0x7E >> count_drawn_numbers;
 		int end_marker_in_2_byte = 0x7E << (8 - count_drawn_numbers);
-		int ones_padding_in_byte_2 = (int)(pow_my(2, 8 - count_drawn_numbers)) - 1;
-		putc(drawn_number | end_marker_in_1_byte, stream); // добавляем к выпавшим битам помещяющийся в этот байт маркер конца
-		putc(end_marker_in_2_byte | ones_padding_in_byte_2, stream);
+		int ones_padding_in_byte_2 = (int)(pow_my(2, 8 - count_drawn_numbers)) - 1; // получаем един которыми нужно дополнить конец 2 байта
+		if (putc(drawn_number | end_marker_in_1_byte, stream) == EOF){ // добавляем к выпавшим битам помещяющийся в этот байт маркер конца
+			fprintf(stderr, "Error writing to file!\n");
+			return EOF;
+		}
+		if (putc(end_marker_in_2_byte | ones_padding_in_byte_2, stream) == EOF){
+			fprintf(stderr, "Error writing to file!\n");
+			return EOF;
+		}
 	}
 	else{
-		putc(0x7E, stream); // нет съехавших битов просто вставляем маркер конца
+		if (putc(0x7E, stream) == EOF){ // нет съехавших битов просто вставляем маркер конца
+			fprintf(stderr, "Error writing to file!\n");
+			return EOF;
+		}
 	}
 	return (int)(nbyte);
 }
@@ -99,9 +113,10 @@ int read_message(FILE *stream, void *buf){
 	int new_byte = 0;
 	int count_of_bytes = 0;
 	uint8_t byte = 0;
-	while(!feof(stream)){
-		byte = getc(stream);
-		if (ferror(stream)){
+	int new_el = 0;
+	while((new_el = getc(stream)) != EOF){
+		byte = (uint8_t)new_el;
+		if (ferror(stream)){ // проверяем возможна ли считка с файла
 			fprintf(stderr, "File reading error!!!\n");
 			return EOF;
 		}
