@@ -36,7 +36,7 @@ int write_message(FILE* stream, const void *buf, size_t nbyte){
 		byte = byte | start_byte; //записываем биты которые сьехали с предыдущего байта
 		for(int j = 0; j < 8; j++){
 			if (count_of_one == 5){ // если нужно вписать 0
-				drawn_number = drawn_number | ((byte & 1) << (7 - count_drawn_numbers)); // записываем выпавший бит
+				drawn_number = (drawn_number >> 1) | ((byte & 1) << 7 ); // записываем выпавший бит
 				count_drawn_numbers++;
 				byte = byte >> 1; // двигаем byte на выпавший бит
 				count_of_one = 0;
@@ -62,7 +62,7 @@ int write_message(FILE* stream, const void *buf, size_t nbyte){
 			drawn_number = 0; // обнуляем счетчики т к теперь нет сдвинутых битов
 			for(int j = 0; j < 8; j++){
 				if (count_of_one == 5){
-					drawn_number = drawn_number | ((analiz_byte & 1) << (7 - count_drawn_numbers)); // записываем выпавший бит
+					drawn_number = (drawn_number >> 1) | ((analiz_byte & 1) << 7 ); // записываем выпавший бит
 					count_drawn_numbers++;
 					analiz_byte = analiz_byte >> 1; // двигаем byte на выпавший бит
 					count_of_one = 0;
@@ -81,7 +81,49 @@ int write_message(FILE* stream, const void *buf, size_t nbyte){
 				fprintf(stderr, "Error writing to file!\n");
 				return EOF;
 			}
-			new_byte = 0;
+		}
+	}
+	if (count_drawn_numbers != 0){ // если есть сьехавшие биты то нужно посмотреть нужно ли там втавлять нули
+		uint8_t new_drawn_number = 0;
+		uint8_t next_drawn_number = 0; // если new_drawn_number станет 8 бит то нужно будет записать новый выпавший бит
+		for(int j = 0; j < 8; j++){
+			if (count_of_one == 5){
+				if (count_drawn_numbers == 8){ // если new_drawn_number 8 бит то нам нужно создать новый drawn_number
+					next_drawn_number = (drawn_number & 1) << 7; // в этом случае не может выпасть больше чем 1 бит
+					count_drawn_numbers = 0;
+				}
+				count_drawn_numbers++;
+				drawn_number = drawn_number >> 1; // двигаем byte на выпавший бит
+				count_of_one = 0;
+				continue; //контин чтобы вписать 0
+			}
+			int parsed_bit = (int)pow_my(2, (7 - j));
+			if (drawn_number & parsed_bit){ // проверка на 1 в нужном нам бите
+				count_of_one++;
+			}
+			else{
+				count_of_one = 0;
+			}
+			new_drawn_number = new_drawn_number | (drawn_number & parsed_bit);
+		}
+		if (next_drawn_number != 0){ // new_drawn_number стал 8 и при этом выпал еще 1 бит
+			if (putc(new_drawn_number, stream) ==  EOF){
+				fprintf(stderr, "Error writing to file!\n");
+				return EOF;
+			}
+			drawn_number = next_drawn_number;
+		}
+		else{
+			if (count_drawn_numbers == 8){ // если new_drawn_number стал равен 8
+				if (putc(new_drawn_number, stream) ==  EOF){
+					fprintf(stderr, "Error writing to file!\n");
+					return EOF;
+				}
+				count_drawn_numbers = 0;
+			}
+			else{
+				drawn_number = new_drawn_number;
+			}
 		}
 	}
 	if (count_drawn_numbers != 0){ //если после считывания всех байтов есть сьехавшие биты то нужно добавить маркер окончания и заполнить конец след байта 1
