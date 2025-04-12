@@ -1,4 +1,4 @@
-package models
+package model
 
 enum class GraphType {
     UnweightedUndirected,
