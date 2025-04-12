@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 enum class FileSystem {
     Json,
     SQLite,
-    neo4j
+    Neo4j,
 }
 
 
@@ -44,7 +44,7 @@ fun GreetingView() {
                     backgroundColor = Color.Black,
                     contentColor = Color.White
                 ),
-                modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(1f),
+                modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.27f),
                 onClick = { fileSystem = FileSystem.Json }) {
                 Text(
                     "Json",
@@ -58,7 +58,7 @@ fun GreetingView() {
                     backgroundColor = Color.Black,
                     contentColor = Color.White
                 ),
-                modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(1f),
+                modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.4f),
                 onClick = { fileSystem = FileSystem.SQLite }) {
                 Text(
                     "SQLite",
@@ -72,10 +72,10 @@ fun GreetingView() {
                     backgroundColor = Color.Black,
                     contentColor = Color.White
                 ),
-                modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(1f),
-                onClick = { fileSystem = FileSystem.neo4j }) {
+                modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.33f),
+                onClick = { fileSystem = FileSystem.Neo4j }) {
                 Text(
-                    "neo4j",
+                    "Neo4j",
                     style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
                     fontSize = 90.sp,
                     modifier = Modifier.padding(10.dp)
