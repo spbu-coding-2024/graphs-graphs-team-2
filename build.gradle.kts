@@ -20,9 +20,7 @@ dependencies {
     implementation(compose.desktop.currentOs)
     testImplementation(kotlin("test"))
     implementation("org.xerial:sqlite-jdbc:3.49.1.0")
-    implementation("org.neo4j.driver", "neo4j-java-driver", "5.28.4")
     implementation("org.gephi", "gephi-toolkit", "0.10.1", classifier = "all")
-    implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springframework.boot:spring-boot-starter-data-neo4j")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -35,9 +33,6 @@ tasks.test {
 }
 kotlin {
     jvmToolchain(23)
-    compilerOptions {
-        freeCompilerArgs.addAll("-Xjsr305=strict")
-    }
 }
 
 compose.desktop {
