@@ -7,10 +7,10 @@ import androidx.compose.ui.unit.Dp
 
 @Node("Vertex")
 class VertexNeo4j(
-    var coordinate: Pair<Dp, Dp>?,
-    @Id
-    @GeneratedValue
-    var id: Long? = null
+    @Id @GeneratedValue
+    var id: Long? = null,
+    val x: Dp,
+    val y: Dp
 ){
     @Relationship(direction = Direction.OUTGOING)
     var edges: HashSet<VertexNeo4j>? = null
