@@ -4,13 +4,11 @@ import org.springframework.data.neo4j.core.schema.*
 
 @RelationshipProperties
 class EdgeNeo4j(
-    _vertex: VertexNeo4j,
-    @GeneratedValue
-    @RelationshipId
-    private var id: Long? = null
-) {
-    private var weight: Long? = null;
+    @Id @GeneratedValue
+    var id: Long? = null,
 
     @TargetNode
-    private var vertex = _vertex;
-}
+    var vertex: VertexNeo4j,
+
+    var weight: Long? = null
+)
