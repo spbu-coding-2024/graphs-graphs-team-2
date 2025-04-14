@@ -19,7 +19,7 @@ fun App() {
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
-        state = WindowState(width = 1600.dp, height = 1200.dp),
+        state = WindowState(width = 1400.dp, height = 1050.dp),
         title = "SE TOP"
     ) {
         window.minimumSize = Dimension(800, 600)

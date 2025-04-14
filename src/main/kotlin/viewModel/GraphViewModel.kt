@@ -5,6 +5,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import model.Graph
 import model.Vertex
+import view.components.CoolColors
 import kotlin.random.Random
 import kotlin.random.nextInt
 
