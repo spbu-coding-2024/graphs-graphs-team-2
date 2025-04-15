@@ -1,4 +1,4 @@
-package io
+package ioNeo4j
 
 import org.springframework.data.neo4j.core.schema.*
 import org.springframework.data.neo4j.core.schema.Relationship.Direction
@@ -12,10 +12,11 @@ class VertexNeo4j(
     val x: Double? = null,
     @Property
     val y: Double? = null,
+    @Property
+    val isDirected: Boolean = false,
+    @Property
+    val isWeighted: Boolean = false,
 ) {
-    @Relationship(type = "Edge",direction = Direction.OUTGOING)
-    var edges: Set<EdgeNeo4j>? = null
-
-    @Relationship(type = "Graph type", direction = Direction.OUTGOING)
-    var graphType : GraphType? = null
+    @Relationship(type = "Edge", direction = Direction.OUTGOING)
+    var edges: List<EdgeNeo4j>? = null
 }
