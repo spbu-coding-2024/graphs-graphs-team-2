@@ -1,4 +1,4 @@
-package io
+package ioNeo4j
 
 import org.springframework.data.neo4j.core.schema.*
 
