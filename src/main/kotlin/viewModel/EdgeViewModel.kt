@@ -1,12 +1,12 @@
 package viewModel
 
 import androidx.compose.runtime.State
-import model.Edge
+import model.AbstractEdge
 
 class EdgeViewModel<E, V>(
     val u: VertexViewModel<V>,
     val v: VertexViewModel<V>,
-    private val e: Edge<E, V>,
+    private val e: AbstractEdge<E, V>,
     private val _weightVisible: State<Boolean>,
     private val _directionVisible: State<Boolean>,
 ) {

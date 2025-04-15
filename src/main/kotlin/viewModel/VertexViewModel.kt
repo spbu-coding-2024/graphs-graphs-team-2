@@ -6,13 +6,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import model.Vertex
+import model.AbstractVertex
 
 class VertexViewModel<V>(
     x: Dp = 0.dp,
     y: Dp = 0.dp,
     color: Color,
-    private val v: Vertex<V>,
+    private val v: AbstractVertex<V>,
     private val _labelVisible: State<Boolean>,
     var radius: Dp = 25.dp
 ) {

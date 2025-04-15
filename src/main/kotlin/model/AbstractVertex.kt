@@ -1,5 +1,5 @@
 package model
 
-interface Vertex<V> {
+interface AbstractVertex<V> {
     var element: V
 }

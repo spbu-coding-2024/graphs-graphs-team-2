@@ -3,15 +3,15 @@ package viewModel
 import androidx.compose.runtime.State
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import model.Graph
-import model.Vertex
+import model.AbstractGraph
+import model.AbstractVertex
 import view.components.CoolColors
 import kotlin.random.Random
 import kotlin.random.nextInt
 
 class GraphViewModel<V, E> (
-    private val graph: Graph<V, E>,
-    private val placement: Map<Vertex<V>, Pair<Dp, Dp>?>,
+    private val graph: AbstractGraph<V, E>,
+    private val placement: Map<AbstractVertex<V>, Pair<Dp, Dp>?>,
     showVerticesLabels: State<Boolean>,
     showEdgesWeights: State<Boolean>,
     showEdgesDirections: State<Boolean>,
@@ -25,6 +25,7 @@ class GraphViewModel<V, E> (
             showVerticesLabels,
         )
     }
+
     private val _edges = graph.edges.associateWith { e ->
         val fst = _vertices[e.vertices.first]
             ?: throw IllegalStateException("VertexView for ${e.vertices.first} not found")
