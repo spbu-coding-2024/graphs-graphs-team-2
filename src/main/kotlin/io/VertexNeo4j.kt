@@ -8,9 +8,14 @@ class VertexNeo4j(
     @Id @GeneratedValue
     var id: Long? = null,
 
+    @Property
     val x: Double? = null,
+    @Property
     val y: Double? = null,
 ) {
-    @Relationship(direction = Direction.OUTGOING)
+    @Relationship(type = "Edge",direction = Direction.OUTGOING)
     var edges: Set<EdgeNeo4j>? = null
+
+    @Relationship(type = "Graph type", direction = Direction.OUTGOING)
+    var graphType : GraphType? = null
 }

@@ -2,14 +2,14 @@ package io
 
 import org.springframework.data.neo4j.core.schema.*
 
-@RelationshipProperties
-class EdgeNeo4j(
+@Node("GraphType")
+class GraphType (
     @Id @GeneratedValue
     var id: Long? = null,
 
-    @TargetNode
-    var vertex: VertexNeo4j,
+    @Property
+    var isDirected : Boolean,
 
     @Property
-    var weight: Long? = null
+    var isWeighted : Boolean
 )

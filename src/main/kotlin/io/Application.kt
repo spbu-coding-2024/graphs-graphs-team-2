@@ -16,14 +16,20 @@ open class Application {
 
     @Bean
     open fun databaseInitializer(graphRepository: GraphRepository) = ApplicationRunner {
+        val graphType = GraphType(isDirected = false, isWeighted = true)
         val v1 = VertexNeo4j(x = 50.0, y = 50.0)
         val v2 = VertexNeo4j(x = 100.0, y = 10.0)
         val v3 = VertexNeo4j(x = 200.0, y = 20.0)
         val v4 = VertexNeo4j()
         val v5 = VertexNeo4j(x = 200.0, y = 20.0)
         v1.edges = setOf(EdgeNeo4j(vertex = v2, weight = 2), EdgeNeo4j(vertex = v3, weight = 3))
+        v1.graphType = graphType
         v2.edges = setOf(EdgeNeo4j(vertex = v1, weight = 2), EdgeNeo4j(vertex = v3, weight = 3))
+        v2.graphType = graphType
         v3.edges = setOf(EdgeNeo4j(vertex = v2, weight = 2), EdgeNeo4j(vertex = v1, weight = 3))
+        v3.graphType = graphType
+        v4.graphType = graphType
+        v5.graphType = graphType
         graphRepository.save<VertexNeo4j>(v1)
         graphRepository.save<VertexNeo4j>(v2)
         graphRepository.save<VertexNeo4j>(v3)
