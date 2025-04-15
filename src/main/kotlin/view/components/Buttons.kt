@@ -6,11 +6,14 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextGeometricTransform
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
+import org.jetbrains.skiko.Cursor
 
 
 @Composable
@@ -25,7 +28,7 @@ fun PurpleButton (modifier: Modifier = Modifier,
             backgroundColor = CoolColors.Purple,
             contentColor = CoolColors.Gray,
         ),
-        modifier = modifier,
+        modifier = modifier.pointerHoverIcon(PointerIcon(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))),
         onClick = onClick,
     ) {
         Text(
