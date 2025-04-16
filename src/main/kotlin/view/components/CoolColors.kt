@@ -1,3 +1,5 @@
+package view.components
+
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 

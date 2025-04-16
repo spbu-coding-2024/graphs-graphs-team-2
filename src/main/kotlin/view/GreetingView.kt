@@ -11,10 +11,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
-import CoolColors
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextGeometricTransform
 import androidx.compose.ui.unit.sp
+import view.components.CoolColors
+import view.components.PurpleButton
 
 enum class FileSystem {
     Json,
@@ -44,51 +45,30 @@ fun GreetingView() {
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier.width(1000.dp)
         ) {
-            Button(
-                colors = ButtonDefaults.textButtonColors(
-                    backgroundColor = CoolColors.Purple,
-                    contentColor = CoolColors.Gray,
-                ),
+            PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.24f),
-                onClick = { fileSystem = FileSystem.Json }) {
-                Text(
-                    "Json",
-                    style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
-                    fontSize = 75.sp,
-                    modifier = Modifier.padding(10.dp),
-                    fontFamily = FontFamily.Monospace,
-                )
-            }
-            Button(
-                colors = ButtonDefaults.textButtonColors(
-                    backgroundColor = CoolColors.Purple,
-                    contentColor = CoolColors.Gray,
-                ),
+                onClick = { fileSystem = FileSystem.Json },
+                text = "Json",
+                fontSize = 75.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 10.dp
+            )
+            PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.36f),
-                onClick = { fileSystem = FileSystem.SQLite }) {
-                Text(
-                    "SQLite",
-                    style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
-                    fontSize = 75.sp,
-                    modifier = Modifier.padding(10.dp),
-                    fontFamily = FontFamily.Monospace,
-                )
-            }
-            Button(
-                colors = ButtonDefaults.textButtonColors(
-                    backgroundColor = CoolColors.Purple,
-                    contentColor = CoolColors.Gray,
-                ),
+                onClick = { fileSystem = FileSystem.SQLite },
+                text = "SQLite",
+                fontSize = 75.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 10.dp
+            )
+            PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.3f),
-                onClick = { fileSystem = FileSystem.Neo4j }) {
-                Text(
-                    "Neo4j",
-                    style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
-                    fontSize = 75.sp,
-                    modifier = Modifier.padding(10.dp),
-                    fontFamily = FontFamily.Monospace
-                )
-            }
+                onClick = { fileSystem = FileSystem.Neo4j },
+                text = "Neo4j",
+                fontSize = 75.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 10.dp
+            )
         }
     }
 }
