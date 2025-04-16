@@ -13,6 +13,9 @@ class EdgeViewModel<E, V>(
     val weight
         get() = e.weight.toString()
 
+    val label
+        get() = e.element
+
     val weightVisible
         get() = _weightVisible.value
 
