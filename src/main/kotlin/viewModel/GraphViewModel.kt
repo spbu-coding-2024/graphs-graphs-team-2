@@ -9,7 +9,7 @@ import view.components.CoolColors
 import kotlin.random.Random
 import kotlin.random.nextInt
 
-class GraphViewModel<V, E> (
+class GraphViewModel (
     private val graph: AbstractGraph,
     private val placement: Map<AbstractVertex, Pair<Dp, Dp>?>,
     showVerticesLabels: State<Boolean>,
@@ -25,6 +25,11 @@ class GraphViewModel<V, E> (
             showVerticesLabels,
         )
     }
+
+    internal val isDirected: Boolean
+        get() = graph.isDirected
+    internal val isWeighted: Boolean
+        get() = graph.isWeighted
 
     private val _edges = graph.edges.associateWith { e ->
         val fst = _vertices[e.vertices.first]

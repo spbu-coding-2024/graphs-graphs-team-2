@@ -41,6 +41,9 @@ class VertexViewModel (
     val labelVisible
         get() = _labelVisible.value
 
+    internal val ID
+        get() = v.id
+
     fun onDrag(offset: Offset) {
         _x.value += offset.x.dp
         _y.value += offset.y.dp
