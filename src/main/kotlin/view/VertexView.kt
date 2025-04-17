@@ -17,8 +17,8 @@ import viewModel.VertexViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun <V> VertexView(
-    viewModel: VertexViewModel<V>,
+fun VertexView(
+    viewModel: VertexViewModel,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier

@@ -16,8 +16,8 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 @Composable
-fun <E, V> EdgeView(
-    viewModel: EdgeViewModel<E, V>,
+fun EdgeView(
+    viewModel: EdgeViewModel,
     modifier: Modifier = Modifier,
 ) {
     Canvas(modifier = modifier.fillMaxSize()) {
