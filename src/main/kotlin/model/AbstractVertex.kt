@@ -1,5 +1,6 @@
 package model
 
-interface AbstractVertex<V> {
-    var element: V
+interface AbstractVertex {
+    var id: Long
+    val label: String
 }
