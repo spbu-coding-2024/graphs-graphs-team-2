@@ -1,7 +1,8 @@
 package model
 
-interface AbstractEdge <E, V> {
-    var element: E
-    val vertices: Pair<AbstractVertex<V>, AbstractVertex<V>>
+interface AbstractEdge {
+    var id: Long
+    var label: String
+    val vertices: Pair<AbstractVertex, AbstractVertex>
     val weight: Float
 }

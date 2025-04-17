@@ -3,10 +3,10 @@ package viewModel
 import androidx.compose.runtime.State
 import model.AbstractEdge
 
-class EdgeViewModel<E, V>(
-    val u: VertexViewModel<V>,
-    val v: VertexViewModel<V>,
-    private val e: AbstractEdge<E, V>,
+class EdgeViewModel (
+    val u: VertexViewModel,
+    val v: VertexViewModel,
+    private val e: AbstractEdge,
     private val _weightVisible: State<Boolean>,
     private val _directionVisible: State<Boolean>,
 ) {
@@ -14,7 +14,7 @@ class EdgeViewModel<E, V>(
         get() = e.weight.toString()
 
     val label
-        get() = e.element
+        get() = e.label
 
     val weightVisible
         get() = _weightVisible.value

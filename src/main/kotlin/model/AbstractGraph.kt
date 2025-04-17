@@ -1,10 +1,10 @@
 package model
 
-interface AbstractGraph<V, E> {
+interface AbstractGraph {
 
-    val vertices: Collection<AbstractVertex<V>>
-    val edges: Collection<AbstractEdge<E, V>>
+    val vertices: Collection<AbstractVertex>
+    val edges: Collection<AbstractEdge>
 
-    fun addVertex(v: V): AbstractVertex<V>
-    fun addEdge(u: V, v: V, edgeLabel: E, weight: Float = 1.0f): AbstractEdge<E, V>
+    fun addVertex(v: Long, vertexLabel: String): AbstractVertex
+    fun addEdge(u: Long, v: Long, edgeLabel: String, edgeID: Long, weight: Float = 1.0f): AbstractEdge
 }
