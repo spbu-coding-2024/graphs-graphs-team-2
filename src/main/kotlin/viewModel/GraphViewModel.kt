@@ -10,8 +10,8 @@ import kotlin.random.Random
 import kotlin.random.nextInt
 
 class GraphViewModel<V, E> (
-    private val graph: AbstractGraph<V, E>,
-    private val placement: Map<AbstractVertex<V>, Pair<Dp, Dp>?>,
+    private val graph: AbstractGraph,
+    private val placement: Map<AbstractVertex, Pair<Dp, Dp>?>,
     showVerticesLabels: State<Boolean>,
     showEdgesWeights: State<Boolean>,
     showEdgesDirections: State<Boolean>,
@@ -34,9 +34,9 @@ class GraphViewModel<V, E> (
         EdgeViewModel(fst, snd, e, showEdgesWeights, showEdgesDirections)
     }
 
-    val vertices: Collection<VertexViewModel<V>>
+    val vertices: Collection<VertexViewModel>
         get() = _vertices.values
 
-    val edges: Collection<EdgeViewModel<E, V>>
+    val edges: Collection<EdgeViewModel>
         get() = _edges.values
 }
