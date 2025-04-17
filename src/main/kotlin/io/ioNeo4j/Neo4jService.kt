@@ -1,4 +1,4 @@
-package ioNeo4j
+package io.ioNeo4j
 
 import model.Graph
 import model.UndirectedWeightedGraph
