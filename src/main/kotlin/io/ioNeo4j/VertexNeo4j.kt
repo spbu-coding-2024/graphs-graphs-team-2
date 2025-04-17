@@ -7,7 +7,8 @@ import org.springframework.data.neo4j.core.schema.Relationship.Direction
 class VertexNeo4j(
     @Id @GeneratedValue
     var id: Long? = null,
-
+    @Property
+    var label: String = "",
     @Property
     val x: Double? = null,
     @Property
@@ -18,5 +19,5 @@ class VertexNeo4j(
     val isWeighted: Boolean = false,
 ) {
     @Relationship(type = "Edge", direction = Direction.OUTGOING)
-    var edges: List<EdgeNeo4j>? = null
+    var edges: List<EdgeNeo4j> = emptyList()
 }
