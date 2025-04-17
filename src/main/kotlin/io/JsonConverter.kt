@@ -1,0 +1,83 @@
+package io
+
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.unit.Dp
+import com.google.gson.Gson
+import model.Graph
+import model.AbstractVertex
+import viewModel.GraphViewModel
+
+data class VertexInfo(
+    val label: String,
+    val x: Dp,
+    val y: Dp,
+)
+
+data class EdgeInfo(
+    val label: String,
+    val from: Long,
+    val to: Long,
+    val weight: Float,
+)
+
+data class GraphInfo(
+    val direction: Boolean,
+    val weight: Boolean,
+    var vertices: MutableMap<Long, VertexInfo>,
+    var edges: MutableMap<Long, EdgeInfo>,
+)
+
+class JsonConverter() {
+    fun toJson(graph: GraphViewModel): String {
+        val jsonSaver = Gson()
+        val graphInfo = writeGraphInfo(graph)
+        return jsonSaver.toJson(graphInfo)
+    }
+
+    fun fromJson(json: String): GraphViewModel {
+        val jsonReader = Gson()
+        try {
+            val info = jsonReader.fromJson<GraphInfo>(json, GraphInfo::class.java)
+            return readGraphInfo(info)
+        } catch (e: Exception) {
+            throw IllegalStateException("Cannot read json file: ${e.message}")
+        }
+    }
+
+
+    private fun writeGraphInfo(graphViewModel: GraphViewModel): GraphInfo {
+        val verticesInfo = mutableMapOf<Long, VertexInfo>()
+        graphViewModel.vertices.forEach {
+            verticesInfo[it.ID] = VertexInfo(
+                it.label,
+                it.x,
+                it.y,
+            )
+        }
+
+        val edgesInfo = mutableMapOf<Long, EdgeInfo>()
+        graphViewModel.edges.forEach {
+            edgesInfo[it.ID] = EdgeInfo(it.label, it.u.ID, it.v.ID, it.weight.toFloat())
+        }
+
+        val info = GraphInfo (
+            graphViewModel.isDirected,
+            graphViewModel.isWeighted,
+            verticesInfo,
+            edgesInfo,
+        )
+        return info
+    }
+
+    private fun readGraphInfo(graphInfo: GraphInfo): GraphViewModel {
+        val place = mutableMapOf< AbstractVertex, Pair<Dp, Dp>>()
+        val graph = Graph(graphInfo.direction, graphInfo.weight)
+        graphInfo.vertices.forEach {
+            place.put(graph.addVertex(it.key, it.value.label), it.value.x to it.value.y)
+        }
+        graphInfo.edges.forEach {
+            graph.addEdge(it.value.from, it.value.to, it.value.label, it.key, it.value.weight)
+        }
+        return GraphViewModel(graph, place, mutableStateOf(false), mutableStateOf(false), mutableStateOf(false))
+    }
+}
