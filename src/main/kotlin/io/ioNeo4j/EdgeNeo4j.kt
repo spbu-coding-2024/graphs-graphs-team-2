@@ -11,5 +11,8 @@ class EdgeNeo4j(
     var vertex: VertexNeo4j,
 
     @Property
-    var weight: Long? = null
+    var label: String = "",
+
+    @Property
+    var weight: Double? = null
 )
