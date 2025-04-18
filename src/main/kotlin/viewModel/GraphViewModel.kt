@@ -11,15 +11,15 @@ import kotlin.random.nextInt
 
 class GraphViewModel (
     private val graph: AbstractGraph,
-    private val placement: Map<AbstractVertex, Pair<Double, Double>?>,
+    private val placement: Map<AbstractVertex, Pair<Dp, Dp>?>,
     showVerticesLabels: State<Boolean>,
     showEdgesWeights: State<Boolean>,
     showEdgesDirections: State<Boolean>,
 ) {
     private val _vertices = graph.vertices.associateWith { v ->
         VertexViewModel(
-            placement[v]?.first?.dp ?: Random.nextInt(0..800).dp,
-            placement[v]?.first?.dp ?: Random.nextInt(0..600).dp,
+            placement[v]?.first ?: Random.nextInt(0..800).dp,
+            placement[v]?.first ?: Random.nextInt(0..600).dp,
             CoolColors.DarkPurple,
             v,
             showVerticesLabels,

@@ -14,5 +14,5 @@ class EdgeNeo4j(
     var label: String = "",
 
     @Property
-    var weight: Double? = null
+    var weight: Float? = null
 )
