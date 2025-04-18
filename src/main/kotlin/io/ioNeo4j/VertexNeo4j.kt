@@ -10,14 +10,14 @@ class VertexNeo4j(
     @Property
     var label: String = "",
     @Property
-    val x: Double? = null,
+    val x: Float? = null,
     @Property
-    val y: Double? = null,
+    val y: Float? = null,
     @Property
     val isDirected: Boolean = false,
     @Property
     val isWeighted: Boolean = false,
 ) {
     @Relationship(type = "Edge", direction = Direction.OUTGOING)
-    var edges: List<EdgeNeo4j> = emptyList()
+    var edges: MutableList<EdgeNeo4j> = mutableListOf()
 }
