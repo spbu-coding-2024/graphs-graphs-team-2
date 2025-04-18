@@ -9,9 +9,9 @@ import view.components.CoolColors
 import kotlin.random.Random
 import kotlin.random.nextInt
 
-class GraphViewModel<V, E> (
-    private val graph: AbstractGraph<V, E>,
-    private val placement: Map<AbstractVertex<V>, Pair<Dp, Dp>?>,
+class GraphViewModel (
+    private val graph: AbstractGraph,
+    private val placement: Map<AbstractVertex, Pair<Dp, Dp>?>,
     showVerticesLabels: State<Boolean>,
     showEdgesWeights: State<Boolean>,
     showEdgesDirections: State<Boolean>,
@@ -26,6 +26,11 @@ class GraphViewModel<V, E> (
         )
     }
 
+    internal val isDirected: Boolean
+        get() = graph.isDirected
+    internal val isWeighted: Boolean
+        get() = graph.isWeighted
+
     private val _edges = graph.edges.associateWith { e ->
         val fst = _vertices[e.vertices.first]
             ?: throw IllegalStateException("VertexView for ${e.vertices.first} not found")
@@ -34,9 +39,9 @@ class GraphViewModel<V, E> (
         EdgeViewModel(fst, snd, e, showEdgesWeights, showEdgesDirections)
     }
 
-    val vertices: Collection<VertexViewModel<V>>
+    val vertices: Collection<VertexViewModel>
         get() = _vertices.values
 
-    val edges: Collection<EdgeViewModel<E, V>>
+    val edges: Collection<EdgeViewModel>
         get() = _edges.values
 }

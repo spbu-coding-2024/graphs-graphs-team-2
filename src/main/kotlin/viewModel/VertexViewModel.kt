@@ -8,11 +8,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import model.AbstractVertex
 
-class VertexViewModel<V>(
+class VertexViewModel (
     x: Dp = 0.dp,
     y: Dp = 0.dp,
     color: Color,
-    private val v: AbstractVertex<V>,
+    private val v: AbstractVertex,
     private val _labelVisible: State<Boolean>,
     var radius: Dp = 25.dp
 ) {
@@ -36,10 +36,13 @@ class VertexViewModel<V>(
         }
 
     val label
-        get() = v.element.toString()
+        get() = v.label
 
     val labelVisible
         get() = _labelVisible.value
+
+    internal val ID
+        get() = v.id
 
     fun onDrag(offset: Offset) {
         _x.value += offset.x.dp

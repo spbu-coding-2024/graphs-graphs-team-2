@@ -1,35 +1,46 @@
 package model
 
-class Graph<V, E> (
-    val direction: Boolean = false
-) : AbstractGraph<V, E> {
+class Graph (
+    private val direction: Boolean = false,
+    private val weight: Boolean = false,
+) : AbstractGraph {
 
-    private val _vertices = hashMapOf<V, Vertex<V>>()
-    private val _edges = hashMapOf<E, Edge<E, V>>()
+    private val _vertices = hashMapOf<Long, Vertex>()
+    private val _edges = hashMapOf<Long, Edge>()
 
-    override val vertices: Collection<AbstractVertex<V>>
+    override val vertices: Collection<AbstractVertex>
         get() = _vertices.values
-    override val edges: Collection<AbstractEdge<E, V>>
+    override val edges: Collection<AbstractEdge>
         get() = _edges.values
-    val isDirected: Boolean
+
+    override val isDirected: Boolean
         get() = direction
+    override val isWeighted: Boolean
+        get() = weight
 
-    override fun addVertex(v: V): AbstractVertex<V> = _vertices.getOrPut(v) { Vertex(v) }
+    override fun addVertex(id: Long, label: String): AbstractVertex = _vertices.getOrPut(id) { Vertex(label, id) }
 
-    override fun addEdge(u: V, v: V, edgeLabel: E, weight: Float): AbstractEdge<E, V> {
-        val first = addVertex(u)
-        val second = addVertex(v)
-        return _edges.getOrPut(edgeLabel) { Edge(edgeLabel, first, second, weight) }
+    override fun addEdge(firstID: Long, secondID: Long,
+                         edgeLabel: String, edgeID: Long,
+                         weight: Float): AbstractEdge {
+
+        val first = _vertices[firstID]
+        val second = _vertices[secondID]
+        if (first == null || second == null)
+            throw IllegalStateException("Graph has no vertices with ID $firstID and $secondID")
+
+        return _edges.getOrPut(edgeID) { Edge(edgeLabel, edgeID, first, second, weight) }
     }
 
-    private data class Vertex<V>(override var element: V) : AbstractVertex<V>
+    private data class Vertex(override var label: String, override var id: Long) : AbstractVertex
 
-    private data class Edge<E, V>(
-        override var element: E,
-        var first: AbstractVertex<V>,
-        var second: AbstractVertex<V>,
+    private data class Edge(
+        override val label: String,
+        override val id: Long,
+        var first: Vertex,
+        var second: Vertex,
         override val weight: Float,
-    ) : AbstractEdge<E, V> {
+    ) : AbstractEdge {
         override val vertices
             get() = first to second
     }
