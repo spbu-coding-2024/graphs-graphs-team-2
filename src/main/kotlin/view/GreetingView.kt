@@ -4,7 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.*
+import androidx.compose.material.CheckboxDefaults.colors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,6 +20,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextGeometricTransform
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import view.components.CoolColors
 import view.components.PurpleButton
 
@@ -75,6 +78,68 @@ fun GreetingView() {
                 fontFamily = FontFamily.Monospace,
                 textPadding = 10.dp
             )
+            if (fileSystem == FileSystem.Neo4j) {
+                val state = remember { TextFieldState() }
+                var showPassword by remember { mutableStateOf(false) }
+                Dialog(onDismissRequest = {}) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(500.dp)
+                            .padding(16.dp),
+                        shape = RoundedCornerShape(16.dp),
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize().background(CoolColors.DarkGray),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            Text(
+                                text = "Enter username and password Neo4j",
+                                modifier = Modifier.padding(10.dp),
+                                fontSize = 30.sp,
+                                style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
+                                color = CoolColors.DarkPurple
+                            )
+                            val username = remember { mutableStateOf("username") }
+                            val password = remember { mutableStateOf("password") }
+
+                            OutlinedTextField(
+                                username.value,
+                                { username.value = it },
+                                textStyle = TextStyle(fontSize = 30.sp, color = CoolColors.DarkPurple),
+                                modifier = Modifier.padding(15.dp).width(400.dp)
+                            )
+                            OutlinedTextField(
+                                password.value,
+                                { password.value = it },
+                                textStyle = TextStyle(fontSize = 30.sp, color = CoolColors.DarkPurple),
+                                modifier = Modifier.padding(15.dp).width(400.dp)
+                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center,
+                            ) {
+                                TextButton(
+                                    onClick = { fileSystem = null },
+                                    modifier = Modifier.padding(30.dp),
+                                ) {
+                                    Text("Back", fontSize = 32.sp, color = CoolColors.DarkPurple)
+                                }
+                                TextButton(
+                                    onClick = { fileSystem = null },
+                                    modifier = Modifier.padding(30.dp),
+                                ) {
+                                    Text("Confirm", fontSize = 32.sp, color = CoolColors.DarkPurple)
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
         }
     }
 }
