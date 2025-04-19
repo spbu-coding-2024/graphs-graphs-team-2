@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,6 +20,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextGeometricTransform
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import view.components.CoolColors
 import view.components.PurpleButton
 
@@ -76,6 +79,36 @@ fun GreetingView() {
                 textPadding = 10.dp
             )
         }
+        if(fileSystem == FileSystem.SQLite) {
+            Dialog(
+                onDismissRequest = { fileSystem = null }
+
+            ){
+                Card (
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(500.dp),
+                    shape = RoundedCornerShape(16.dp),
+                ){
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ){
+                        var searchQuery by remember { mutableStateOf("") }
+                        OutlinedTextField(
+                            value = searchQuery,
+                            onValueChange = { searchQuery = it },
+                            modifier = Modifier.fillMaxWidth().padding(20.dp),
+                            label = { Text("Graph search") },
+                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                            singleLine = true
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
+            }
+        }
     }
 }
+
+
 

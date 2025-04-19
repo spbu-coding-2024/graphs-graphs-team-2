@@ -4,14 +4,14 @@ import model.AbstractEdge
 import model.AbstractGraph
 import model.AbstractVertex
 
-fun <V,E>FordBellman(graph:AbstractGraph<V,E>, start: AbstractVertex<V>){
-    val mapa= mutableMapOf<AbstractVertex<V>,AbstractEdge<E,V>>()
-    val dist = mutableMapOf<AbstractVertex<V>, Float>()
+fun FordBellman(graph:AbstractGraph, start: AbstractVertex){
+    val mapa= mutableMapOf<AbstractVertex,AbstractEdge>()
+    val dist = mutableMapOf<AbstractVertex, Float>()
     for (v in graph.vertices) {
         dist[v] = Float.POSITIVE_INFINITY
     }
     dist[start] = 0f
-    val path = mutableMapOf<AbstractVertex<V>, AbstractVertex<V>>()
+    val path = mutableMapOf<AbstractVertex, AbstractVertex>()
     for (i in 0..graph.vertices.size - 1) {
         for (e in graph.edges) {
             val d1=dist[e.vertices.first]

@@ -11,13 +11,18 @@ object Graphs : IntIdTable() {
 }
 
 object Vertices : IntIdTable() {
-    val vertex = integer("vertex_num")
+    val vertex = long("vertex_num")
     val x = double("x")
     val y = double("y")
     val graph_id = integer("graph_id").references(Graphs.id, onDelete = ReferenceOption.CASCADE)
+    init {
+        uniqueIndex(vertex, graph_id)
+    }
 }
 
 object Edges : IntIdTable() {
+    val weight = double("weight")
+    val edge = long("edge_id")
     val vertexFrom = integer("vertex_numFrom")
     val vertexTO = integer("vertex_numTo")
     val graph_id = integer("graph_id").references(Graphs.id, onDelete = ReferenceOption.CASCADE)
@@ -30,6 +35,7 @@ class SQLiteEXP(dbPath: String) {
             driver = "org.sqlite.JDBC",
             setupConnection = { it.createStatement().execute("PRAGMA foreign_keys=ON") })
         transaction {
+            addLogger(StdOutSqlLogger)
             SchemaUtils.create(Edges, Vertices, Graphs)
         }
     }
@@ -37,27 +43,35 @@ class SQLiteEXP(dbPath: String) {
     private val path: String = dbPath
     fun addGraph(name: String): Int {
         //Database.connect("jdbc:sqlite:$path", driver = "org.sqlite.JDBC", setupConnection = { it.createStatement().execute("PRAGMA foreign_keys=ON") })
-        val id = transaction {
-            val t = Graphs.insertAndGetId {
-                it[graphName] = name
+        val id =
+            try {
+                transaction {
+                    val t = Graphs.insertAndGetId {
+                        it[graphName] = name
+                    }
+                    return@transaction t.value
+                }
+            }catch (e:Exception){
+                return -1
             }
-            return@transaction t.value
-        }
         return id
     }
 
-    fun addEdge(graphId: Int, fromVertex: Int, toVertex: Int) {
+    fun addEdge(graphId: Int, fromVertex: Int, toVertex: Int, weight_d : Double,edge_d:Long) {
         transaction {
             Edges.insert {
                 it[graph_id] = graphId
+                it[edge]=edge_d
+                it[weight] = weight_d
                 it[vertexTO] = toVertex
                 it[vertexFrom] = fromVertex
             }
         }
     }
 
-    fun addVerrtex(graphId: Int, vertexnum: Int, xc: Double, yc: Double) {
+    fun addVerrtex(graphId: Int, vertexnum: Long, xc: Double, yc: Double) {
         //Database.connect("jdbc:sqlite:$path", driver = "org.sqlite.JDBC", setupConnection = { it.createStatement().execute("PRAGMA foreign_keys=ON") })
+        try{
         transaction {
             Vertices.insert {
                 it[graph_id] = graphId
@@ -66,13 +80,15 @@ class SQLiteEXP(dbPath: String) {
                 it[y] = yc
             }
         }
+        }catch (e:Exception){
+            return
+        }
     }
 
     fun findGraph(name: String): Int {
         //Database.connect("jdbc:sqlite:$path", driver = "org.sqlite.JDBC", setupConnection = { it.createStatement().execute("PRAGMA foreign_keys=ON") })
         val c = transaction {
             Graphs.select { Graphs.graphName eq name }.singleOrNull()?.get(Graphs.id)?.value
-
         }
         return c ?: -1
     }
@@ -85,9 +101,9 @@ class SQLiteEXP(dbPath: String) {
         return p
     }
 
-    fun findEdges(graphId: Int): List<Pair<Int, Int>> {
+    fun findEdges(graphId: Int): List<edgeInfo> {
         val p = transaction {
-            Edges.select { Edges.graph_id eq graphId }.map { Pair(it[Edges.vertexTO], it[Edges.vertexFrom]) }
+            Edges.select { Edges.graph_id eq graphId }.map { edgeInfo(it[Edges.vertexTO], it[Edges.vertexFrom],it[Edges.weight], it[Edges.edge]) }
         }
         return p
     }
@@ -98,6 +114,19 @@ class SQLiteEXP(dbPath: String) {
             Graphs.deleteWhere { Graphs.id eq graphId }
         }
     }
+
+    fun makeListFromNames(): List<String> {
+        val t=transaction {
+            Graphs.selectAll().map { it[Graphs.graphName] }
+        }
+        return t
+    }
+    fun deleteAll(){
+        transaction {
+            Graphs.deleteAll()
+        }
+    }
 }
 
-data class vertexInfo(val vert: Int, val x: Double, val y: Double)
+data class vertexInfo(val vert: Long, val x: Double, val y: Double)
+data class edgeInfo(val vertexTo: Int, val edgeTo: Int, val weight: Double, val id:Long)
