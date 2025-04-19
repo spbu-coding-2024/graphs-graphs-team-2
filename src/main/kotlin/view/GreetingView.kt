@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.*
-import androidx.compose.material.CheckboxDefaults.colors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,8 +20,11 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextGeometricTransform
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import io.ioNeo4j.ReadNeo4j
 import view.components.CoolColors
 import view.components.PurpleButton
+import viewModel.GraphViewModel
+import java.io.File
 
 enum class FileSystem {
     Json,
@@ -32,6 +34,7 @@ enum class FileSystem {
 
 @Composable
 fun GreetingView() {
+    var graphViewModel: GraphViewModel
 
     var fileSystem by remember { mutableStateOf<FileSystem?>(null) }
 
@@ -129,7 +132,10 @@ fun GreetingView() {
                                     Text("Back", fontSize = 32.sp, color = CoolColors.DarkPurple)
                                 }
                                 TextButton(
-                                    onClick = { fileSystem = null },
+                                    onClick = {
+                                        graphViewModel = ReadNeo4j(username.value,password.value)
+                                        fileSystem = null
+                                    },
                                     modifier = Modifier.padding(30.dp),
                                 ) {
                                     Text("Confirm", fontSize = 32.sp, color = CoolColors.DarkPurple)
