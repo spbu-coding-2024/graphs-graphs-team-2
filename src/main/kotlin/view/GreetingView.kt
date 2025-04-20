@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,15 +18,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextGeometricTransform
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import io.ioNeo4j.ReadNeo4j
 import view.components.CoolColors
 import view.components.PurpleButton
+import view.io.JsonView
 import viewModel.GraphViewModel
-import java.io.File
 
 enum class FileSystem {
-    Json,
+    JSON,
     SQLite,
     Neo4j,
 }
@@ -35,10 +32,8 @@ enum class FileSystem {
 @Composable
 fun GreetingView() {
 
-    var showErrorDialog by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
-    var graphViewModel: GraphViewModel
     var fileSystem by remember { mutableStateOf<FileSystem?>(null) }
+    var model by remember { mutableStateOf<GraphViewModel?>(null) }
 
     Column(
         modifier = Modifier
@@ -61,8 +56,8 @@ fun GreetingView() {
         ) {
             PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.24f),
-                onClick = { fileSystem = FileSystem.Json },
-                text = "Json",
+                onClick = { fileSystem = FileSystem.JSON },
+                text = "JSON",
                 fontSize = 75.sp,
                 fontFamily = FontFamily.Monospace,
                 textPadding = 10.dp
@@ -83,109 +78,15 @@ fun GreetingView() {
                 fontFamily = FontFamily.Monospace,
                 textPadding = 10.dp
             )
-            if (fileSystem == FileSystem.Neo4j) {
-                val state = remember { TextFieldState() }
-                var showPassword by remember { mutableStateOf(false) }
-                Dialog(onDismissRequest = {}) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(500.dp)
-                            .padding(16.dp),
-                        shape = RoundedCornerShape(16.dp),
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize().background(CoolColors.DarkGray),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            Text(
-                                text = "Enter username and password Neo4j",
-                                modifier = Modifier.padding(10.dp),
-                                fontSize = 30.sp,
-                                style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
-                                color = CoolColors.DarkPurple
-                            )
-                            val username = remember { mutableStateOf("username") }
-                            val password = remember { mutableStateOf("password") }
+        }
 
-                            OutlinedTextField(
-                                username.value,
-                                { username.value = it },
-                                textStyle = TextStyle(fontSize = 30.sp, color = CoolColors.DarkPurple),
-                                modifier = Modifier.padding(15.dp).width(400.dp)
-                            )
-                            OutlinedTextField(
-                                password.value,
-                                { password.value = it },
-                                textStyle = TextStyle(fontSize = 30.sp, color = CoolColors.DarkPurple),
-                                modifier = Modifier.padding(15.dp).width(400.dp)
-                            )
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center,
-                            ) {
-                                TextButton(
-                                    onClick = { fileSystem = null },
-                                    modifier = Modifier.padding(30.dp),
-                                ) {
-                                    Text("Back", fontSize = 32.sp, color = CoolColors.DarkPurple)
-                                }
-                                TextButton(
-                                    onClick = {
-                                        try {
-                                            graphViewModel = ReadNeo4j(username.value, password.value)
-                                        } catch (e: Exception) {
-                                            errorMessage = e.message ?: "Error"
-                                            showErrorDialog = true
-                                        }
-                                        fileSystem = null
-                                    },
-                                    modifier = Modifier.padding(30.dp),
-                                ) {
-                                    Text("Confirm", fontSize = 32.sp, color = CoolColors.DarkPurple)
-                                }
-                            }
-                        }
-                    }
-                }
-
-            }
-            if (showErrorDialog) {
-                Dialog(onDismissRequest = {fileSystem = null
-                showErrorDialog = false}) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(500.dp)
-                            .padding(16.dp),
-                        shape = RoundedCornerShape(16.dp),
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize().background(CoolColors.DarkGray),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            Text(
-                                text = errorMessage,
-                                modifier = Modifier.padding(10.dp),
-                                fontSize = 30.sp,
-                                style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
-                                color = CoolColors.DarkPurple
-                            )
-                            TextButton(
-                                onClick = { fileSystem = null
-                                    showErrorDialog = false},
-                                modifier = Modifier.padding(30.dp),
-                            ) {
-                                Text("Ok", fontSize = 32.sp, color = CoolColors.DarkPurple)
-                            }
-                        }
-                    }
-                }
+        if (fileSystem == FileSystem.JSON) {
+            val fileChooser = JsonView()
+            try {
+                model = fileChooser.loadFromJson()
+                if(model == null ) fileSystem = null
+            } catch(e: Exception) {
+                fileSystem = null
             }
         }
     }
