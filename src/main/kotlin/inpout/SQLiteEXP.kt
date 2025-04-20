@@ -12,8 +12,8 @@ object Graphs : IntIdTable() {
 
 object Vertices : IntIdTable() {
     val vertex = long("vertex_num")
-    val x = double("x")
-    val y = double("y")
+    val x = float("x")
+    val y = float("y")
     val graph_id = integer("graph_id").references(Graphs.id, onDelete = ReferenceOption.CASCADE)
     init {
         uniqueIndex(vertex, graph_id)
@@ -21,10 +21,10 @@ object Vertices : IntIdTable() {
 }
 
 object Edges : IntIdTable() {
-    val weight = double("weight")
+    val weight = float("weight")
     val edge = long("edge_id")
-    val vertexFrom = integer("vertex_numFrom")
-    val vertexTO = integer("vertex_numTo")
+    val vertexFrom = long("vertex_numFrom")
+    val vertexTO = long("vertex_numTo")
     val graph_id = integer("graph_id").references(Graphs.id, onDelete = ReferenceOption.CASCADE)
 }
 
@@ -57,7 +57,7 @@ class SQLiteEXP(dbPath: String) {
         return id
     }
 
-    fun addEdge(graphId: Int, fromVertex: Int, toVertex: Int, weight_d : Double,edge_d:Long) {
+    fun addEdge(graphId: Int, fromVertex: Long, toVertex: Long, weight_d : Float,edge_d:Long) {
         transaction {
             Edges.insert {
                 it[graph_id] = graphId
@@ -69,7 +69,7 @@ class SQLiteEXP(dbPath: String) {
         }
     }
 
-    fun addVerrtex(graphId: Int, vertexnum: Long, xc: Double, yc: Double) {
+    fun addVertex(graphId: Int, vertexnum: Long, xc: Float, yc: Float) {
         //Database.connect("jdbc:sqlite:$path", driver = "org.sqlite.JDBC", setupConnection = { it.createStatement().execute("PRAGMA foreign_keys=ON") })
         try{
         transaction {
@@ -103,7 +103,7 @@ class SQLiteEXP(dbPath: String) {
 
     fun findEdges(graphId: Int): List<edgeInfo> {
         val p = transaction {
-            Edges.select { Edges.graph_id eq graphId }.map { edgeInfo(it[Edges.vertexTO], it[Edges.vertexFrom],it[Edges.weight], it[Edges.edge]) }
+            Edges.select { Edges.graph_id eq graphId }.map { edgeInfo(it[Edges.vertexFrom], it[Edges.vertexTO],it[Edges.weight], it[Edges.edge]) }
         }
         return p
     }
@@ -128,5 +128,5 @@ class SQLiteEXP(dbPath: String) {
     }
 }
 
-data class vertexInfo(val vert: Long, val x: Double, val y: Double)
-data class edgeInfo(val vertexTo: Int, val edgeTo: Int, val weight: Double, val id:Long)
+data class vertexInfo(val vert: Long, val x: Float, val y: Float)
+data class edgeInfo(val vertexFrom: Long, val vertexTo: Long, val weight: Float, val id:Long)

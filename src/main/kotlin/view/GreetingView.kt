@@ -3,6 +3,8 @@ package view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -21,6 +23,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextGeometricTransform
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import inpout.SQLiteEXP
 import view.components.CoolColors
 import view.components.PurpleButton
 
@@ -93,7 +96,13 @@ fun GreetingView() {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ){
+                        val connection = SQLiteEXP("app.db")
+                        val listOfGraphs = remember{connection.makeListFromNames()}
                         var searchQuery by remember { mutableStateOf("") }
+                        val filteredNames = remember(searchQuery, listOfGraphs) {
+                            if (searchQuery.isEmpty()) listOfGraphs
+                            else listOfGraphs.filter { it.contains(searchQuery, ignoreCase = true) }
+                        }
                         OutlinedTextField(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
@@ -103,6 +112,19 @@ fun GreetingView() {
                             singleLine = true
                         )
                         Spacer(modifier = Modifier.height(16.dp))
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(filteredNames) { name ->
+                                Button(
+                                    onClick = {},
+                                    modifier = Modifier.fillMaxWidth(),
+                                ){
+                                    Text(name)
+                                }
+                            }
+                        }
                     }
                 }
             }
