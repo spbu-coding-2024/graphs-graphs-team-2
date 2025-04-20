@@ -20,9 +20,11 @@ import androidx.compose.ui.text.style.TextGeometricTransform
 import androidx.compose.ui.unit.sp
 import view.components.CoolColors
 import view.components.PurpleButton
+import view.io.JsonView
+import viewModel.GraphViewModel
 
 enum class FileSystem {
-    Json,
+    JSON,
     SQLite,
     Neo4j,
 }
@@ -31,6 +33,7 @@ enum class FileSystem {
 fun GreetingView() {
 
     var fileSystem by remember { mutableStateOf<FileSystem?>(null) }
+    var model by remember { mutableStateOf<GraphViewModel?>(null) }
 
     Column(
         modifier = Modifier
@@ -53,8 +56,8 @@ fun GreetingView() {
         ) {
             PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.24f),
-                onClick = { fileSystem = FileSystem.Json },
-                text = "Json",
+                onClick = { fileSystem = FileSystem.JSON },
+                text = "JSON",
                 fontSize = 75.sp,
                 fontFamily = FontFamily.Monospace,
                 textPadding = 10.dp
@@ -75,6 +78,16 @@ fun GreetingView() {
                 fontFamily = FontFamily.Monospace,
                 textPadding = 10.dp
             )
+        }
+
+        if (fileSystem == FileSystem.JSON) {
+            val fileChooser = JsonView()
+            try {
+                model = fileChooser.loadFromJson()
+                if(model == null ) fileSystem = null
+            } catch(e: Exception) {
+                fileSystem = null
+            }
         }
     }
 }
