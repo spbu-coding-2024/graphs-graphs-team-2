@@ -35,17 +35,17 @@ class JsonConverter() {
             val graphInfo = writeGraphInfo(graph)
             return jsonSaver.toJson(graphInfo)
         } catch(e: Exception) {
-            throw IllegalStateException("Cannot save graph to JSON-file: ${e.message}")
+            throw IllegalStateException("Cannot save graph to JSON file: ${e.message}")
         }
     }
 
     fun loadJson(json: String): GraphViewModel {
         val jsonReader = Gson()
         try {
-            val info = jsonReader.fromJson<GraphInfo>(json, GraphInfo::class.java)
+            val info = jsonReader.fromJson(json, GraphInfo::class.java)
             return readGraphInfo(info)
         } catch (e: Exception) {
-            throw IllegalStateException("Cannot read JSON-file: ${e.message}")
+            throw IllegalStateException("Cannot read JSON file: ${e.message}")
         }
     }
 
@@ -62,7 +62,11 @@ class JsonConverter() {
 
         val edgesInfo = mutableMapOf<Long, EdgeInfo>()
         graphViewModel.edges.forEach {
-            edgesInfo[it.ID] = EdgeInfo(it.label, it.u.ID, it.v.ID, it.weight.toFloat())
+            edgesInfo[it.ID] = EdgeInfo(it.label,
+                it.u.ID,
+                it.v.ID,
+                it.weight.toFloat()
+            )
         }
 
         val info = GraphInfo (
@@ -80,9 +84,20 @@ class JsonConverter() {
         graphInfo.vertices.forEach {
             place.put(graph.addVertex(it.key, it.value.label), it.value.x to it.value.y)
         }
+
         graphInfo.edges.forEach {
-            graph.addEdge(it.value.from, it.value.to, it.value.label, it.key, it.value.weight)
+            graph.addEdge(it.value.from,
+                it.value.to,
+                it.value.label,
+                it.key,
+                it.value.weight)
         }
-        return GraphViewModel(graph, place, mutableStateOf(false), mutableStateOf(false), mutableStateOf(false))
+
+        return GraphViewModel(graph,
+            place,
+            mutableStateOf(false),
+            mutableStateOf(false),
+            mutableStateOf(false)
+        )
     }
 }
