@@ -28,19 +28,24 @@ data class GraphInfo(
 )
 
 class JsonConverter() {
-    fun toJson(graph: GraphViewModel): String {
+
+    fun saveJson(graph: GraphViewModel): String {
         val jsonSaver = Gson()
-        val graphInfo = writeGraphInfo(graph)
-        return jsonSaver.toJson(graphInfo)
+        try {
+            val graphInfo = writeGraphInfo(graph)
+            return jsonSaver.toJson(graphInfo)
+        } catch(e: Exception) {
+            throw IllegalStateException("Cannot save graph to JSON-file: ${e.message}")
+        }
     }
 
-    fun fromJson(json: String): GraphViewModel {
+    fun loadJson(json: String): GraphViewModel {
         val jsonReader = Gson()
         try {
             val info = jsonReader.fromJson<GraphInfo>(json, GraphInfo::class.java)
             return readGraphInfo(info)
         } catch (e: Exception) {
-            throw IllegalStateException("Cannot read json file: ${e.message}")
+            throw IllegalStateException("Cannot read JSON-file: ${e.message}")
         }
     }
 
