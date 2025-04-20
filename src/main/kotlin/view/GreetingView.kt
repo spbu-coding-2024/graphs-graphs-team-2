@@ -34,8 +34,10 @@ enum class FileSystem {
 
 @Composable
 fun GreetingView() {
-    var graphViewModel: GraphViewModel
 
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+    var graphViewModel: GraphViewModel
     var fileSystem by remember { mutableStateOf<FileSystem?>(null) }
 
     Column(
@@ -133,7 +135,12 @@ fun GreetingView() {
                                 }
                                 TextButton(
                                     onClick = {
-                                        graphViewModel = ReadNeo4j(username.value,password.value)
+                                        try {
+                                            graphViewModel = ReadNeo4j(username.value, password.value)
+                                        } catch (e: Exception) {
+                                            errorMessage = e.message ?: "Error"
+                                            showErrorDialog = true
+                                        }
                                         fileSystem = null
                                     },
                                     modifier = Modifier.padding(30.dp),
@@ -145,6 +152,40 @@ fun GreetingView() {
                     }
                 }
 
+            }
+            if (showErrorDialog) {
+                Dialog(onDismissRequest = {fileSystem = null
+                showErrorDialog = false}) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(500.dp)
+                            .padding(16.dp),
+                        shape = RoundedCornerShape(16.dp),
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize().background(CoolColors.DarkGray),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            Text(
+                                text = errorMessage,
+                                modifier = Modifier.padding(10.dp),
+                                fontSize = 30.sp,
+                                style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
+                                color = CoolColors.DarkPurple
+                            )
+                            TextButton(
+                                onClick = { fileSystem = null
+                                    showErrorDialog = false},
+                                modifier = Modifier.padding(30.dp),
+                            ) {
+                                Text("Ok", fontSize = 32.sp, color = CoolColors.DarkPurple)
+                            }
+                        }
+                    }
+                }
             }
         }
     }
