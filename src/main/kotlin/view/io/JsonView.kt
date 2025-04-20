@@ -30,7 +30,7 @@ class JsonView {
             frame.dispose()
         } catch (e: Exception) {
             frame.dispose()
-            throw IllegalStateException("Conversation error: ${e.message?.removePrefix("Exception")}. Cannot save the graph")
+            throw IllegalStateException("Conversation error: ${e.message}")
         }
     }
 
@@ -52,8 +52,9 @@ class JsonView {
             val graphModel = convertor.loadJson(fileToOpen.readText())
             frame.dispose()
             return graphModel
-        } catch (e: IllegalStateException) {
-            throw IllegalStateException("Cannot open the graph: ${e.message}")
+        } catch (e: Exception) {
+            frame.dispose()
+            throw IllegalStateException(e.message)
         }
     }
 }
