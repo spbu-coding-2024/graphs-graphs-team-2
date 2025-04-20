@@ -8,12 +8,15 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object Graphs : IntIdTable() {
     val graphName = varchar("graph_name", 255).uniqueIndex()
+    val isDirected = bool("is_directed")
+    val isWeighted = bool("is_weighted")
 }
 
 object Vertices : IntIdTable() {
     val vertex = long("vertex_num")
     val x = float("x")
     val y = float("y")
+    val label = text("label")
     val graph_id = integer("graph_id").references(Graphs.id, onDelete = ReferenceOption.CASCADE)
     init {
         uniqueIndex(vertex, graph_id)
@@ -25,13 +28,15 @@ object Edges : IntIdTable() {
     val edge = long("edge_id")
     val vertexFrom = long("vertex_numFrom")
     val vertexTO = long("vertex_numTo")
+    val label = text("label")
     val graph_id = integer("graph_id").references(Graphs.id, onDelete = ReferenceOption.CASCADE)
 }
 
-class SQLiteEXP(dbPath: String) {
+class SQLiteEXP(dbName: String) {
     init {
+
         Database.connect(
-            "jdbc:sqlite:$dbPath",
+            "jdbc:sqlite:$dbName",
             driver = "org.sqlite.JDBC",
             setupConnection = { it.createStatement().execute("PRAGMA foreign_keys=ON") })
         transaction {
@@ -40,14 +45,15 @@ class SQLiteEXP(dbPath: String) {
         }
     }
 
-    private val path: String = dbPath
-    fun addGraph(name: String): Int {
-        //Database.connect("jdbc:sqlite:$path", driver = "org.sqlite.JDBC", setupConnection = { it.createStatement().execute("PRAGMA foreign_keys=ON") })
+
+    fun addGraph(name: String,isDir: Boolean,isWeigh: Boolean): Int {
         val id =
             try {
                 transaction {
                     val t = Graphs.insertAndGetId {
                         it[graphName] = name
+                        it[isDirected] = isDir
+                        it[isWeighted] = isWeigh
                     }
                     return@transaction t.value
                 }
@@ -57,7 +63,7 @@ class SQLiteEXP(dbPath: String) {
         return id
     }
 
-    fun addEdge(graphId: Int, fromVertex: Long, toVertex: Long, weight_d : Float,edge_d:Long) {
+    fun addEdge(graphId: Int, fromVertex: Long, toVertex: Long, weight_d : Float,edge_d:Long, label_d : String) {
         transaction {
             Edges.insert {
                 it[graph_id] = graphId
@@ -65,12 +71,12 @@ class SQLiteEXP(dbPath: String) {
                 it[weight] = weight_d
                 it[vertexTO] = toVertex
                 it[vertexFrom] = fromVertex
+                it[label]=label_d
             }
         }
     }
 
-    fun addVertex(graphId: Int, vertexnum: Long, xc: Float, yc: Float) {
-        //Database.connect("jdbc:sqlite:$path", driver = "org.sqlite.JDBC", setupConnection = { it.createStatement().execute("PRAGMA foreign_keys=ON") })
+    fun addVertex(graphId: Int, vertexnum: Long, xc: Float, yc: Float,labell:String) {
         try{
         transaction {
             Vertices.insert {
@@ -78,6 +84,7 @@ class SQLiteEXP(dbPath: String) {
                 it[vertex] = vertexnum
                 it[x] = xc
                 it[y] = yc
+                it[label] = labell
             }
         }
         }catch (e:Exception){
@@ -85,25 +92,24 @@ class SQLiteEXP(dbPath: String) {
         }
     }
 
-    fun findGraph(name: String): Int {
-        //Database.connect("jdbc:sqlite:$path", driver = "org.sqlite.JDBC", setupConnection = { it.createStatement().execute("PRAGMA foreign_keys=ON") })
+    fun findGraph(name: String): graphInfo?{
         val c = transaction {
-            Graphs.select { Graphs.graphName eq name }.singleOrNull()?.get(Graphs.id)?.value
+            Graphs.select { Graphs.graphName eq name }.singleOrNull()?.let{it -> graphInfo(it[Graphs.id].value,it[Graphs.isDirected], it[Graphs.isWeighted])}
         }
-        return c ?: -1
+        return c
     }
 
     fun findVertices(graphId: Int): List<vertexInfo> {
         val p = transaction {
             Vertices.select { Vertices.graph_id eq graphId }
-                .map { vertexInfo(it[Vertices.vertex], it[Vertices.x], it[Vertices.y]) }
+                .map { vertexInfo(it[Vertices.vertex], it[Vertices.x], it[Vertices.y], it[Vertices.label]) }
         }
         return p
     }
 
     fun findEdges(graphId: Int): List<edgeInfo> {
         val p = transaction {
-            Edges.select { Edges.graph_id eq graphId }.map { edgeInfo(it[Edges.vertexFrom], it[Edges.vertexTO],it[Edges.weight], it[Edges.edge]) }
+            Edges.select { Edges.graph_id eq graphId }.map { edgeInfo(it[Edges.vertexFrom], it[Edges.vertexTO],it[Edges.weight], it[Edges.edge],it[Edges.label]) }
         }
         return p
     }
@@ -126,7 +132,9 @@ class SQLiteEXP(dbPath: String) {
             Graphs.deleteAll()
         }
     }
+
 }
 
-data class vertexInfo(val vert: Long, val x: Float, val y: Float)
-data class edgeInfo(val vertexFrom: Long, val vertexTo: Long, val weight: Float, val id:Long)
+data class vertexInfo(val vert: Long, val x: Float, val y: Float, val label : String)
+data class edgeInfo(val vertexFrom: Long, val vertexTo: Long, val weight: Float, val id:Long, val label:String)
+data class graphInfo(val id:Int, val isDirected:Boolean, val isWeighted:Boolean)

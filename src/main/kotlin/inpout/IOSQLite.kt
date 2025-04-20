@@ -13,26 +13,29 @@ import java.nio.file.Paths
 fun writeToSQLite(name: String,viewModel: GraphViewModel) {
     val dbpath = findDBPath()
     val connection =SQLiteEXP(dbpath)
-    val id=connection.addGraph(name)
+    val id=connection.addGraph(name,viewModel.isDirected,viewModel.isWeighted)
     if(id==-1){
         return
     }
     viewModel.vertices.forEach{
-        connection.addVertex(id,it.ID,it.x.value,it.y.value)
+        connection.addVertex(id,it.ID,it.x.value,it.y.value,it.label)
     }
     viewModel.edges.forEach{
-        connection.addEdge(id,it.u.ID,it.v.ID,it.weight.toFloat(),it.ID)
+        connection.addEdge(id,it.u.ID,it.v.ID,it.weight.toFloat(),it.ID,it.label)
     }
 }
 fun readFromSQLite(name:String){
     val p = findDBPath()
     val connection = SQLiteEXP(p)
-    val id = connection.findGraph(name)
-    if(id==-1){
+    val gi = connection.findGraph(name)
+    if(gi==null){
         return
     }
-    val vertices = connection.findVertices(id)
-    val edges = connection.findEdges(id)
+    if(gi.id==-1){
+        return
+    }
+    val vertices = connection.findVertices(gi.id)
+    val edges = connection.findEdges(gi.id)
 }
 
 fun findDBPath():String {
