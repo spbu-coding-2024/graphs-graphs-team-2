@@ -18,6 +18,7 @@ import kotlin.math.sin
 @Composable
 fun EdgeView(
     viewModel: EdgeViewModel,
+    isDirect: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Canvas(modifier = modifier.fillMaxSize()) {
@@ -32,7 +33,7 @@ fun EdgeView(
             ),
             color = Color.Black,
         )
-        if (viewModel.directionVisible) {
+        if (isDirect) {
             val startX = viewModel.u.x.toPx() + viewModel.u.radius.toPx()
             val startY = viewModel.u.y.toPx() + viewModel.u.radius.toPx()
             val endX = viewModel.v.x.toPx() + viewModel.v.radius.toPx()
