@@ -39,7 +39,7 @@ class JsonConverter() {
         }
     }
 
-    fun loadJson(json: String): GraphViewModel {
+    fun loadJson(json: String): Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>> {
         val jsonReader = Gson()
         try {
             val info = jsonReader.fromJson(json, GraphInfo::class.java)
@@ -79,7 +79,7 @@ class JsonConverter() {
         return info
     }
 
-    private fun readGraphInfo(graphInfo: GraphInfo): GraphViewModel {
+    private fun readGraphInfo(graphInfo: GraphInfo): Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>> {
         val place = mutableMapOf< AbstractVertex, Pair<Dp?, Dp?>>()
         val graph = Graph(graphInfo.direction == true, graphInfo.weight == true)
         graphInfo.vertices.forEach {
@@ -94,11 +94,6 @@ class JsonConverter() {
                 it.value.weight ?: 1.0f)
         }
 
-        return GraphViewModel(graph,
-            place,
-            mutableStateOf(false),
-            mutableStateOf(false),
-            mutableStateOf(false)
-        )
+        return graph to place
     }
 }

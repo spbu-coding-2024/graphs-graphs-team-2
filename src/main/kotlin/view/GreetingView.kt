@@ -1,5 +1,6 @@
 package view
 
+import GraphScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Row
@@ -17,7 +18,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextGeometricTransform
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import model.Graph
+import model.abstractGraph.AbstractVertex
 import view.components.CoolColors
 import view.components.PurpleButton
 import view.io.JsonView
@@ -33,7 +39,8 @@ enum class DataSystems {
 fun GreetingView() {
 
     var dataSystem by remember { mutableStateOf<DataSystems?>(null) }
-    var model by remember { mutableStateOf<GraphViewModel?>(null) }
+    var model by remember { mutableStateOf<Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>?>(null) }
+    val navigator = LocalNavigator.currentOrThrow
 
     Column(
         modifier = Modifier
@@ -84,7 +91,8 @@ fun GreetingView() {
             val fileChooser = JsonView()
             try {
                 model = fileChooser.loadFromJson()
-                if(model == null ) dataSystem = null
+                if(model == null) dataSystem = null
+                else navigator.push(GraphScreen(model!!.first, model!!.second))
             } catch(e: Exception) {
                 dataSystem = null
             }
