@@ -74,4 +74,14 @@ fun EdgeView(
             text = viewModel.weight,
         )
     }
+    if (viewModel.labelVisibile) {
+        Text(
+            modifier = Modifier
+                .offset(
+                    viewModel.u.x + (viewModel.v.x - viewModel.u.x) / 2,
+                    viewModel.u.y + (viewModel.v.y - viewModel.u.y) / 2
+                ),
+            text = viewModel.weight,
+        )
+    }
 }
