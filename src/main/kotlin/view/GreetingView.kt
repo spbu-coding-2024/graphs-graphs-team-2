@@ -27,8 +27,8 @@ import model.abstractGraph.AbstractVertex
 import view.components.CoolColors
 import view.components.ErrorDialog
 import view.components.PurpleButton
-import androidx.compose.ui.window.Dialog
-import io.ioNeo4j.ReadNeo4j
+import view.io.Neo4jView
+
 
 enum class DataSystems {
     JSON,
@@ -39,10 +39,10 @@ enum class DataSystems {
 @Composable
 fun GreetingView() {
 
-    var dataSystem by remember { mutableStateOf<DataSystems?>(null) }
-    var model by remember { mutableStateOf<Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>?>(null) }
-    var showErrorDialog by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
+    var dataSystem = remember { mutableStateOf<DataSystems?>(null) }
+    var model = remember { mutableStateOf<Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>?>(null) }
+    var showErrorDialog = remember { mutableStateOf(false) }
+    var errorMessage = remember { mutableStateOf("") }
     val navigator = LocalNavigator.currentOrThrow
 
     Column(
@@ -66,7 +66,7 @@ fun GreetingView() {
         ) {
             PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.24f),
-                onClick = { dataSystem = DataSystems.JSON },
+                onClick = { dataSystem.value = DataSystems.JSON },
                 text = "JSON",
                 fontSize = 75.sp,
                 fontFamily = FontFamily.Monospace,
@@ -74,7 +74,7 @@ fun GreetingView() {
             )
             PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.36f),
-                onClick = { dataSystem = DataSystems.SQLite },
+                onClick = { dataSystem.value = DataSystems.SQLite },
                 text = "SQLite",
                 fontSize = 75.sp,
                 fontFamily = FontFamily.Monospace,
@@ -82,7 +82,7 @@ fun GreetingView() {
             )
             PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.3f),
-                onClick = { dataSystem = DataSystems.Neo4j },
+                onClick = { dataSystem.value = DataSystems.Neo4j },
                 text = "Neo4j",
                 fontSize = 75.sp,
                 fontFamily = FontFamily.Monospace,
@@ -90,78 +90,12 @@ fun GreetingView() {
             )
         }
 
-        if (dataSystem == DataSystems.Neo4j) {
-            Dialog(onDismissRequest = {}) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(500.dp)
-                        .padding(16.dp),
-                    shape = RoundedCornerShape(16.dp),
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize().background(CoolColors.DarkGray),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text(
-                            text = "Enter username and password Neo4j",
-                            modifier = Modifier.padding(10.dp),
-                            fontSize = 30.sp,
-                            style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
-                            color = CoolColors.DarkPurple
-                        )
-                        val username = remember { mutableStateOf("username") }
-                        val password = remember { mutableStateOf("password") }
+        if (dataSystem.value == DataSystems.Neo4j) {
+            Neo4jView(dataSystem, errorMessage, model, showErrorDialog, navigator)
+        }
 
-                        OutlinedTextField(
-                            username.value,
-                            { username.value = it },
-                            textStyle = TextStyle(fontSize = 30.sp, color = CoolColors.DarkPurple),
-                            modifier = Modifier.padding(15.dp).width(400.dp)
-                        )
-                        OutlinedTextField(
-                            password.value,
-                            { password.value = it },
-                            textStyle = TextStyle(fontSize = 30.sp, color = CoolColors.DarkPurple),
-                            modifier = Modifier.padding(15.dp).width(400.dp)
-                        )
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center,
-                        ) {
-                            TextButton(
-                                onClick = { dataSystem = null },
-                                modifier = Modifier.padding(30.dp),
-                            ) {
-                                Text("Back", fontSize = 32.sp, color = CoolColors.DarkPurple)
-                            }
-                            TextButton(
-                                onClick = {
-                                    try {
-                                        model = ReadNeo4j(username.value, password.value)
-                                    } catch (e: Exception) {
-                                        errorMessage = e.message ?: "Error"
-                                        showErrorDialog = true
-                                    }
-                                    if(model != null) {
-                                        navigator.push(GraphScreen(model!!.first, model!!.second))
-                                    }
-                                },
-                                modifier = Modifier.padding(30.dp),
-                            ) {
-                                Text("Confirm", fontSize = 32.sp, color = CoolColors.DarkPurple)
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (showErrorDialog) {
-                ErrorDialog(errorMessage) { showErrorDialog = false }
-            }
+        if (showErrorDialog.value) {
+            ErrorDialog(errorMessage.value) { showErrorDialog.value = false }
         }
     }
 }
