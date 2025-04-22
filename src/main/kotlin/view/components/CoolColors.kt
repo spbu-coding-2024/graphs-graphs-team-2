@@ -15,4 +15,7 @@ object CoolColors {
 
     @Stable
     val DarkPurple = Color(130, 100, 175)
+
+    @Stable
+    val Pink = Color(233, 184, 234)
 }
