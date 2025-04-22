@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import viewModel.graph.EdgeViewModel
 import kotlin.math.PI
@@ -22,45 +22,53 @@ fun EdgeView(
     modifier: Modifier = Modifier,
 ) {
     Canvas(modifier = modifier.fillMaxSize()) {
+        val x1 = mutableStateOf(viewModel.u.x.toPx())
+        val x2 = mutableStateOf(viewModel.v.x.toPx())
+        val y1 = mutableStateOf(viewModel.u.y.toPx())
+        val y2 = mutableStateOf(viewModel.v.y.toPx())
+        val r1 = mutableStateOf(viewModel.u.radius.toPx())
+        val r2 = mutableStateOf(viewModel.v.radius.toPx())
+
+        val startX = x1.value + r1.value
+        val startY = y1.value + r1.value
+        val endX = x2.value + r2.value
+        val endY = y2.value + r2.value
+
+        val dx = endX - startX
+        val dy = endY - startY
+        val angle = atan2(dy, dx)
+        val firstX = startX + r1.value * cos(angle)
+        val firstY = startY + r1.value * sin(angle)
+        val indentX = endX - r2.value * cos(angle)
+        val indentY = endY - r2.value * sin(angle)
+
         drawLine(
             start = Offset(
-                viewModel.u.x.toPx(),
-                viewModel.u.y.toPx(),
+                firstX,
+                firstY,
             ),
             end = Offset(
-                viewModel.v.x.toPx(),
-                viewModel.v.y.toPx(),
+                indentX,
+                indentY,
             ),
-            color = Color.Black,
+            color = viewModel.u.color,
         )
-        if (isDirect) {
-            val startX = viewModel.u.x.toPx() + viewModel.u.radius.toPx()
-            val startY = viewModel.u.y.toPx() + viewModel.u.radius.toPx()
-            val endX = viewModel.v.x.toPx() + viewModel.v.radius.toPx()
-            val endY = viewModel.v.y.toPx() + viewModel.v.radius.toPx()
-
-
-            val arrowLength = viewModel.u.radius.toPx() / 2
+        if(isDirect) {
+            val arrowLength = r1.value / 2
             val arrowAngle = PI / 6
 
-
-            val dx = endX - startX
-            val dy = endY - startY
-            val angle = atan2(dy, dx)
-            val x1 = (endX - arrowLength * cos(angle - arrowAngle)).toFloat()
-            val y1 = (endY - arrowLength * sin(angle - arrowAngle)).toFloat()
-            val x2 = (endX - arrowLength * cos(angle + arrowAngle)).toFloat()
-            val y2 = (endY - arrowLength * sin(angle + arrowAngle)).toFloat()
-
-
+            val arrowBeginX = (indentX - arrowLength * cos(angle - arrowAngle)).toFloat()
+            val arrowBeginY = (indentY - arrowLength * sin(angle - arrowAngle)).toFloat()
+            val arrowEndX = (indentX - arrowLength * cos(angle + arrowAngle)).toFloat()
+            val arrowEndY = (indentY - arrowLength * sin(angle + arrowAngle)).toFloat()
             drawPath(
                 path = Path().apply {
-                    moveTo(endX, endY)
-                    lineTo(x1, y1)
-                    lineTo(x2, y2)
+                    moveTo(indentX, indentY)
+                    lineTo(arrowBeginX, arrowBeginY)
+                    lineTo(arrowEndX, arrowEndY)
                     close()
                 },
-                color = Color.Black
+                color = viewModel.u.color,
             )
         }
     }
@@ -72,6 +80,7 @@ fun EdgeView(
                     viewModel.u.y + (viewModel.v.y - viewModel.u.y) / 2
                 ),
             text = viewModel.weight,
+            color = viewModel.u.color,
         )
     }
     if (viewModel.labelVisibile) {
@@ -81,7 +90,8 @@ fun EdgeView(
                     viewModel.u.x + (viewModel.v.x - viewModel.u.x) / 2,
                     viewModel.u.y + (viewModel.v.y - viewModel.u.y) / 2
                 ),
-            text = viewModel.weight,
+            text = viewModel.label,
+            color = viewModel.u.color
         )
     }
 }

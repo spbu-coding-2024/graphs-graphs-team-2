@@ -41,17 +41,6 @@ fun VertexView(
                 }) { change, dragAmount ->
                 change.consume()
                 viewModel.onDrag(dragAmount)
-
-            }
-        }
-        .onClick(true) {
-            if(viewModel.color != Color.Red) {
-                viewModel.radius += 2.dp
-                viewModel.color = Color.Red
-            }
-            else {
-                viewModel.radius -= 5.dp
-                viewModel.color = Color.Gray
             }
         }
     ) {
@@ -61,6 +50,7 @@ fun VertexView(
                     .align(Alignment.Center)
                     .offset(0.dp, -viewModel.radius - 10.dp),
                 text = viewModel.label,
+                color = viewModel.color,
             )
         }
     }
