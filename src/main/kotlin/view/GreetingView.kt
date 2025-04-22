@@ -23,7 +23,7 @@ import view.components.PurpleButton
 import view.io.JsonView
 import viewModel.GraphViewModel
 
-enum class FileSystem {
+enum class DataSystems {
     JSON,
     SQLite,
     Neo4j,
@@ -32,7 +32,7 @@ enum class FileSystem {
 @Composable
 fun GreetingView() {
 
-    var fileSystem by remember { mutableStateOf<FileSystem?>(null) }
+    var dataSystem by remember { mutableStateOf<DataSystems?>(null) }
     var model by remember { mutableStateOf<GraphViewModel?>(null) }
 
     Column(
@@ -56,7 +56,7 @@ fun GreetingView() {
         ) {
             PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.24f),
-                onClick = { fileSystem = FileSystem.JSON },
+                onClick = { dataSystem = DataSystems.JSON },
                 text = "JSON",
                 fontSize = 75.sp,
                 fontFamily = FontFamily.Monospace,
@@ -64,7 +64,7 @@ fun GreetingView() {
             )
             PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.36f),
-                onClick = { fileSystem = FileSystem.SQLite },
+                onClick = { dataSystem = DataSystems.SQLite },
                 text = "SQLite",
                 fontSize = 75.sp,
                 fontFamily = FontFamily.Monospace,
@@ -72,7 +72,7 @@ fun GreetingView() {
             )
             PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.3f),
-                onClick = { fileSystem = FileSystem.Neo4j },
+                onClick = { dataSystem = DataSystems.Neo4j },
                 text = "Neo4j",
                 fontSize = 75.sp,
                 fontFamily = FontFamily.Monospace,
@@ -80,13 +80,13 @@ fun GreetingView() {
             )
         }
 
-        if (fileSystem == FileSystem.JSON) {
+        if (dataSystem == DataSystems.JSON) {
             val fileChooser = JsonView()
             try {
                 model = fileChooser.loadFromJson()
-                if(model == null ) fileSystem = null
+                if(model == null ) dataSystem = null
             } catch(e: Exception) {
-                fileSystem = null
+                dataSystem = null
             }
         }
     }
