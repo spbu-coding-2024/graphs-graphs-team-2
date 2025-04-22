@@ -4,8 +4,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.Dp
 import com.google.gson.Gson
 import model.Graph
-import model.AbstractVertex
-import viewModel.GraphViewModel
+import model.abstractGraph.AbstractVertex
+import viewModel.graph.GraphViewModel
 
 data class VertexInfo(
     val label: String,

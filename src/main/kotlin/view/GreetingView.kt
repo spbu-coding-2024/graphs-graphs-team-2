@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 import view.components.CoolColors
 import view.components.PurpleButton
 import view.io.JsonView
-import viewModel.GraphViewModel
+import viewModel.graph.GraphViewModel
 
 enum class DataSystems {
     JSON,

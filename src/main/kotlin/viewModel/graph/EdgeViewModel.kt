@@ -1,7 +1,8 @@
-package viewModel
+package viewModel.graph
 
 import androidx.compose.runtime.State
-import model.AbstractEdge
+import model.abstractGraph.AbstractEdge
+import viewModel.graph.VertexViewModel
 
 class EdgeViewModel (
     val u: VertexViewModel,
