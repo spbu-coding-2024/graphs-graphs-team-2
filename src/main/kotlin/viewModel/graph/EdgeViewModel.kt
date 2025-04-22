@@ -20,7 +20,7 @@ class EdgeViewModel (
         get() = e.label
 
     val labelVisibile
-        get() = _labelVisible
+        get() = _labelVisible.value
 
     internal val ID
         get() = e.id
