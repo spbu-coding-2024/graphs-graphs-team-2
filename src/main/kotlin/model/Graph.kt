@@ -1,5 +1,9 @@
 package model
 
+import model.abstractGraph.AbstractEdge
+import model.abstractGraph.AbstractGraph
+import model.abstractGraph.AbstractVertex
+
 class Graph (
     private val direction: Boolean = false,
     private val weight: Boolean = false,

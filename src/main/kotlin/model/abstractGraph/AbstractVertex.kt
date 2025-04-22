@@ -1,4 +1,4 @@
-package model
+package model.abstractGraph
 
 interface AbstractVertex {
     var id: Long
