@@ -11,7 +11,7 @@ import kotlin.random.nextInt
 
 class GraphViewModel (
     private val graph: AbstractGraph,
-    private val placement: Map<AbstractVertex, Pair<Dp, Dp>?>,
+    private val placement: Map<AbstractVertex, Pair<Dp?, Dp?>?>,
     showVerticesLabels: State<Boolean>,
     showEdgesWeights: State<Boolean>,
     showEdgesDirections: State<Boolean>,

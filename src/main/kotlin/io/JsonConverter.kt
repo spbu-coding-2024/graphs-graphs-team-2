@@ -9,20 +9,20 @@ import viewModel.GraphViewModel
 
 data class VertexInfo(
     val label: String,
-    val x: Dp,
-    val y: Dp,
+    val x: Dp?,
+    val y: Dp?,
 )
 
 data class EdgeInfo(
     val label: String,
     val from: Long,
     val to: Long,
-    val weight: Float,
+    val weight: Float?,
 )
 
 data class GraphInfo(
-    val direction: Boolean,
-    val weight: Boolean,
+    val direction: Boolean?,
+    val weight: Boolean?,
     var vertices: MutableMap<Long, VertexInfo>,
     var edges: MutableMap<Long, EdgeInfo>,
 )
@@ -45,6 +45,7 @@ class JsonConverter() {
             val info = jsonReader.fromJson(json, GraphInfo::class.java)
             return readGraphInfo(info)
         } catch (e: Exception) {
+            print("ono")
             throw IllegalStateException("Cannot read JSON file: ${e.message}")
         }
     }
@@ -79,8 +80,8 @@ class JsonConverter() {
     }
 
     private fun readGraphInfo(graphInfo: GraphInfo): GraphViewModel {
-        val place = mutableMapOf< AbstractVertex, Pair<Dp, Dp>>()
-        val graph = Graph(graphInfo.direction, graphInfo.weight)
+        val place = mutableMapOf< AbstractVertex, Pair<Dp?, Dp?>>()
+        val graph = Graph(graphInfo.direction == true, graphInfo.weight == true)
         graphInfo.vertices.forEach {
             place.put(graph.addVertex(it.key, it.value.label), it.value.x to it.value.y)
         }
@@ -90,7 +91,7 @@ class JsonConverter() {
                 it.value.to,
                 it.value.label,
                 it.key,
-                it.value.weight)
+                it.value.weight ?: 1.0f)
         }
 
         return GraphViewModel(graph,
