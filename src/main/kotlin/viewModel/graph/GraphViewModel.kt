@@ -5,6 +5,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import model.abstractGraph.AbstractGraph
 import model.abstractGraph.AbstractVertex
+import org.objectweb.asm.Label
 import view.components.CoolColors
 import viewModel.graph.VertexViewModel
 import kotlin.random.Random
@@ -15,7 +16,7 @@ class GraphViewModel (
     private val placement: Map<AbstractVertex, Pair<Dp?, Dp?>?>,
     showVerticesLabels: State<Boolean>,
     showEdgesWeights: State<Boolean>,
-    showEdgesDirections: State<Boolean>,
+    showEdgesLabels: State<Boolean>,
 ) {
     private val _vertices = graph.vertices.associateWith { v ->
         VertexViewModel(
@@ -37,7 +38,7 @@ class GraphViewModel (
             ?: throw IllegalStateException("VertexView for ${e.vertices.first} not found")
         val snd = _vertices[e.vertices.second]
             ?: throw IllegalStateException("VertexView for ${e.vertices.second} not found")
-        EdgeViewModel(fst, snd, e, showEdgesWeights, showEdgesDirections)
+        EdgeViewModel(fst, snd, e, showEdgesWeights, showEdgesLabels)
     }
 
     val vertices: Collection<VertexViewModel>
