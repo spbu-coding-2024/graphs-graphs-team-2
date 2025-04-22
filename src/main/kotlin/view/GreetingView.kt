@@ -27,7 +27,8 @@ import model.abstractGraph.AbstractVertex
 import view.components.CoolColors
 import view.components.ErrorDialog
 import view.components.PurpleButton
-import view.io.JsonView
+import androidx.compose.ui.window.Dialog
+import io.ioNeo4j.ReadNeo4j
 
 enum class DataSystems {
     JSON,
@@ -89,21 +90,78 @@ fun GreetingView() {
             )
         }
 
-        if (dataSystem == DataSystems.JSON) {
-            val fileChooser = JsonView()
-            try {
-                model = fileChooser.loadFromJson()
-                if(model == null) dataSystem = null
-                else navigator.push(GraphScreen(model!!.first, model!!.second))
-            } catch(e: Exception) {
-                errorMessage = e.message ?: ""
-                showErrorDialog = true
-                dataSystem = null
-            }
-        }
+        if (dataSystem == DataSystems.Neo4j) {
+            Dialog(onDismissRequest = {}) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(500.dp)
+                        .padding(16.dp),
+                    shape = RoundedCornerShape(16.dp),
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize().background(CoolColors.DarkGray),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(
+                            text = "Enter username and password Neo4j",
+                            modifier = Modifier.padding(10.dp),
+                            fontSize = 30.sp,
+                            style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
+                            color = CoolColors.DarkPurple
+                        )
+                        val username = remember { mutableStateOf("username") }
+                        val password = remember { mutableStateOf("password") }
 
-        if(showErrorDialog) {
-            ErrorDialog(errorMessage) { showErrorDialog = false }
+                        OutlinedTextField(
+                            username.value,
+                            { username.value = it },
+                            textStyle = TextStyle(fontSize = 30.sp, color = CoolColors.DarkPurple),
+                            modifier = Modifier.padding(15.dp).width(400.dp)
+                        )
+                        OutlinedTextField(
+                            password.value,
+                            { password.value = it },
+                            textStyle = TextStyle(fontSize = 30.sp, color = CoolColors.DarkPurple),
+                            modifier = Modifier.padding(15.dp).width(400.dp)
+                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center,
+                        ) {
+                            TextButton(
+                                onClick = { dataSystem = null },
+                                modifier = Modifier.padding(30.dp),
+                            ) {
+                                Text("Back", fontSize = 32.sp, color = CoolColors.DarkPurple)
+                            }
+                            TextButton(
+                                onClick = {
+                                    try {
+                                        model = ReadNeo4j(username.value, password.value)
+                                    } catch (e: Exception) {
+                                        errorMessage = e.message ?: "Error"
+                                        showErrorDialog = true
+                                    }
+                                    if(model != null) {
+                                        navigator.push(GraphScreen(model!!.first, model!!.second))
+                                    }
+                                },
+                                modifier = Modifier.padding(30.dp),
+                            ) {
+                                Text("Confirm", fontSize = 32.sp, color = CoolColors.DarkPurple)
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (showErrorDialog) {
+                ErrorDialog(errorMessage) { showErrorDialog = false }
+            }
         }
     }
 }
