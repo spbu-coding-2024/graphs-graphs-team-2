@@ -74,5 +74,5 @@ fun calculateScale(graph: GraphViewModel): Float {
     val scaleX = 800f/(maxX - minX)
     val scaleY = 600f/(maxY - minY)
 
-    return 5 * min(scaleY, scaleX)
+    return min(scaleY, scaleX)
 }
