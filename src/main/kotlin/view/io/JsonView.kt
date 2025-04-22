@@ -51,12 +51,11 @@ class JsonView {
 
         val fileToOpen = File(fileDialog.directory, fileDialog.file)
         val convertor = JsonConverter()
+        frame.dispose()
         try {
             val graphModel = convertor.loadJson(fileToOpen.readText())
-            frame.dispose()
             return graphModel
         } catch (e: Exception) {
-            frame.dispose()
             throw IllegalStateException(e.message)
         }
     }

@@ -21,27 +21,39 @@ import viewModel.MainScreenViewModel
 fun MainScreen(viewModel: MainScreenViewModel) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(5.dp),
-        modifier = Modifier.background(CoolColors.DarkGray)
+        modifier = Modifier.background(CoolColors.Gray)
     ) {
-        Column(modifier = Modifier.width(370.dp).background(CoolColors.DarkGray)) {
+        Column(modifier = Modifier
+            .width(370.dp)
+            .background(CoolColors.Gray)
+        ) {
             Row {
-                Checkbox(checked = viewModel.showVerticesLabels.value, onCheckedChange = {
-                    viewModel.showVerticesLabels.value = it
-                })
-                Text("Show vertices labels", fontSize = 28.sp, modifier = Modifier.padding(4.dp), color = CoolColors.Purple)
+                Checkbox(checked = viewModel.showVerticesLabels.value,
+                    onCheckedChange = { viewModel.showVerticesLabels.value = it })
+                Text(
+                    "Show vertices labels",
+                    fontSize = 28.sp,
+                    modifier = Modifier.padding(4.dp),
+                    color = CoolColors.Purple
+                )
             }
             Row {
                 Checkbox(checked = viewModel.showEdgesLabels.value, onCheckedChange = {
                     viewModel.showEdgesLabels.value = it
                 })
-                Text("Show edges labels", fontSize = 28.sp, modifier = Modifier.padding(4.dp), color = CoolColors.Purple)
+                Text(
+                    "Show edges labels",
+                    fontSize = 28.sp,
+                    modifier = Modifier.padding(4.dp),
+                    color = CoolColors.Purple
+                )
             }
         }
 
         Surface(
             modifier = Modifier
                 .weight(1f),
-            color = CoolColors.Gray,
+            color = CoolColors.DarkGray,
         ) {
             GraphView(viewModel.graphViewModel)
         }

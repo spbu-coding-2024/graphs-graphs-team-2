@@ -25,9 +25,9 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import model.Graph
 import model.abstractGraph.AbstractVertex
 import view.components.CoolColors
+import view.components.ErrorDialog
 import view.components.PurpleButton
 import view.io.JsonView
-import viewModel.graph.GraphViewModel
 
 enum class DataSystems {
     JSON,
@@ -40,12 +40,14 @@ fun GreetingView() {
 
     var dataSystem by remember { mutableStateOf<DataSystems?>(null) }
     var model by remember { mutableStateOf<Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>?>(null) }
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
     val navigator = LocalNavigator.currentOrThrow
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = CoolColors.DarkGray),
+            .background(color = CoolColors.Gray),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -94,8 +96,14 @@ fun GreetingView() {
                 if(model == null) dataSystem = null
                 else navigator.push(GraphScreen(model!!.first, model!!.second))
             } catch(e: Exception) {
+                errorMessage = e.message ?: ""
+                showErrorDialog = true
                 dataSystem = null
             }
+        }
+
+        if(showErrorDialog) {
+            ErrorDialog(errorMessage) { showErrorDialog = false }
         }
     }
 }
