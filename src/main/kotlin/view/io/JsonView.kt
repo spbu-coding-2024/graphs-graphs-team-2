@@ -1,7 +1,7 @@
 package view.io
 
 import io.JsonConverter
-import viewModel.GraphViewModel
+import viewModel.graph.GraphViewModel
 import java.awt.FileDialog
 import java.awt.Frame
 import java.io.File

@@ -1,4 +1,4 @@
-package view
+package view.graph
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
-import viewModel.EdgeViewModel
+import viewModel.graph.EdgeViewModel
 import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.cos

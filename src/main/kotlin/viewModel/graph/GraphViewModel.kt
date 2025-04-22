@@ -1,11 +1,12 @@
-package viewModel
+package viewModel.graph
 
 import androidx.compose.runtime.State
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import model.AbstractGraph
-import model.AbstractVertex
+import model.abstractGraph.AbstractGraph
+import model.abstractGraph.AbstractVertex
 import view.components.CoolColors
+import viewModel.graph.VertexViewModel
 import kotlin.random.Random
 import kotlin.random.nextInt
 
@@ -18,8 +19,8 @@ class GraphViewModel (
 ) {
     private val _vertices = graph.vertices.associateWith { v ->
         VertexViewModel(
-            placement[v]?.first ?: Random.nextInt(0..800).dp,
-            placement[v]?.first ?: Random.nextInt(0..600).dp,
+            placement[v]?.first ?: Random.Default.nextInt(0..800).dp,
+            placement[v]?.first ?: Random.Default.nextInt(0..600).dp,
             CoolColors.DarkPurple,
             v,
             showVerticesLabels,
