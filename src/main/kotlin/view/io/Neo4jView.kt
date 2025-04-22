@@ -39,7 +39,7 @@ import cafe.adriel.voyager.navigator.Navigator
 fun Neo4jView(
     dataSystem: MutableState<DataSystems?>, errorMessage: MutableState<String>,
     model: MutableState<Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>?>,
-    showErrorDialog: MutableState<Boolean>, navigator: Navigator
+    showErrorDialog : MutableState<Boolean>, navigator :  Navigator
 ) {
     Dialog(onDismissRequest = {}) {
         Card(
