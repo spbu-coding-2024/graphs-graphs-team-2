@@ -20,6 +20,7 @@ fun EdgeView(
     viewModel: EdgeViewModel,
     isDirect: Boolean,
     modifier: Modifier = Modifier,
+
 ) {
     Canvas(modifier = modifier.fillMaxSize()) {
         val x1 = mutableStateOf(viewModel.u.x.toPx())
@@ -83,7 +84,7 @@ fun EdgeView(
             color = viewModel.u.color,
         )
     }
-    if (viewModel.labelVisibile) {
+    if (viewModel.labelVisible) {
         Text(
             modifier = Modifier
                 .offset(
