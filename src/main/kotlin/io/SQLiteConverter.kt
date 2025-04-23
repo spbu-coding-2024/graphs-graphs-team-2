@@ -4,14 +4,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import inpout.SQLiteEXP
-import model.AbstractVertex
 import model.Graph
-import viewModel.GraphViewModel
+import model.abstractGraph.AbstractVertex
+
+import viewModel.graph.GraphViewModel
 
 
 class SQLiteConverter(val connection: SQLiteEXP){
 
-    fun saveToSQLiteDB(viewModel:GraphViewModel,name :String){
+    fun saveToSQLiteDB(viewModel: GraphViewModel, name :String){
         val id=connection.addGraph(name,viewModel.isDirected,viewModel.isWeighted)
         if(id==-1){
             return
@@ -24,7 +25,7 @@ class SQLiteConverter(val connection: SQLiteEXP){
         }
     }
 
-    fun readFromSQLiteDB(graphName:String):GraphViewModel?{
+    fun readFromSQLiteDB(graphName:String):Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>?{
         val gi =connection.findGraph(graphName)
         if(gi==null){
             return null
@@ -39,7 +40,7 @@ class SQLiteConverter(val connection: SQLiteEXP){
         edges.forEach {
             graph.addEdge(it.vertexFrom,it.vertexTo,it.label,it.id,it.weight)
         }
-        return GraphViewModel(graph,placement, mutableStateOf(false),mutableStateOf(false),mutableStateOf(false))
+        return graph to placement
     }
 }
 

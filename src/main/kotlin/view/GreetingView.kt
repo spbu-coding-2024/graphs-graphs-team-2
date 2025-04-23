@@ -28,6 +28,8 @@ import view.components.CoolColors
 import view.components.ErrorDialog
 import view.components.PurpleButton
 import view.io.JsonView
+import view.io.SQLiteView
+import viewModel.SearchScreenSQlite.SQLiteSearchScreenViewModel
 
 enum class DataSystems {
     JSON,
@@ -100,6 +102,9 @@ fun GreetingView() {
                 showErrorDialog = true
                 dataSystem = null
             }
+        }
+        if(dataSystem == DataSystems.SQLite) {
+            SQLiteView(SQLiteSearchScreenViewModel(), onDismissRequest =  { dataSystem = null },navigator)
         }
 
         if(showErrorDialog) {

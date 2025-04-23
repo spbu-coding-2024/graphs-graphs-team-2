@@ -1,6 +1,6 @@
 package algoritms
 
-import model.AbstractEdge
+/*import model.AbstractEdge
 import model.AbstractGraph
 import model.AbstractVertex
 
@@ -33,4 +33,4 @@ fun FordBellman(graph:AbstractGraph, start: AbstractVertex){
             }
         }
     }
-}
+}*/

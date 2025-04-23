@@ -1,5 +1,6 @@
 package view.io
 
+import GraphScreen
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,14 +24,18 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
+import cafe.adriel.voyager.navigator.Navigator
 import kotlin.text.contains
 
 @Composable
 fun SQLiteView(viewmodel: SQLiteSearchScreenViewModel,
-               onDismissRequest: () -> Unit) {
+               onDismissRequest: () -> Unit, navigator: Navigator
+) {
     Dialog(onDismissRequest = {onDismissRequest()}) {
         Card(
             modifier = Modifier
@@ -38,18 +43,13 @@ fun SQLiteView(viewmodel: SQLiteSearchScreenViewModel,
                 .height(500.dp),
             shape = RoundedCornerShape(16.dp),
         ){
-            val names = remember {
-                listOf(
-                    "Graph1","Graph2","Graph3","Graph4","Graph5","Graph6","Graph7","Graph8"
-                )
-            }
-
+            val graphs = remember {viewmodel.graphList.toMutableStateList()}
             var searchQuery by remember { mutableStateOf("") }
             var expandedMenuId by remember { mutableStateOf(-1) }
 
-            val filteredNames = remember(searchQuery, names) {
-                if (searchQuery.isEmpty()) names
-                else names.filter { it.contains(searchQuery, ignoreCase = true) }
+            val filteredNames = remember(searchQuery, graphs) {
+                if (searchQuery.isBlank()) graphs
+                else graphs.filter { it.contains(searchQuery) }
             }
             Column(
                 modifier = Modifier
@@ -73,7 +73,11 @@ fun SQLiteView(viewmodel: SQLiteSearchScreenViewModel,
                 ){
                     items(filteredNames){name->
                         Button(
-                            onClick = {},
+                            onClick = {
+                                onDismissRequest()
+                                val model = viewmodel.loadGraph(name)
+                                navigator.push(GraphScreen(model!!.first,model.second))
+                            },
                             modifier = Modifier.fillMaxWidth(),
                         ){
                             Text(text = name)
