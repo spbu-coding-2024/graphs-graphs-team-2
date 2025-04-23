@@ -1,15 +1,12 @@
 package viewModel.SearchScreenSQlite
 
 import androidx.compose.ui.unit.Dp
-import inpout.SQLiteEXP
+import io.SQLiteExposed.SQLiteEXP
 import io.SQLiteConverter
 import model.Graph
 import model.abstractGraph.AbstractVertex
-import viewModel.graph.GraphViewModel
 import java.io.File
 import java.nio.file.Paths
-import java.sql.SQLException
-
 
 
 class SQLiteSearchScreenViewModel {

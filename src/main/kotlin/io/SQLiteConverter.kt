@@ -1,9 +1,8 @@
 package io
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import inpout.SQLiteEXP
+import io.SQLiteExposed.SQLiteEXP
 import model.Graph
 import model.abstractGraph.AbstractVertex
 

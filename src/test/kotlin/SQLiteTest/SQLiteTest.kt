@@ -1,11 +1,11 @@
 package SQLiteTest
 
-import inpout.Edges
-import inpout.Graphs
-import inpout.SQLiteEXP
-import inpout.Vertices
-import inpout.edgeInfo
-import inpout.vertexInfo
+import io.SQLiteExposed.Edges
+import io.SQLiteExposed.Graphs
+import io.SQLiteExposed.SQLiteEXP
+import io.SQLiteExposed.Vertices
+import io.SQLiteExposed.edgeInfo
+import io.SQLiteExposed.vertexInfo
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.selectAll
@@ -14,9 +14,7 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.sqlite.SQLiteException
 import java.io.File
-import java.sql.SQLException
 import kotlin.random.Random
 import kotlin.test.assertEquals
 

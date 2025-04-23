@@ -1,13 +1,10 @@
-package inpout
+package io.SQLiteExposed
 
-import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.sqlite.SQLiteException
-import java.sql.SQLException
 
 
 object Graphs : IntIdTable() {
