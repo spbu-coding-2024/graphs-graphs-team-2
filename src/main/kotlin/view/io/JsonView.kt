@@ -1,7 +1,10 @@
 package view.io
 
+import androidx.compose.ui.unit.Dp
 import io.JsonConverter
-import viewModel.GraphViewModel
+import model.Graph
+import model.abstractGraph.AbstractVertex
+import viewModel.graph.GraphViewModel
 import java.awt.FileDialog
 import java.awt.Frame
 import java.io.File
@@ -34,7 +37,7 @@ class JsonView {
         }
     }
 
-    fun loadFromJson(): GraphViewModel? {
+    fun loadFromJson(): Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>? {
         val frame = Frame()
         val fileDialog = FileDialog(frame, "Open your JSON file:", FileDialog.LOAD).also {
             it.setFile("*.json")
@@ -48,12 +51,11 @@ class JsonView {
 
         val fileToOpen = File(fileDialog.directory, fileDialog.file)
         val convertor = JsonConverter()
+        frame.dispose()
         try {
             val graphModel = convertor.loadJson(fileToOpen.readText())
-            frame.dispose()
             return graphModel
         } catch (e: Exception) {
-            frame.dispose()
             throw IllegalStateException(e.message)
         }
     }

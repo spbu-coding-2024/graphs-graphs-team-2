@@ -1,4 +1,4 @@
-package model
+package model.abstractGraph
 
 interface AbstractGraph {
     val vertices: Collection<AbstractVertex>
