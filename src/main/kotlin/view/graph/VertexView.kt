@@ -1,4 +1,4 @@
-package view
+package view.graph
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -13,7 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import viewModel.VertexViewModel
+import view.components.CoolColors
+import viewModel.graph.VertexViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -31,26 +32,15 @@ fun VertexView(
         .pointerInput(viewModel) {
             detectDragGestures (
                 onDragStart =  {
-                    viewModel.radius += 2.dp
-                    viewModel.color = Color.Red
+                    viewModel.radius += 5.dp
+                    viewModel.color = CoolColors.Pink
                 },
                 onDragEnd =  {
-                    viewModel.radius -= 2.dp
-                    viewModel.color = Color.Gray
-                }) { change, dragAmount,  ->
+                    viewModel.radius -= 5.dp
+                    viewModel.color = CoolColors.Purple
+                }) { change, dragAmount ->
                 change.consume()
                 viewModel.onDrag(dragAmount)
-
-            }
-        }
-        .onClick(true) {
-            if(viewModel.color != Color.Red) {
-                viewModel.radius += 2.dp
-                viewModel.color = Color.Red
-            }
-            else {
-                viewModel.radius -= 5.dp
-                viewModel.color = Color.Gray
             }
         }
     ) {
@@ -60,6 +50,7 @@ fun VertexView(
                     .align(Alignment.Center)
                     .offset(0.dp, -viewModel.radius - 10.dp),
                 text = viewModel.label,
+                color = viewModel.color,
             )
         }
     }

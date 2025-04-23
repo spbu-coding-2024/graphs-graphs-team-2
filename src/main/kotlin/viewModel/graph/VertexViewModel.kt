@@ -1,4 +1,4 @@
-package viewModel
+package viewModel.graph
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -6,7 +6,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import model.AbstractVertex
+import model.abstractGraph.AbstractVertex
 
 class VertexViewModel (
     x: Dp = 0.dp,

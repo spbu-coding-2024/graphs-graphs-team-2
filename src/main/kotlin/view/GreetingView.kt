@@ -1,5 +1,6 @@
 package view
 
+import GraphScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Row
@@ -17,15 +18,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextGeometricTransform
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import model.Graph
+import model.abstractGraph.AbstractVertex
 import view.components.CoolColors
+import view.components.ErrorDialog
 import view.components.PurpleButton
 import view.io.JsonView
-import view.io.SQLiteView
-import viewModel.GraphViewModel
-import viewModel.SearchScreenSQlite.SQLiteSearchScreenViewModel
 
-enum class FileSystem {
+enum class DataSystems {
     JSON,
     SQLite,
     Neo4j,
@@ -34,13 +38,16 @@ enum class FileSystem {
 @Composable
 fun GreetingView() {
 
-    var fileSystem by remember { mutableStateOf<FileSystem?>(null) }
-    var model by remember { mutableStateOf<GraphViewModel?>(null) }
+    var dataSystem by remember { mutableStateOf<DataSystems?>(null) }
+    var model by remember { mutableStateOf<Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>?>(null) }
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+    val navigator = LocalNavigator.currentOrThrow
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = CoolColors.DarkGray),
+            .background(color = CoolColors.Gray),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -58,7 +65,7 @@ fun GreetingView() {
         ) {
             PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.24f),
-                onClick = { fileSystem = FileSystem.JSON },
+                onClick = { dataSystem = DataSystems.JSON },
                 text = "JSON",
                 fontSize = 75.sp,
                 fontFamily = FontFamily.Monospace,
@@ -66,7 +73,7 @@ fun GreetingView() {
             )
             PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.36f),
-                onClick = { fileSystem = FileSystem.SQLite },
+                onClick = { dataSystem = DataSystems.SQLite },
                 text = "SQLite",
                 fontSize = 75.sp,
                 fontFamily = FontFamily.Monospace,
@@ -74,7 +81,7 @@ fun GreetingView() {
             )
             PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.3f),
-                onClick = { fileSystem = FileSystem.Neo4j },
+                onClick = { dataSystem = DataSystems.Neo4j },
                 text = "Neo4j",
                 fontSize = 75.sp,
                 fontFamily = FontFamily.Monospace,
@@ -82,17 +89,21 @@ fun GreetingView() {
             )
         }
 
-        if (fileSystem == FileSystem.JSON) {
+        if (dataSystem == DataSystems.JSON) {
             val fileChooser = JsonView()
             try {
                 model = fileChooser.loadFromJson()
-                if(model == null ) fileSystem = null
+                if(model == null) dataSystem = null
+                else navigator.push(GraphScreen(model!!.first, model!!.second))
             } catch(e: Exception) {
-                fileSystem = null
+                errorMessage = e.message ?: ""
+                showErrorDialog = true
+                dataSystem = null
             }
         }
-        if (fileSystem == FileSystem.SQLite) {
-            SQLiteView(SQLiteSearchScreenViewModel(), onDismissRequest = {fileSystem = null})
+
+        if(showErrorDialog) {
+            ErrorDialog(errorMessage) { showErrorDialog = false }
         }
     }
 }
