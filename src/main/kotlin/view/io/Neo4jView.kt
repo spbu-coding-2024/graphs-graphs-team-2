@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -24,6 +25,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextGeometricTransform
 import androidx.compose.ui.unit.Dp
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.IconButton
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -54,26 +62,44 @@ fun Neo4jView(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = "Enter username and password Neo4j",
+                    text = "Connect to Neo4j",
                     modifier = Modifier.padding(10.dp),
-                    fontSize = 30.sp,
+                    fontSize = 40.sp,
                     style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
                     color = CoolColors.DarkPurple
                 )
-                val username = remember { mutableStateOf("username") }
-                val password = remember { mutableStateOf("password") }
+                val username = remember { mutableStateOf("") }
+                val password = remember { mutableStateOf("") }
+                var passwordVisible = remember { mutableStateOf(false) }
 
                 OutlinedTextField(
                     username.value,
                     { username.value = it },
                     textStyle = TextStyle(fontSize = 30.sp, color = CoolColors.DarkPurple),
-                    modifier = Modifier.padding(15.dp).width(400.dp)
+                    modifier = Modifier.padding(15.dp).width(400.dp),
+                    label = { Text("username", fontSize = 30.sp, color = CoolColors.DarkPurple) },
                 )
                 OutlinedTextField(
                     password.value,
                     { password.value = it },
                     textStyle = TextStyle(fontSize = 30.sp, color = CoolColors.DarkPurple),
-                    modifier = Modifier.padding(15.dp).width(400.dp)
+                    modifier = Modifier.padding(15.dp).width(400.dp),
+                    label = { Text("password", fontSize = 30.sp, color = CoolColors.DarkPurple) },
+                    visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        val image = if (passwordVisible.value)
+                            Icons.Filled.Visibility
+                        else Icons.Filled.VisibilityOff
+
+                        val description = if (passwordVisible.value) "Hide password" else "Show password"
+
+                        IconButton(onClick = { passwordVisible.value = !passwordVisible.value }) {
+                            Icon(
+                                imageVector = image, contentDescription = description,
+                                tint = CoolColors.DarkPurple, modifier = Modifier.size(32.dp)
+                            )
+                        }
+                    }
                 )
                 Row(
                     modifier = Modifier

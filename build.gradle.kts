@@ -17,6 +17,8 @@ repositories {
 }
 
 dependencies {
+    implementation(compose.material)
+    implementation(compose.materialIconsExtended)
     implementation(compose.desktop.currentOs)
     testImplementation(kotlin("test"))
     implementation("org.xerial:sqlite-jdbc:3.49.1.0")
