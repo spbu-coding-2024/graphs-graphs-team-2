@@ -1,3 +1,4 @@
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     kotlin("jvm") version "2.1.10"
     id("org.jetbrains.kotlin.plugin.compose") version "2.1.20"
@@ -8,6 +9,7 @@ plugins {
 
 group = "org.example"
 version = "1.0-SNAPSHOT"
+
 
 repositories {
     mavenCentral()
@@ -33,6 +35,12 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    implementation("io.github.microutils", "kotlin-logging-jvm", "2.0.6")
+    implementation("org.slf4j:slf4j-simple:2.0.12")
+    implementation("org.jetbrains.exposed:exposed-core:0.44.0")
+    implementation("org.jetbrains.exposed:exposed-dao:0.44.0")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.44.0")
+
 }
 
 tasks.test {
@@ -45,6 +53,12 @@ kotlin {
 compose.desktop {
     application {
         mainClass = "MainKt"
+        nativeDistributions {
+            targetFormats(TargetFormat.Dmg, TargetFormat.Exe, TargetFormat.Deb)
+            packageName = "graphs"
+            packageVersion = "1.0.0"
+        }
     }
+
 
 }

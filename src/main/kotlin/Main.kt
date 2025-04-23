@@ -23,9 +23,7 @@ object WelcomeScreen : Screen {
 
 data class GraphScreen(val graph: Graph, val placement: Map<AbstractVertex, Pair<Dp?, Dp?>?>) : Screen {
     @Composable
-    override fun Content() {
-        MainScreen(MainScreenViewModel(graph, placement))
-    }
+    override fun Content() = MainScreen(MainScreenViewModel(graph, placement))
 }
 
 @Composable
@@ -39,7 +37,7 @@ fun App() {
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
-        state = WindowState(width = 1400.dp, height = 1050.dp),
+        state = WindowState(width = 1200.dp, height = 900.dp),
         title = "SE TOP"
     ) {
         window.minimumSize = Dimension(800, 600)

@@ -30,6 +30,9 @@ import view.components.CoolColors
 import view.components.ErrorDialog
 import view.components.PurpleButton
 import view.io.Neo4jView
+import view.io.JsonView
+import view.io.SQLiteView
+import viewModel.SearchScreenSQlite.SQLiteSearchScreenViewModel
 
 
 enum class DataSystems {
@@ -48,6 +51,7 @@ fun GreetingView() {
     val navigator = LocalNavigator.currentOrThrow
     val username: MutableState<String?> = remember { mutableStateOf(null) }
     val password: MutableState<String?> = remember { mutableStateOf(null) }
+
 
     Column(
         modifier = Modifier
@@ -94,6 +98,7 @@ fun GreetingView() {
             )
         }
 
+
         if (dataSystem == DataSystems.Neo4j) {
             Neo4jView(username, password) { dataSystem = null }
             if (username.value != null && password.value != null) {
@@ -112,7 +117,25 @@ fun GreetingView() {
             }
         }
 
-        if (showErrorDialog) {
+
+
+        if (dataSystem == DataSystems.JSON) {
+            val fileChooser = JsonView()
+            try {
+                model = fileChooser.loadFromJson()
+                if(model == null) dataSystem = null
+                else navigator.push(GraphScreen(model!!.first, model!!.second))
+            } catch(e: Exception) {
+                errorMessage = e.message ?: ""
+                showErrorDialog = true
+                dataSystem = null
+            }
+        }
+        if(dataSystem == DataSystems.SQLite) {
+            SQLiteView(SQLiteSearchScreenViewModel(), onDismissRequest =  { dataSystem = null },navigator)
+        }
+
+        if(showErrorDialog) {
             ErrorDialog(errorMessage) { showErrorDialog = false }
         }
     }

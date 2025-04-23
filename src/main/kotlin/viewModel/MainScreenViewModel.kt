@@ -7,6 +7,7 @@ import model.abstractGraph.AbstractVertex
 import viewModel.graph.GraphViewModel
 
 class MainScreenViewModel(val graph: Graph, placement: Map<AbstractVertex, Pair<Dp?, Dp?>?>) {
+
     val showVerticesLabels = mutableStateOf(false)
     val showEdgesWeights = mutableStateOf(false)
     val showEdgesLabels = mutableStateOf(false)

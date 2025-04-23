@@ -1,6 +1,5 @@
 package model.abstractGraph
 
-import model.abstractGraph.AbstractVertex
 
 interface AbstractGraph {
     val vertices: Collection<AbstractVertex>

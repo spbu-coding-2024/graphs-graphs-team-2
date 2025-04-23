@@ -28,7 +28,6 @@ class GraphViewModel (
         )
     }
 
-
     internal val isDirected: Boolean
         get() = graph.isDirected
     internal val isWeighted: Boolean
@@ -40,6 +39,7 @@ class GraphViewModel (
         val snd = _vertices[e.vertices.second]
             ?: throw IllegalStateException("VertexView for ${e.vertices.second} not found")
         EdgeViewModel(fst, snd, CoolColors.DarkPurple, e, showEdgesWeights, showEdgesLabels)
+
     }
 
     val vertices: Collection<VertexViewModel>

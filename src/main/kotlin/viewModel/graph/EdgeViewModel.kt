@@ -22,19 +22,17 @@ class EdgeViewModel (
     val label
         get() = e.label
 
-    val labelVisibile
+
+    val labelVisible
         get() = _labelVisible.value
 
     internal val ID
         get() = e.id
-
-    val direciton
-        get() = u to v
-
     private var _color = mutableStateOf(color)
     var color: Color
         get() = _color.value
         set(value) {
             _color.value = value
         }
+
 }

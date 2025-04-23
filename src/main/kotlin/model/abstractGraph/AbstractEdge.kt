@@ -1,6 +1,5 @@
 package model.abstractGraph
 
-import model.abstractGraph.AbstractVertex
 
 interface AbstractEdge {
     val id: Long

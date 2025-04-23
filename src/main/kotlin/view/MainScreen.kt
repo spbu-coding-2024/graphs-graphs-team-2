@@ -1,7 +1,11 @@
 package view
 
+
 import GraphScreen
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -52,6 +56,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
             Row {
                 Checkbox(
                     checked = viewModel.showVerticesLabels.value,
+
                     onCheckedChange = { viewModel.showVerticesLabels.value = it })
                 Text(
                     "Show vertices labels",
@@ -89,13 +94,20 @@ fun MainScreen(viewModel: MainScreenViewModel) {
             )
         }
 
+        var scale by remember { mutableStateOf(calculateScale(viewModel.graphViewModel)) }
         Surface(
             modifier = Modifier
-                .weight(1f),
+                .weight(1f)
+                .scrollable(orientation = Orientation.Vertical, state = rememberScrollableState { delta ->
+                    scale *= 1f + delta / 400
+                    scale = scale.coerceIn(0.000001f, 100f)
+                    delta
+                }),
             color = CoolColors.DarkGray,
         ) {
-            GraphView(viewModel.graphViewModel)
+            GraphView(viewModel.graphViewModel, scale)
         }
+        
         if (dataSystem == DataSystems.Neo4j) {
             Neo4jView(username, password) { dataSystem = null }
             if (username.value != null && password.value != null) {
@@ -117,4 +129,22 @@ fun MainScreen(viewModel: MainScreenViewModel) {
             ErrorDialog(errorMessage) { showErrorDialog = false }
         }
     }
+}
+
+fun calculateScale(graph: GraphViewModel): Float {
+    var minX = 0f
+    var minY = 0f
+    var maxX = 0f
+    var maxY = 0f
+
+    for (v in graph.vertices) {
+        minX = min(v.x.value, minX)
+        minY = min(v.y.value, minY)
+        maxX = max(v.x.value, maxX)
+        maxY = max(v.y.value, maxY)
+    }
+    val scaleX = 800f/(maxX - minX)
+    val scaleY = 600f/(maxY - minY)
+
+    return min(scaleY, scaleX)
 }
