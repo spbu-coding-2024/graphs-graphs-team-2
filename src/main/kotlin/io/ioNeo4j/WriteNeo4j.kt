@@ -4,8 +4,9 @@ import androidx.compose.ui.unit.Dp
 import model.Graph
 import model.abstractGraph.AbstractVertex
 import org.springframework.boot.builder.SpringApplicationBuilder
+import viewModel.graph.GraphViewModel
 
-fun ReadNeo4j(username: String, password: String): Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>> {
+fun WriteNeo4j(username: String, password: String, graphViewModel: GraphViewModel) {
     val context = SpringApplicationBuilder(Neo4jApplication::class.java)
         .properties(
             mapOf(
@@ -14,7 +15,6 @@ fun ReadNeo4j(username: String, password: String): Pair<Graph, Map<AbstractVerte
             )
         )
         .run()
-    val graph = context.getBean(Neo4jService::class.java).readData()
+    context.getBean(Neo4jService::class.java).writeData(graphViewModel)
     context.close()
-    return graph
 }

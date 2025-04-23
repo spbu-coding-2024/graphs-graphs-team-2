@@ -75,16 +75,16 @@ fun Neo4jView(
                 OutlinedTextField(
                     username.value,
                     { username.value = it },
-                    textStyle = TextStyle(fontSize = 30.sp, color = CoolColors.DarkPurple),
+                    textStyle = TextStyle(fontSize = 32.sp, color = CoolColors.DarkPurple),
                     modifier = Modifier.padding(15.dp).width(400.dp),
-                    label = { Text("username", fontSize = 30.sp, color = CoolColors.DarkPurple) },
+                    label = { Text("username", fontSize = 28.sp, color = CoolColors.DarkPurple) },
                 )
                 OutlinedTextField(
                     password.value,
                     { password.value = it },
-                    textStyle = TextStyle(fontSize = 30.sp, color = CoolColors.DarkPurple),
+                    textStyle = TextStyle(fontSize = 32.sp, color = CoolColors.DarkPurple),
                     modifier = Modifier.padding(15.dp).width(400.dp),
-                    label = { Text("password", fontSize = 30.sp, color = CoolColors.DarkPurple) },
+                    label = { Text("password", fontSize = 28.sp, color = CoolColors.DarkPurple) },
                     visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
                         val image = if (passwordVisible.value)
