@@ -1,9 +1,13 @@
 package inpout
 
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.sqlite.SQLiteException
+import java.sql.SQLException
 
 
 object Graphs : IntIdTable() {
@@ -33,13 +37,12 @@ object Edges : IntIdTable() {
 }
 
 class SQLiteEXP(dbName: String) {
+    var dbc =Database.connect(
+        "jdbc:sqlite:$dbName",
+        driver = "org.sqlite.JDBC",
+        setupConnection = { it.createStatement().execute("PRAGMA foreign_keys=ON") })
     init {
-
-        Database.connect(
-            "jdbc:sqlite:$dbName",
-            driver = "org.sqlite.JDBC",
-            setupConnection = { it.createStatement().execute("PRAGMA foreign_keys=ON") })
-        transaction {
+        transaction(dbc) {
             addLogger(StdOutSqlLogger)
             SchemaUtils.create(Edges, Vertices, Graphs)
         }
@@ -47,24 +50,24 @@ class SQLiteEXP(dbName: String) {
 
 
     fun addGraph(name: String,isDir: Boolean,isWeigh: Boolean): Int {
-        val id =
+        var id  = 0
+        transaction(dbc) {
             try {
-                transaction {
-                    val t = Graphs.insertAndGetId {
-                        it[graphName] = name
-                        it[isDirected] = isDir
-                        it[isWeighted] = isWeigh
-                    }
-                    return@transaction t.value
+                val t = Graphs.insertAndGetId {
+                    it[graphName] = name
+                    it[isDirected] = isDir
+                    it[isWeighted] = isWeigh
                 }
-            }catch (e:Exception){
-                return -1
+                id=t.value
+            }catch (e: ExposedSQLException) {
+                throw e
             }
+        }
         return id
     }
 
     fun addEdge(graphId: Int, fromVertex: Long, toVertex: Long, weight_d : Float,edge_d:Long, label_d : String) {
-        transaction {
+        transaction(dbc) {
             Edges.insert {
                 it[graph_id] = graphId
                 it[edge]=edge_d
@@ -77,19 +80,20 @@ class SQLiteEXP(dbName: String) {
     }
 
     fun addVertex(graphId: Int, vertexnum: Long, xc: Float, yc: Float,labell:String) {
-        try{
         transaction {
-            Vertices.insert {
-                it[graph_id] = graphId
-                it[vertex] = vertexnum
-                it[x] = xc
-                it[y] = yc
-                it[label] = labell
+            try {
+                Vertices.insert {
+                    it[graph_id] = graphId
+                    it[vertex] = vertexnum
+                    it[x] = xc
+                    it[y] = yc
+                    it[label] = labell
+                }
+            }catch (e: ExposedSQLException) {
+                throw e
             }
         }
-        }catch (e:Exception){
-            return
-        }
+
     }
 
     fun findGraph(name: String): graphInfo?{

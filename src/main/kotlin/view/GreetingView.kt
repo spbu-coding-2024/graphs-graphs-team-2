@@ -21,7 +21,9 @@ import androidx.compose.ui.unit.sp
 import view.components.CoolColors
 import view.components.PurpleButton
 import view.io.JsonView
+import view.io.SQLiteView
 import viewModel.GraphViewModel
+import viewModel.SearchScreenSQlite.SQLiteSearchScreenViewModel
 
 enum class FileSystem {
     JSON,
@@ -88,6 +90,9 @@ fun GreetingView() {
             } catch(e: Exception) {
                 fileSystem = null
             }
+        }
+        if (fileSystem == FileSystem.SQLite) {
+            SQLiteView(SQLiteSearchScreenViewModel(), onDismissRequest = {fileSystem = null})
         }
     }
 }

@@ -23,6 +23,7 @@ dependencies {
     implementation("org.neo4j.driver", "neo4j-java-driver", "5.28.4")
     implementation("org.gephi","gephi-toolkit" ,"0.10.1" , classifier = "all")
     implementation("io.github.microutils", "kotlin-logging-jvm", "2.0.6")
+    implementation("org.slf4j:slf4j-simple:2.0.12")
     implementation("org.jetbrains.exposed:exposed-core:0.44.0")
     implementation("org.jetbrains.exposed:exposed-dao:0.44.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.44.0")
