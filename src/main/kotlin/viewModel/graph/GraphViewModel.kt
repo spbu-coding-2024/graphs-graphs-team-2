@@ -5,9 +5,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import model.abstractGraph.AbstractGraph
 import model.abstractGraph.AbstractVertex
-import org.objectweb.asm.Label
 import view.components.CoolColors
-import viewModel.graph.VertexViewModel
 import kotlin.random.Random
 import kotlin.random.nextInt
 

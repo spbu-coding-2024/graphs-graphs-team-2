@@ -19,12 +19,9 @@ class EdgeViewModel (
     val label
         get() = e.label
 
-    val labelVisibile
+    val labelVisible
         get() = _labelVisible.value
 
     internal val ID
         get() = e.id
-
-    val direciton
-        get() = u to v
 }
