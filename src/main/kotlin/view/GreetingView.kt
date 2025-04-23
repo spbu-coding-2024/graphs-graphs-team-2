@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import io.ioNeo4j.ReadNeo4j
 import model.Graph
 import model.abstractGraph.AbstractVertex
 import view.components.CoolColors
@@ -39,11 +41,13 @@ enum class DataSystems {
 @Composable
 fun GreetingView() {
 
-    var dataSystem = remember { mutableStateOf<DataSystems?>(null) }
-    var model = remember { mutableStateOf<Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>?>(null) }
-    var showErrorDialog = remember { mutableStateOf(false) }
-    var errorMessage = remember { mutableStateOf("") }
+    var dataSystem by remember { mutableStateOf<DataSystems?>(null) }
+    var model by remember { mutableStateOf<Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>?>(null) }
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
     val navigator = LocalNavigator.currentOrThrow
+    val username: MutableState<String?> = remember { mutableStateOf(null) }
+    val password: MutableState<String?> = remember { mutableStateOf(null) }
 
     Column(
         modifier = Modifier
@@ -66,7 +70,7 @@ fun GreetingView() {
         ) {
             PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.24f),
-                onClick = { dataSystem.value = DataSystems.JSON },
+                onClick = { dataSystem = DataSystems.JSON },
                 text = "JSON",
                 fontSize = 75.sp,
                 fontFamily = FontFamily.Monospace,
@@ -74,7 +78,7 @@ fun GreetingView() {
             )
             PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.36f),
-                onClick = { dataSystem.value = DataSystems.SQLite },
+                onClick = { dataSystem = DataSystems.SQLite },
                 text = "SQLite",
                 fontSize = 75.sp,
                 fontFamily = FontFamily.Monospace,
@@ -82,7 +86,7 @@ fun GreetingView() {
             )
             PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.3f),
-                onClick = { dataSystem.value = DataSystems.Neo4j },
+                onClick = { dataSystem = DataSystems.Neo4j },
                 text = "Neo4j",
                 fontSize = 75.sp,
                 fontFamily = FontFamily.Monospace,
@@ -90,12 +94,26 @@ fun GreetingView() {
             )
         }
 
-        if (dataSystem.value == DataSystems.Neo4j) {
-            Neo4jView(dataSystem, errorMessage, model, showErrorDialog, navigator)
+        if (dataSystem == DataSystems.Neo4j) {
+            Neo4jView(username, password) { dataSystem = null }
+            if (username.value != null && password.value != null) {
+                try {
+                    model = ReadNeo4j(username.value ?: "", password.value ?: "")
+                } catch (e: Exception) {
+                    errorMessage = e.message ?: "Error"
+                    showErrorDialog = true
+                    username.value = null
+                    password.value = null
+                    dataSystem = null
+                }
+                if (model != null) {
+                    navigator.push(GraphScreen(model!!.first, model!!.second))
+                }
+            }
         }
 
-        if (showErrorDialog.value) {
-            ErrorDialog(errorMessage.value) { showErrorDialog.value = false }
+        if (showErrorDialog) {
+            ErrorDialog(errorMessage) { showErrorDialog = false }
         }
     }
 }

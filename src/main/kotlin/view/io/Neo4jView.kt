@@ -37,9 +37,7 @@ import cafe.adriel.voyager.navigator.Navigator
 
 @Composable
 fun Neo4jView(
-    dataSystem: MutableState<DataSystems?>, errorMessage: MutableState<String>,
-    model: MutableState<Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>?>,
-    showErrorDialog : MutableState<Boolean>, navigator :  Navigator
+    Username: MutableState<String?>, Password: MutableState<String?>, onDismissRequest: () -> Unit
 ) {
     Dialog(onDismissRequest = {}) {
         Card(
@@ -83,22 +81,15 @@ fun Neo4jView(
                     horizontalArrangement = Arrangement.Center,
                 ) {
                     TextButton(
-                        onClick = { dataSystem.value = null },
+                        onClick = onDismissRequest,
                         modifier = Modifier.padding(30.dp),
                     ) {
                         Text("Back", fontSize = 32.sp, color = CoolColors.DarkPurple)
                     }
                     TextButton(
                         onClick = {
-                            try {
-                                model.value = ReadNeo4j(username.value, password.value)
-                            } catch (e: Exception) {
-                                errorMessage.value = e.message ?: "Error"
-                                showErrorDialog.value = true
-                            }
-                            if (model.value != null) {
-                                navigator.push(GraphScreen(model.value!!.first, model.value!!.second))
-                            }
+                            Username.value = username.value
+                            Password.value = password.value
                         },
                         modifier = Modifier.padding(30.dp),
                     ) {
