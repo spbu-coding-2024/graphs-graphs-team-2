@@ -6,14 +6,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import view.algo.FindBridgesView
 import view.components.CoolColors
+import view.components.PurpleButton
 import view.graph.GraphView
 import viewModel.MainScreenViewModel
 
@@ -48,6 +53,12 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     color = CoolColors.Purple
                 )
             }
+            PurpleButton(modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.3f),
+                onClick = { FindBridgesView(viewModel.graph,viewModel.graphViewModel).DrawBridges() },
+                text = "FindBridges",
+                fontSize = 75.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 10.dp)
         }
 
         Surface(

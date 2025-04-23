@@ -51,7 +51,7 @@ fun EdgeView(
                 indentX,
                 indentY,
             ),
-            color = viewModel.u.color,
+            color = viewModel.color,
         )
         if(isDirect) {
             val arrowLength = r1.value / 2
@@ -68,7 +68,7 @@ fun EdgeView(
                     lineTo(arrowEndX, arrowEndY)
                     close()
                 },
-                color = viewModel.u.color,
+                color = viewModel.color,
             )
         }
     }
@@ -80,7 +80,7 @@ fun EdgeView(
                     viewModel.u.y + (viewModel.v.y - viewModel.u.y) / 2
                 ),
             text = viewModel.weight,
-            color = viewModel.u.color,
+            color = viewModel.color,
         )
     }
     if (viewModel.labelVisibile) {
@@ -91,7 +91,7 @@ fun EdgeView(
                     viewModel.u.y + (viewModel.v.y - viewModel.u.y) / 2
                 ),
             text = viewModel.label,
-            color = viewModel.u.color
+            color = viewModel.color
         )
     }
 }
