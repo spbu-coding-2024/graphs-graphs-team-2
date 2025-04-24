@@ -71,12 +71,24 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     color = CoolColors.Purple
                 )
             }
+
             Row {
                 Checkbox(checked = viewModel.showEdgesLabels.value, onCheckedChange = {
                     viewModel.showEdgesLabels.value = it
                 })
                 Text(
                     "Show edges labels",
+                    fontSize = 28.sp,
+                    modifier = Modifier.padding(4.dp),
+                    color = CoolColors.Purple
+                )
+            }
+            Row {
+                Checkbox(
+                    checked = viewModel.showVerticesIds.value,
+                    onCheckedChange = { viewModel.showVerticesIds.value = it })
+                Text(
+                    "Show vertices ids",
                     fontSize = 28.sp,
                     modifier = Modifier.padding(4.dp),
                     color = CoolColors.Purple

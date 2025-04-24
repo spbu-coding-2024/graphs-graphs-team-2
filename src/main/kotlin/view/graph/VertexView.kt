@@ -58,5 +58,14 @@ fun VertexView(
                 color = viewModel.color,
             )
         }
+        if (viewModel.idVisible) {
+            Text(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .offset(0.dp, viewModel.radius + 10.dp),
+                text = viewModel.ID.toString(),
+                color = viewModel.color,
+            )
+        }
     }
 }

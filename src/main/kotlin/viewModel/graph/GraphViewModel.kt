@@ -19,6 +19,7 @@ class GraphViewModel(
     private val graph: Graph,
     private val placement: Map<AbstractVertex, Pair<Dp?, Dp?>?>,
     showVerticesLabels: State<Boolean>,
+    showVerticesIds: State<Boolean>,
     showEdgesWeights: State<Boolean>,
     showEdgesLabels: State<Boolean>,
 ) {
@@ -30,6 +31,7 @@ class GraphViewModel(
                     CoolColors.DarkPurple,
                     v,
                     showVerticesLabels,
+                    showVerticesIds
                 )
     }
 
