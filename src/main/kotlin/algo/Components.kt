@@ -1,9 +1,6 @@
 package algo
 
 import model.Graph
-import model.abstractGraph.AbstractGraph
-import model.abstractGraph.AbstractVertex
-
 
 class Components(private val graph: Graph) {
 

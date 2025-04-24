@@ -1,6 +1,5 @@
 package view
 
-import algo.Components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
@@ -8,6 +7,8 @@ import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -51,13 +52,13 @@ fun MainScreen(viewModel: MainScreenViewModel) {
         Column(
             modifier = Modifier
                 .width(370.dp)
-                .background(CoolColors.Gray)
+                .background(CoolColors.Gray),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Row {
                 Checkbox(
                     checked = viewModel.showVerticesLabels.value,
-
-                    onCheckedChange = { viewModel.showVerticesLabels.value = it; viewModel.graphViewModel.highlightComponents() })
+                    onCheckedChange = { viewModel.showVerticesLabels.value = it })
                 Text(
                     "Show vertices labels",
                     fontSize = 28.sp,
@@ -68,7 +69,6 @@ fun MainScreen(viewModel: MainScreenViewModel) {
             Row {
                 Checkbox(checked = viewModel.showEdgesLabels.value, onCheckedChange = {
                     viewModel.showEdgesLabels.value = it
-                    val comp = Components(viewModel.graph).components
                 })
                 Text(
                     "Show edges labels",
@@ -78,20 +78,28 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 )
             }
             PurpleButton(
-                modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.3f),
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
                 onClick = { viewModel.graphViewModel.DrawBridges() },
-                text = "FindBridges",
-                fontSize = 75.sp,
+                text = "Find Bridges",
+                fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
-                textPadding = 10.dp
+                textPadding = 3.dp
             )
             PurpleButton(
-                modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.3f),
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
                 onClick = { dataSystem = DataSystems.Neo4j},
-                text = "WriteNeo4j",
-                fontSize = 75.sp,
+                text = "Write to Neo4j",
+                fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
-                textPadding = 10.dp
+                textPadding = 3.dp
             )
         }
 
