@@ -85,7 +85,7 @@ fun EdgeView(
             color = viewModel.color,
         )
     }
-    if (viewModel.labelVisibile) {
+    if (viewModel.labelVisible) {
 
         Text(
             modifier = Modifier

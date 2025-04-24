@@ -1,10 +1,17 @@
 package viewModel.SearchScreenSQlite
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import io.SQLiteExposed.SQLiteEXP
 import io.SQLiteConverter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import model.Graph
+import model.abstractGraph.AbstractGraph
 import model.abstractGraph.AbstractVertex
+import viewModel.graph.GraphViewModel
 import java.io.File
 import java.nio.file.Paths
 
@@ -12,8 +19,10 @@ import java.nio.file.Paths
 class SQLiteSearchScreenViewModel {
     private val connection = SQLiteEXP("app.db")
     private val converter = SQLiteConverter(connection)
-    val graphList
-        get()=connection.makeListFromNames().toMutableList()
+    var graphList: MutableList<String>
+    init{
+        graphList = connection.makeListFromNames().toMutableList()
+    }
     fun loadGraph(name: String): Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>? {
         return converter.readFromSQLiteDB(name)
     }
@@ -30,4 +39,23 @@ class SQLiteSearchScreenViewModel {
         }
 
     }
+
+    fun writeGraph(viewModel: GraphViewModel, name: String){
+        converter.saveToSQLiteDB(viewModel, name)
+    }
+}
+
+fun main(){
+    val graph= Graph()
+    val viewModel = SQLiteSearchScreenViewModel()
+    val placement = mutableMapOf<AbstractVertex, Pair<Dp, Dp>>()
+    for (i in 1..10000){
+        placement.put(graph.addVertex(i.toLong(),i.toString()),0.dp to 0.dp)
+
+    }
+    for (i in 1..10000){
+        graph.addEdge((1L..10000L).random(),(1L..10000L).random(),i.toString(),i.toLong(),1f)
+    }
+    val gm = GraphViewModel(graph,placement, mutableStateOf(false),mutableStateOf(false),mutableStateOf(false))
+    SQLiteSearchScreenViewModel().writeGraph(gm,"megalo")
 }

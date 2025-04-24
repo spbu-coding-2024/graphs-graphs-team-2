@@ -35,6 +35,9 @@ import view.components.PurpleButton
 import view.graph.GraphView
 import view.io.Neo4jView
 import viewModel.MainScreenViewModel
+import viewModel.graph.GraphViewModel
+import kotlin.math.max
+import kotlin.math.min
 
 @Composable
 fun MainScreen(viewModel: MainScreenViewModel) {
