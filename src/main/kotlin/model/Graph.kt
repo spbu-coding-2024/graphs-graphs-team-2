@@ -22,6 +22,7 @@ class Graph (
     override val isWeighted: Boolean
         get() = weight
 
+
     override fun addVertex(id: Long, label: String): AbstractVertex = _vertices.getOrPut(id) { Vertex(label, id) }
 
     override fun addEdge(firstID: Long, secondID: Long,
@@ -34,6 +35,20 @@ class Graph (
             throw IllegalStateException("Graph has no vertices with ID $firstID and $secondID")
 
         return _edges.getOrPut(edgeID) { Edge(edgeLabel, edgeID, first, second, weight) }
+    }
+
+    private var _graphMap = mapOf<Long, ArrayDeque<Long>>()
+    val graphMap: Map<Long, ArrayDeque<Long>>
+        get() {
+            if(_graphMap.isEmpty()) computeMap()
+            return _graphMap
+        }
+    private fun computeMap() {
+        _graphMap = _vertices.keys.associateWith{ ArrayDeque() }
+        edges.forEach {
+            _graphMap[it.vertices.first.id]?.add(it.vertices.second.id)
+                ?: throw IllegalStateException("Edge ${it.id} contains non-existing vertex")
+        }
     }
 
     private data class Vertex(override var label: String, override var id: Long) : AbstractVertex

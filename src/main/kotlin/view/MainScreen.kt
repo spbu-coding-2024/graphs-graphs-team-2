@@ -1,21 +1,18 @@
 package view
 
-
-import GraphScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Checkbox
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,15 +21,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.ioNeo4j.ReadNeo4j
 import io.ioNeo4j.WriteNeo4j
-import view.algo.FindBridgesView
 import view.components.CoolColors
 import view.components.ErrorDialog
 import view.components.PurpleButton
@@ -50,95 +44,99 @@ fun MainScreen(viewModel: MainScreenViewModel) {
     val password: MutableState<String?> = remember { mutableStateOf(null) }
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
-    if(!viewModel.isLoading.value) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(5.dp),
-            modifier = Modifier.background(CoolColors.Gray)
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(5.dp),
+        modifier = Modifier.background(CoolColors.Gray)
+    ) {
+        Column(
+            modifier = Modifier
+                .width(370.dp)
+                .background(CoolColors.Gray),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .width(370.dp)
-                    .background(CoolColors.Gray)
-            ) {
-                Row {
-                    Checkbox(
-                        checked = viewModel.showVerticesLabels.value,
-
-                        onCheckedChange = { viewModel.showVerticesLabels.value = it })
-                    Text(
-                        "Show vertices labels",
-                        fontSize = 28.sp,
-                        modifier = Modifier.padding(4.dp),
-                        color = CoolColors.Purple
-                    )
-                }
-                Row {
-                    Checkbox(checked = viewModel.showEdgesLabels.value, onCheckedChange = {
-                        viewModel.showEdgesLabels.value = it
-                    })
-                    Text(
-                        "Show edges labels",
-                        fontSize = 28.sp,
-                        modifier = Modifier.padding(4.dp),
-                        color = CoolColors.Purple
-                    )
-                }
-                PurpleButton(
-                    modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.3f),
-                    onClick = { FindBridgesView(viewModel.graph, viewModel.graphViewModel).DrawBridges() },
-                    text = "FindBridges",
-                    fontSize = 75.sp,
-                    fontFamily = FontFamily.Monospace,
-                    textPadding = 10.dp
-                )
-                PurpleButton(
-                    modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.3f),
-                    onClick = { dataSystem = DataSystems.Neo4j },
-                    text = "WriteNeo4j",
-                    fontSize = 75.sp,
-                    fontFamily = FontFamily.Monospace,
-                    textPadding = 10.dp
+            Row {
+                Checkbox(
+                    checked = viewModel.showVerticesLabels.value,
+                    onCheckedChange = { viewModel.showVerticesLabels.value = it })
+                Text(
+                    "Show vertices labels",
+                    fontSize = 28.sp,
+                    modifier = Modifier.padding(4.dp),
+                    color = CoolColors.Purple
                 )
             }
-
-            var scale by remember { mutableStateOf(calculateScale(viewModel.graphViewModel)) }
-            Surface(
+            Row {
+                Checkbox(checked = viewModel.showEdgesLabels.value, onCheckedChange = {
+                    viewModel.showEdgesLabels.value = it
+                })
+                Text(
+                    "Show edges labels",
+                    fontSize = 28.sp,
+                    modifier = Modifier.padding(4.dp),
+                    color = CoolColors.Purple
+                )
+            }
+            PurpleButton(
                 modifier = Modifier
-                    .weight(1f)
-                    .scrollable(orientation = Orientation.Vertical, state = rememberScrollableState { delta ->
-                        scale *= 1f + delta / 400
-                        scale = scale.coerceIn(0.000001f, 100f)
-                        delta
-                    }),
-                color = CoolColors.DarkGray,
-            ) {
-                GraphView(viewModel.graphViewModel, scale)
-            }
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
+                onClick = { viewModel.graphViewModel.DrawBridges() },
+                text = "Find Bridges",
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 3.dp
+            )
+            PurpleButton(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
+                onClick = { dataSystem = DataSystems.Neo4j},
+                text = "Write to Neo4j",
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 3.dp
+            )
+        }
 
-            if (dataSystem == DataSystems.Neo4j) {
-                Neo4jView(username, password) { dataSystem = null }
-                if (username.value != null && password.value != null) {
-                    try {
-                        WriteNeo4j(username.value ?: "", password.value ?: "", viewModel.graphViewModel)
-                        dataSystem = null
-                        username.value = null
-                        password.value = null
-                    } catch (e: Exception) {
-                        errorMessage = e.message ?: "Error"
-                        showErrorDialog = true
-                        username.value = null
-                        password.value = null
-                        dataSystem = null
-                    }
+        var scale by remember { mutableStateOf(calculateScale(viewModel.graphViewModel)) }
+
+        Surface(
+            modifier = Modifier
+                .weight(1f)
+                .scrollable(orientation = Orientation.Vertical, state = rememberScrollableState { delta ->
+                    scale *= 1f + delta / 500
+                    scale = scale.coerceIn(0.000001f, 100f)
+                    delta
+                }),
+            color = CoolColors.DarkGray,
+        ) {
+            GraphView(viewModel.graphViewModel, scale)
+        }
+        
+        if (dataSystem == DataSystems.Neo4j) {
+            Neo4jView(username, password) { dataSystem = null }
+            if (username.value != null && password.value != null) {
+                try {
+                    WriteNeo4j(username.value ?: "", password.value ?: "", viewModel.graphViewModel)
+                    dataSystem = null
+                    username.value = null
+                    password.value = null
+                } catch (e: Exception) {
+                    errorMessage = e.message ?: "Error"
+                    showErrorDialog = true
+                    username.value = null
+                    password.value = null
+                    dataSystem = null
                 }
-            }
-            if (showErrorDialog) {
-                ErrorDialog(errorMessage) { showErrorDialog = false }
             }
         }
-    }else{
-        Box(Modifier.fillMaxSize().background(CoolColors.Gray)) {
-            CircularProgressIndicator(Modifier.align(Alignment.Center))
+        if (showErrorDialog) {
+            ErrorDialog(errorMessage) { showErrorDialog = false }
         }
     }
 }

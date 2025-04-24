@@ -1,32 +1,38 @@
 package algo
 
+import model.Graph
+import kotlin.let
 import kotlin.math.min
 
 
-class AlgoBridges(val graph : Array<ArrayDeque<Int>>) {
-    private val sizeOfGraph = graph.size
-    private val used = Array<Boolean>(sizeOfGraph) { false }
+class AlgoBridges(val graph : Graph) {
+    private val used = graph.vertices.associate { it.id to false }.toMutableMap()
     private var timer: Int = 0
-    private val tin = Array<Int>(sizeOfGraph) { 0 }
-    private val fup = Array<Int>(sizeOfGraph) { 0 }
-    val bridges = ArrayDeque<Pair<Int,Int>>()
+    private val tin = graph.vertices.associate { it.id to 0 }.toMutableMap()
+    private val fup = graph.vertices.associate { it.id to 0 }.toMutableMap()
 
-    private fun dfs(v: Int, p: Int = -1) {
+    val graphMap = graph.graphMap
+    
+    val bridges = ArrayDeque<Pair<Long, Long>>()
+
+    private fun dfs(v: Long, p: Long = -1) {
         used[v] = true
         fup[v] = timer
         tin[v] = timer
         timer++
-        for (i in 0..<graph[v].size){
-            val to : Int = graph[v][i]
+        for (i in 0..<(graphMap[v]?.size ?: 0)){
+            val to = graphMap[v]?.get(i) ?: continue
             if(to == p) continue
-            if(used[to]){
-                fup[v] = min(fup[v],tin[to])
+            if(used[to] == true){
+                fup[v] = min(fup[v] ?: 0, tin[to] ?: 0)
             }
             else{
                 dfs(to,v)
-                fup[v] = min(fup[v],fup[to])
-                if(fup[to] > tin[v]){
-                    if(graph[v].count{u -> u == to} == 1) bridges.add(Pair(v,to))
+                fup[v] = min(fup[v] ?: 0, fup[to] ?: 0)
+                fup[to]?.let {
+                    if(it > (tin[v] ?: 0)){
+                        if(graphMap[v]?.count {u -> u == to} == 1) bridges.add(Pair(v,to))
+                    }
                 }
             }
         }
@@ -34,9 +40,11 @@ class AlgoBridges(val graph : Array<ArrayDeque<Int>>) {
 
     fun findBridges(){
         timer = 0
-        for(i in 0..<sizeOfGraph){
-            if(!used[i]){
-                dfs(i)
+        graphMap.forEach {
+            used[it.key]?.let {isUsed ->
+                if(!isUsed){
+                    dfs(it.key)
+                }
             }
         }
     }

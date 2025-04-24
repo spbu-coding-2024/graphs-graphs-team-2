@@ -22,7 +22,7 @@ fun PurpleButton (modifier: Modifier = Modifier,
                   text: String,
                   fontSize: TextUnit,
                   fontFamily: FontFamily = FontFamily.Default,
-                  textPadding: Dp) {
+                  textPadding: Dp,) {
     Button (
         colors = ButtonDefaults.textButtonColors(
             backgroundColor = CoolColors.Purple,
