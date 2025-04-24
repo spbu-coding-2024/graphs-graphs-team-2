@@ -1,11 +1,12 @@
 package algoritms
 
-import model.AbstractEdge
-import model.AbstractGraph
-import model.AbstractVertex
+import model.abstractGraph.AbstractEdge
+import model.abstractGraph.AbstractGraph
+import model.abstractGraph.AbstractVertex
 
-fun FordBellman(graph:AbstractGraph, start: AbstractVertex){
-    val mapa= mutableMapOf<AbstractVertex,AbstractEdge>()
+
+fun FordBellman(graph: AbstractGraph, start: AbstractVertex){
+    val mapa= mutableMapOf<AbstractVertex, AbstractEdge>()
     val dist = mutableMapOf<AbstractVertex, Float>()
     for (v in graph.vertices) {
         dist[v] = Float.POSITIVE_INFINITY
