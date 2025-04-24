@@ -51,8 +51,8 @@ fun EdgeView(
                 indentX,
                 indentY,
             ),
+            strokeWidth = viewModel.width,
             color = viewModel.color,
-
         )
         if(isDirect) {
             val arrowLength = r1.value / 2
@@ -70,7 +70,6 @@ fun EdgeView(
                     close()
                 },
                 color = viewModel.color,
-
             )
         }
     }
@@ -85,7 +84,7 @@ fun EdgeView(
             color = viewModel.color,
         )
     }
-    if (viewModel.labelVisibile) {
+    if (viewModel.labelVisible) {
 
         Text(
             modifier = Modifier

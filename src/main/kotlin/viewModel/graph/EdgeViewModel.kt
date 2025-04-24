@@ -9,6 +9,7 @@ class EdgeViewModel (
     val u: VertexViewModel,
     val v: VertexViewModel,
     color: Color,
+    width: Float = 2f,
     private val e: AbstractEdge,
     private val _weightVisible: State<Boolean>,
     private val _labelVisible: State<Boolean>,
@@ -28,6 +29,14 @@ class EdgeViewModel (
 
     internal val ID
         get() = e.id
+
+    private var _width = mutableStateOf(width)
+    var width: Float
+        get() = _width.value
+        set(value) {
+            _width.value = value
+        }
+
     private var _color = mutableStateOf(color)
     var color: Color
         get() = _color.value

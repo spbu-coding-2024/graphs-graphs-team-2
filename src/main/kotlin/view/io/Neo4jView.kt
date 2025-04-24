@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,6 +31,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -41,6 +43,7 @@ import model.abstractGraph.AbstractVertex
 import view.DataSystems
 import view.components.CoolColors
 import cafe.adriel.voyager.navigator.Navigator
+import view.components.PurpleButton
 
 
 @Composable
@@ -63,27 +66,27 @@ fun Neo4jView(
             ) {
                 Text(
                     text = "Connect to Neo4j",
-                    modifier = Modifier.padding(10.dp),
+                    modifier = Modifier.padding(top = 20.dp, bottom = 10.dp),
                     fontSize = 40.sp,
                     style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
                     color = CoolColors.DarkPurple
                 )
                 val username = remember { mutableStateOf("") }
                 val password = remember { mutableStateOf("") }
-                var passwordVisible = remember { mutableStateOf(false) }
+                val passwordVisible = remember { mutableStateOf(false) }
 
                 OutlinedTextField(
                     username.value,
                     { username.value = it },
                     textStyle = TextStyle(fontSize = 32.sp, color = CoolColors.DarkPurple),
-                    modifier = Modifier.padding(15.dp).width(400.dp),
+                    modifier = Modifier.width(400.dp),
                     label = { Text("username", fontSize = 28.sp, color = CoolColors.DarkPurple) },
                 )
                 OutlinedTextField(
                     password.value,
                     { password.value = it },
                     textStyle = TextStyle(fontSize = 32.sp, color = CoolColors.DarkPurple),
-                    modifier = Modifier.padding(15.dp).width(400.dp),
+                    modifier = Modifier.width(400.dp),
                     label = { Text("password", fontSize = 28.sp, color = CoolColors.DarkPurple) },
                     visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
@@ -101,25 +104,32 @@ fun Neo4jView(
                         }
                     }
                 )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
+                Column(
+                    modifier = Modifier.padding(top = 52.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
                 ) {
-                    TextButton(
-                        onClick = onDismissRequest,
-                        modifier = Modifier.padding(30.dp),
-                    ) {
-                        Text("Back", fontSize = 32.sp, color = CoolColors.DarkPurple)
-                    }
-                    TextButton(
-                        onClick = {
-                            Username.value = username.value
-                            Password.value = password.value
-                        },
-                        modifier = Modifier.padding(30.dp),
-                    ) {
-                        Text("Confirm", fontSize = 32.sp, color = CoolColors.DarkPurple)
+                    Row(
+                        modifier = Modifier,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ){
+                        PurpleButton(
+                            onClick = onDismissRequest,
+                            modifier = Modifier.clip(shape = RoundedCornerShape(10.dp)),
+                            text = "Back",
+                            fontSize = 32.sp,
+                            textPadding = 10.dp
+                        )
+                        PurpleButton(
+                            onClick = {
+                                Username.value = username.value
+                                Password.value = password.value
+                            },
+                            modifier = Modifier.clip(shape = RoundedCornerShape(10.dp)),
+                            text = "Confirm",
+                            fontSize = 32.sp,
+                            textPadding = 10.dp
+                        )
                     }
                 }
             }

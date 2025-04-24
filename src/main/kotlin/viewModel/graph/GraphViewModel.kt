@@ -1,8 +1,11 @@
 package viewModel.graph
 
+import algo.AlgoBridges
+import algo.Components
 import androidx.compose.runtime.State
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import model.Graph
 import model.abstractGraph.AbstractGraph
 import model.abstractGraph.AbstractVertex
 import org.objectweb.asm.Label
@@ -12,13 +15,14 @@ import kotlin.random.Random
 import kotlin.random.nextInt
 
 class GraphViewModel (
-    private val graph: AbstractGraph,
+    private val graph: Graph,
     private val placement: Map<AbstractVertex, Pair<Dp?, Dp?>?>,
     showVerticesLabels: State<Boolean>,
     showEdgesWeights: State<Boolean>,
     showEdgesLabels: State<Boolean>,
 ) {
-    private val _vertices = graph.vertices.associateWith { v ->
+    private val _vertices = graph.vertices.associate { v ->
+        v.id to
         VertexViewModel(
             placement[v]?.first ?: Random.Default.nextInt(0..800).dp,
             placement[v]?.first ?: Random.Default.nextInt(0..600).dp,
@@ -33,13 +37,19 @@ class GraphViewModel (
     internal val isWeighted: Boolean
         get() = graph.isWeighted
 
-    private val _edges = graph.edges.associateWith { e ->
-        val fst = _vertices[e.vertices.first]
+    private val _edges = graph.edges.associate { e ->
+        val fst = _vertices[e.vertices.first.id]
             ?: throw IllegalStateException("VertexView for ${e.vertices.first} not found")
-        val snd = _vertices[e.vertices.second]
+        val snd = _vertices[e.vertices.second.id]
             ?: throw IllegalStateException("VertexView for ${e.vertices.second} not found")
-        EdgeViewModel(fst, snd, CoolColors.DarkPurple, e, showEdgesWeights, showEdgesLabels)
-
+        fst.ID to snd.ID to
+        EdgeViewModel(fst, snd,
+            CoolColors.DarkPurple,
+            2f,
+            e,
+            showEdgesWeights,
+            showEdgesLabels
+        )
     }
 
     val vertices: Collection<VertexViewModel>
@@ -47,4 +57,22 @@ class GraphViewModel (
 
     val edges: Collection<EdgeViewModel>
         get() = _edges.values
+
+    fun DrawBridges() {
+        val algoBridges = AlgoBridges(graph)
+        algoBridges.findBridges()
+        algoBridges.bridges.forEach { bridge ->
+            _edges[bridge]?.color = CoolColors.Blue
+            _edges[bridge]?.width = 5f
+        }
+    }
+    fun highlightComponents() {
+        val strongComponents = Components(graph).components
+        for ((_, community) in strongComponents.withIndex()) {
+            val color = CoolColors.RandomColor
+            for (vertexId in community) {
+                _vertices[vertexId]?.color = color
+            }
+        }
+    }
 }

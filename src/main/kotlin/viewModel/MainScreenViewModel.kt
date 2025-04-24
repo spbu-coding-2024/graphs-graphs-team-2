@@ -13,4 +13,6 @@ class MainScreenViewModel(val graph: Graph, placement: Map<AbstractVertex, Pair<
     val showEdgesLabels = mutableStateOf(false)
 
     val graphViewModel = GraphViewModel(graph, placement, showVerticesLabels, showEdgesWeights, showEdgesLabels)
+
+
 }

@@ -1,7 +1,5 @@
 package view
 
-
-import GraphScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
@@ -9,6 +7,8 @@ import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,15 +26,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.ioNeo4j.ReadNeo4j
 import io.ioNeo4j.WriteNeo4j
-import view.algo.FindBridgesView
 import view.components.CoolColors
 import view.components.ErrorDialog
 import view.components.PurpleButton
 import view.graph.GraphView
 import view.io.Neo4jView
 import viewModel.MainScreenViewModel
+import viewModel.graph.GraphViewModel
+import kotlin.math.max
+import kotlin.math.min
 
 @Composable
 fun MainScreen(viewModel: MainScreenViewModel) {
@@ -51,12 +52,12 @@ fun MainScreen(viewModel: MainScreenViewModel) {
         Column(
             modifier = Modifier
                 .width(370.dp)
-                .background(CoolColors.Gray)
+                .background(CoolColors.Gray),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Row {
                 Checkbox(
                     checked = viewModel.showVerticesLabels.value,
-
                     onCheckedChange = { viewModel.showVerticesLabels.value = it })
                 Text(
                     "Show vertices labels",
@@ -77,29 +78,38 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 )
             }
             PurpleButton(
-                modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.3f),
-                onClick = { FindBridgesView(viewModel.graph, viewModel.graphViewModel).DrawBridges() },
-                text = "FindBridges",
-                fontSize = 75.sp,
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
+                onClick = { viewModel.graphViewModel.DrawBridges() },
+                text = "Find Bridges",
+                fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
-                textPadding = 10.dp
+                textPadding = 3.dp
             )
             PurpleButton(
-                modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.3f),
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
                 onClick = { dataSystem = DataSystems.Neo4j},
-                text = "WriteNeo4j",
-                fontSize = 75.sp,
+                text = "Write to Neo4j",
+                fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
-                textPadding = 10.dp
+                textPadding = 3.dp
             )
         }
 
         var scale by remember { mutableStateOf(calculateScale(viewModel.graphViewModel)) }
+
         Surface(
             modifier = Modifier
                 .weight(1f)
                 .scrollable(orientation = Orientation.Vertical, state = rememberScrollableState { delta ->
-                    scale *= 1f + delta / 400
+                    scale *= 1f + delta / 500
                     scale = scale.coerceIn(0.000001f, 100f)
                     delta
                 }),
