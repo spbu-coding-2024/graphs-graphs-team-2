@@ -7,12 +7,14 @@ import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Checkbox
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,6 +47,8 @@ fun MainScreen(viewModel: MainScreenViewModel) {
     val password: MutableState<String?> = remember { mutableStateOf(null) }
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
+    var firstIdDijkstra by remember { mutableStateOf("") }
+    var secondIdDijkstra by remember { mutableStateOf("") }
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -77,30 +82,69 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     color = CoolColors.Purple
                 )
             }
+            if (!viewModel.graphViewModel.isDirected) {
+                PurpleButton(
+                    modifier = Modifier
+                        .clip(shape = RoundedCornerShape(15.dp))
+                        .height(65.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 7.dp),
+                    onClick = { viewModel.graphViewModel.DrawBridges() },
+                    text = "Find Bridges",
+                    fontSize = 28.sp,
+                    fontFamily = FontFamily.Monospace,
+                    textPadding = 3.dp
+                )
+            }
             PurpleButton(
                 modifier = Modifier
                     .clip(shape = RoundedCornerShape(15.dp))
                     .height(65.dp)
                     .fillMaxWidth()
                     .padding(horizontal = 7.dp),
-                onClick = { viewModel.graphViewModel.DrawBridges() },
-                text = "Find Bridges",
-                fontSize = 28.sp,
-                fontFamily = FontFamily.Monospace,
-                textPadding = 3.dp
-            )
-            PurpleButton(
-                modifier = Modifier
-                    .clip(shape = RoundedCornerShape(15.dp))
-                    .height(65.dp)
-                    .fillMaxWidth()
-                    .padding(horizontal = 7.dp),
-                onClick = { dataSystem = DataSystems.Neo4j},
+                onClick = { dataSystem = DataSystems.Neo4j },
                 text = "Write to Neo4j",
                 fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
                 textPadding = 3.dp
             )
+            if (viewModel.graphViewModel.isDirected) {
+                Row {
+                    OutlinedTextField(
+                        firstIdDijkstra,
+                        { firstIdDijkstra = it },
+                        textStyle = TextStyle(fontSize = 28.sp, color = CoolColors.DarkPurple),
+                        modifier = Modifier.width(90.dp).height(65.dp)
+                    )
+                    OutlinedTextField(
+                        secondIdDijkstra,
+                        { secondIdDijkstra = it },
+                        textStyle = TextStyle(fontSize = 28.sp, color = CoolColors.DarkPurple),
+                        modifier = Modifier.width(90.dp).height(65.dp)
+                    )
+                    PurpleButton(
+                        modifier = Modifier
+                            .clip(shape = RoundedCornerShape(15.dp))
+                            .height(65.dp)
+                            .fillMaxSize()
+                            .padding(horizontal = 7.dp),
+                        onClick = {
+                            try {
+                                viewModel.graphViewModel.Dijkstra(firstIdDijkstra, secondIdDijkstra)
+                            } catch (e: Exception) {
+                                errorMessage = e.message ?: "Graph is built incorrectly"
+                                showErrorDialog = true
+                                firstIdDijkstra = ""
+                                secondIdDijkstra = ""
+                            }
+                        },
+                        text = "Dijkstra",
+                        fontSize = 28.sp,
+                        fontFamily = FontFamily.Monospace,
+                        textPadding = 3.dp
+                    )
+                }
+            }
         }
 
         var scale by remember { mutableStateOf(calculateScale(viewModel.graphViewModel)) }
@@ -117,7 +161,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
         ) {
             GraphView(viewModel.graphViewModel, scale)
         }
-        
+
         if (dataSystem == DataSystems.Neo4j) {
             Neo4jView(username, password) { dataSystem = null }
             if (username.value != null && password.value != null) {
@@ -153,8 +197,8 @@ fun calculateScale(graph: GraphViewModel): Float {
         maxX = max(v.x.value, maxX)
         maxY = max(v.y.value, maxY)
     }
-    val scaleX = 800f/(maxX - minX)
-    val scaleY = 600f/(maxY - minY)
+    val scaleX = 800f / (maxX - minX)
+    val scaleY = 600f / (maxY - minY)
 
     return min(scaleY, scaleX)
 }
