@@ -1,7 +1,6 @@
 package view
 
-
-import GraphScreen
+import algo.Components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
@@ -26,15 +25,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.ioNeo4j.ReadNeo4j
 import io.ioNeo4j.WriteNeo4j
-import view.algo.FindBridgesView
 import view.components.CoolColors
 import view.components.ErrorDialog
 import view.components.PurpleButton
 import view.graph.GraphView
 import view.io.Neo4jView
 import viewModel.MainScreenViewModel
+import viewModel.graph.GraphViewModel
+import kotlin.math.max
+import kotlin.math.min
 
 @Composable
 fun MainScreen(viewModel: MainScreenViewModel) {
@@ -57,7 +57,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 Checkbox(
                     checked = viewModel.showVerticesLabels.value,
 
-                    onCheckedChange = { viewModel.showVerticesLabels.value = it })
+                    onCheckedChange = { viewModel.showVerticesLabels.value = it; viewModel.graphViewModel.highlightComponents() })
                 Text(
                     "Show vertices labels",
                     fontSize = 28.sp,
@@ -68,6 +68,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
             Row {
                 Checkbox(checked = viewModel.showEdgesLabels.value, onCheckedChange = {
                     viewModel.showEdgesLabels.value = it
+                    val comp = Components(viewModel.graph).components
                 })
                 Text(
                     "Show edges labels",
@@ -78,7 +79,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
             }
             PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.3f),
-                onClick = { FindBridgesView(viewModel.graph, viewModel.graphViewModel).DrawBridges() },
+                onClick = { viewModel.graphViewModel.DrawBridges() },
                 text = "FindBridges",
                 fontSize = 75.sp,
                 fontFamily = FontFamily.Monospace,
@@ -95,11 +96,12 @@ fun MainScreen(viewModel: MainScreenViewModel) {
         }
 
         var scale by remember { mutableStateOf(calculateScale(viewModel.graphViewModel)) }
+
         Surface(
             modifier = Modifier
                 .weight(1f)
                 .scrollable(orientation = Orientation.Vertical, state = rememberScrollableState { delta ->
-                    scale *= 1f + delta / 400
+                    scale *= 1f + delta / 500
                     scale = scale.coerceIn(0.000001f, 100f)
                     delta
                 }),

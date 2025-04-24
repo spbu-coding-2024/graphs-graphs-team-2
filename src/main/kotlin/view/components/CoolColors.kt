@@ -2,6 +2,7 @@ package view.components
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
+import kotlin.random.Random
 
 object CoolColors {
     @Stable
@@ -24,4 +25,14 @@ object CoolColors {
 
     @Stable
     val White = Color(200, 200, 200)
+
+    @Stable
+    val Blue = Color(139, 170, 183)
+
+    val RandomColor
+        get()= Color(
+        Random.nextInt(80, 255),
+        Random.nextInt(80, 255),
+        Random.nextInt(80, 255),
+    )
 }

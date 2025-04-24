@@ -15,6 +15,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextGeometricTransform
 import androidx.compose.ui.unit.dp
@@ -27,7 +28,7 @@ fun ErrorDialog(message: String, onDismissRequest: () -> Unit) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(350.dp),
+                .height(400.dp),
             shape = RoundedCornerShape(25.dp),
             backgroundColor = CoolColors.Gray
         ) {
@@ -65,17 +66,13 @@ fun ErrorDialog(message: String, onDismissRequest: () -> Unit) {
                 verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.End,
             ) {
-                TextButton(
+                PurpleButton(
                     onClick = onDismissRequest,
-                    modifier = Modifier
-                        .background(CoolColors.DarkGray, shape = RoundedCornerShape(10.dp))
-                        .padding(7.dp),
-                ) {
-                    Text(text = "Ok",
-                        fontSize = 32.sp,
-                        color = CoolColors.Purple
-                    )
-                }
+                    modifier = Modifier.clip(shape = RoundedCornerShape(10.dp)),
+                    text = "OK",
+                    fontSize = 32.sp,
+                    textPadding = 7.dp
+                )
             }
         }
     }
