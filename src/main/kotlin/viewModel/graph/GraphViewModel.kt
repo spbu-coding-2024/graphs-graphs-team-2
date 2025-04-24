@@ -1,6 +1,7 @@
 package viewModel.graph
 
 import algo.AlgoBridges
+import algo.AlgoDijkstra
 import algo.Components
 import androidx.compose.runtime.State
 import androidx.compose.ui.unit.Dp
@@ -64,6 +65,16 @@ class GraphViewModel (
         algoBridges.bridges.forEach { bridge ->
             _edges[bridge]?.color = CoolColors.Blue
             _edges[bridge]?.width = 5f
+        }
+    }
+    fun Dijkstra(firstId : Long, secondId : Long) {
+        val algoDijkstra = AlgoDijkstra(graph,firstId,secondId)
+        algoDijkstra.dijkstra(firstId)
+        val way = algoDijkstra.way
+        for(i in 0..way.size - 2){
+            val edge = Pair(way[i],way[i+1])
+            _edges[edge]?.color = CoolColors.Bardo
+            _edges[edge]?.width = 5f
         }
     }
     fun highlightComponents() {
