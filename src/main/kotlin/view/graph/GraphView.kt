@@ -10,10 +10,14 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import viewModel.graph.GraphViewModel
+import java.lang.Float.min
+import kotlin.math.max
+
 
 @Composable
 fun GraphView(
     viewModel: GraphViewModel,
+
     scale: Float
 ) {
     var offsetX by remember{ mutableStateOf(5f) }

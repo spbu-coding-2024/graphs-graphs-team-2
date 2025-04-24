@@ -1,5 +1,6 @@
 package model.abstractGraph
 
+
 interface AbstractGraph {
     val vertices: Collection<AbstractVertex>
     val edges: Collection<AbstractEdge>
