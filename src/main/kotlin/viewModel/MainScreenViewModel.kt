@@ -17,10 +17,13 @@ class MainScreenViewModel(val graph: Graph, placement: Map<AbstractVertex, Pair<
     val showEdgesLabels = mutableStateOf(false)
 
     val graphViewModel = GraphViewModel(graph, placement, showVerticesLabels, showEdgesWeights, showEdgesLabels)
+    val isLoading = mutableStateOf(true)
     init{
         val scope = CoroutineScope(Dispatchers.Default)
         scope.launch {
+            isLoading.value = true
             place(800.0, 600.0, graphViewModel)
+            isLoading.value = false
         }
     }
 }

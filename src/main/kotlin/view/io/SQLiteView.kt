@@ -23,6 +23,7 @@ import androidx.compose.ui.window.Dialog
 import viewModel.SearchScreenSQlite.SQLiteSearchScreenViewModel
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.DrawerDefaults.backgroundColor
 import androidx.compose.material.DrawerDefaults.shape
 import androidx.compose.material.DropdownMenu
@@ -39,7 +40,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.shadow
@@ -48,6 +51,9 @@ import androidx.compose.ui.text.style.TextGeometricTransform
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.Navigator
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import view.components.CoolColors
 import kotlin.collections.filter
 import kotlin.text.contains
@@ -57,85 +63,112 @@ import kotlin.text.isBlank
 fun SQLiteView(viewmodel: SQLiteSearchScreenViewModel,
                onDismissRequest: () -> Unit, navigator: Navigator
 ) {
-    Dialog(onDismissRequest = { onDismissRequest() }) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(500.dp),
-            shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
-            backgroundColor = CoolColors.Gray
-        ) {
-            var nameForConfirm by remember { mutableStateOf("") }
-            var showDialog by remember { mutableStateOf(false) }
-            val graphs = remember { viewmodel.graphList.toMutableStateList() }
-            var searchQuery by remember { mutableStateOf("") }
-            var expandedMenuId by remember { mutableStateOf(-1) }
+    val scope = rememberCoroutineScope()
+    var isLoading by remember { mutableStateOf(true) }
+    var graphs : MutableList<String> by remember { mutableStateOf(mutableListOf<String>()) }
+    scope.launch {
+        isLoading = true
+        graphs = viewmodel.graphList.toMutableStateList()
+        isLoading = false
+    }
 
-            val filteredNames = remember(searchQuery, graphs) {
-                if (searchQuery.isBlank()) graphs
-                else graphs.filter { it.contains(searchQuery, ignoreCase = true) }
-            }
-            Column(
+        Dialog(onDismissRequest = { onDismissRequest() }) {
+            Card(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
+                    .fillMaxWidth()
+                    .height(500.dp),
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+                backgroundColor = CoolColors.Gray
+
             ) {
-                OutlinedTextField(
-                    value = searchQuery,
-                    onValueChange = { searchQuery = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text("SearchGraphs") },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                    singleLine = true
-                )
+                if(!isLoading) {
+                    var nameForConfirm by remember { mutableStateOf("") }
+                    var showDialog by remember { mutableStateOf(false) }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    var searchQuery by remember { mutableStateOf("") }
 
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(filteredNames) { name ->
-                        Box(contentAlignment = Alignment.Center) {
-                            Button(
-                                onClick = {
-                                    onDismissRequest()
-                                    val model = viewmodel.loadGraph(name)
-                                    navigator.push(GraphScreen(model!!.first, model.second))
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically,horizontalArrangement = Arrangement.SpaceBetween,modifier = Modifier.fillMaxWidth()) {
-                                    Text(text = name)
-                                    IconButton(
 
+                    val filteredNames = remember(searchQuery, graphs) {
+                        if (searchQuery.isBlank()) graphs
+                        else graphs.filter { it.contains(searchQuery, ignoreCase = true) }
+                    }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = searchQuery,
+                            onValueChange = { searchQuery = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            label = { Text("SearchGraphs") },
+                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                            singleLine = true
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(filteredNames) { name ->
+                                Box(contentAlignment = Alignment.Center) {
+                                    Button(
                                         onClick = {
-                                            showDialog = true
-                                            nameForConfirm = name
+                                            onDismissRequest()
+                                            val model = viewmodel.loadGraph(name)
+                                            navigator.push(GraphScreen(model!!.first, model.second))
                                         },
+                                        modifier = Modifier.fillMaxWidth(),
+                                    ) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Text(text = name)
+                                            IconButton(
 
-                                    ){
-                                        Icon(
-                                            imageVector = Icons.Default.Delete,
-                                            contentDescription = "Delete",
-                                        )
+                                                onClick = {
+                                                    showDialog = true
+                                                    nameForConfirm = name
+                                                },
+
+                                                ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Delete,
+                                                    contentDescription = "Delete",
+                                                )
+                                            }
+                                        }
                                     }
+
                                 }
                             }
-                            
                         }
+                    }
+                    if (showDialog) {
+                        confirmationDialog(
+                            { showDialog = false },
+                            {
+                                viewmodel.deleteGraph(nameForConfirm)
+                                graphs.remove(nameForConfirm)
+                                showDialog = false
+                            },
+                            nameForConfirm
+                        )
+                    }
+                }
+                if(isLoading) {
+                    Box(Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(Modifier.align(Alignment.Center))
                     }
                 }
             }
-            if(showDialog) {
-                confirmationDialog ({ showDialog = false },
-                    {viewmodel.deleteGraph(nameForConfirm)
-                        graphs.remove(nameForConfirm)
-                        showDialog=false},
-                    nameForConfirm)
-            }
-        }
+
     }
+
 }
 
 @Composable

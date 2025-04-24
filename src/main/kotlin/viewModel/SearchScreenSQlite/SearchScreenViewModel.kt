@@ -1,12 +1,14 @@
 package viewModel.SearchScreenSQlite
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.SQLiteExposed.SQLiteEXP
 import io.SQLiteConverter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import model.Graph
 import model.abstractGraph.AbstractGraph
@@ -17,12 +19,19 @@ import java.nio.file.Paths
 
 
 class SQLiteSearchScreenViewModel {
+    private val _isLoading=mutableStateOf(false)
+    val isLoading = _isLoading
     private val connection = SQLiteEXP("app.db")
     private val converter = SQLiteConverter(connection)
-    var graphList: MutableList<String>
+    lateinit var graphList: MutableList<String>
     init{
         graphList = connection.makeListFromNames().toMutableList()
     }
+
+
+
+
+
     fun loadGraph(name: String): Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>? {
         return converter.readFromSQLiteDB(name)
     }

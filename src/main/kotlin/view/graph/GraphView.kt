@@ -4,7 +4,9 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -22,6 +24,7 @@ fun GraphView(
 ) {
     var offsetX by remember{ mutableStateOf(5f) }
     var offsetY by remember{ mutableStateOf(5f) }
+    var isLoading = true
 
 
     Box(modifier = Modifier
@@ -39,11 +42,17 @@ fun GraphView(
             scaleY = scale
         )
     ) {
+        isLoading = false
         viewModel.vertices.forEach { v ->
             VertexView(v, Modifier)
         }
         viewModel.edges.forEach { e ->
             EdgeView(e, viewModel.isDirected)
+        }
+    }
+    if(isLoading) {
+        Box(Modifier.fillMaxSize()) {
+            CircularProgressIndicator(Modifier.align(Alignment.Center))
         }
     }
 }
