@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.unit.dp
 import viewModel.graph.EdgeViewModel
 import kotlin.math.PI
 import kotlin.math.atan2
@@ -77,8 +78,8 @@ fun EdgeView(
         Text(
             modifier = Modifier
                 .offset(
-                    viewModel.u.x + (viewModel.v.x - viewModel.u.x) / 2,
-                    viewModel.u.y + (viewModel.v.y - viewModel.u.y) / 2
+                    viewModel.u.x + (viewModel.v.x - viewModel.u.x) / 2 + 30.dp,
+                    viewModel.u.y + (viewModel.v.y - viewModel.u.y) / 2 + 30.dp
                 ),
             text = viewModel.weight,
             color = viewModel.color,
@@ -89,8 +90,8 @@ fun EdgeView(
         Text(
             modifier = Modifier
                 .offset(
-                    viewModel.u.x + (viewModel.v.x - viewModel.u.x) / 2,
-                    viewModel.u.y + (viewModel.v.y - viewModel.u.y) / 2
+                    viewModel.u.x + (viewModel.v.x - viewModel.u.x) / 2 - 10.dp,
+                    viewModel.u.y + (viewModel.v.y - viewModel.u.y) / 2 - 10.dp
                 ),
             text = viewModel.label,
             color = viewModel.color
