@@ -19,12 +19,8 @@ class SQLiteConverter(val connection: SQLiteEXP){
         if(id==-1){
             return
         }
-        viewModel.vertices.forEach {
-            connection.addVertex(id,it.ID,it.x.value,it.y.value,it.label)
-        }
-        viewModel.edges.forEach {
-            connection.addEdge(id,it.u.ID,it.v.ID,it.weight.toFloat(),it.ID,it.label)
-        }
+        connection.addAllvertices(id,viewModel.vertices)
+        connection.addAllEdges(id,viewModel.edges)
     }
 
     fun readFromSQLiteDB(graphName:String):Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>?{
