@@ -60,7 +60,6 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 .background(CoolColors.Gray),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-
             Row {
                 Checkbox(
                     checked = viewModel.showVerticesLabels.value,
@@ -103,8 +102,8 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     .padding(horizontal = 7.dp),
                 onClick = { val scope = CoroutineScope(Dispatchers.Default)
                     scope.launch {
-                        place(800.0,600.0, viewModel.graphViewModel)
-                        scale=calculateScale(viewModel.graphViewModel)
+                        place(800.0,600.0,viewModel.graphViewModel)
+                        scale = calculateScale(viewModel.graphViewModel)
                     }},
                 text = "Placement",
                 fontSize = 28.sp,

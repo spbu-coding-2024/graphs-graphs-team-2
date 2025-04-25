@@ -72,100 +72,100 @@ fun SQLiteView(viewmodel: SQLiteSearchScreenViewModel,
         isLoading = false
     }
 
-        Dialog(onDismissRequest = { onDismissRequest() }) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(500.dp),
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
-                backgroundColor = CoolColors.Gray
+    Dialog(onDismissRequest = { onDismissRequest() }) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(500.dp),
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+            backgroundColor = CoolColors.Gray
 
-            ) {
-                if(!isLoading) {
-                    var nameForConfirm by remember { mutableStateOf("") }
-                    var showDialog by remember { mutableStateOf(false) }
+        ) {
+            if (!isLoading) {
+                var nameForConfirm by remember { mutableStateOf("") }
+                var showDialog by remember { mutableStateOf(false) }
 
-                    var searchQuery by remember { mutableStateOf("") }
+                var searchQuery by remember { mutableStateOf("") }
 
 
-                    val filteredNames = remember(searchQuery, graphs) {
-                        if (searchQuery.isBlank()) graphs
-                        else graphs.filter { it.contains(searchQuery, ignoreCase = true) }
-                    }
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp)
+                val filteredNames = remember(searchQuery, graphs) {
+                    if (searchQuery.isBlank()) graphs
+                    else graphs.filter { it.contains(searchQuery, ignoreCase = true) }
+                }
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
+                    OutlinedTextField(
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text("SearchGraphs") },
+                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                        singleLine = true
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        OutlinedTextField(
-                            value = searchQuery,
-                            onValueChange = { searchQuery = it },
-                            modifier = Modifier.fillMaxWidth(),
-                            label = { Text("SearchGraphs") },
-                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                            singleLine = true
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            items(filteredNames) { name ->
-                                Box(contentAlignment = Alignment.Center) {
-                                    Button(
-                                        onClick = {
-                                            onDismissRequest()
-                                            val model = viewmodel.loadGraph(name)
-                                            navigator.push(GraphScreen(model!!.first, model.second))
-                                        },
-                                        modifier = Modifier.fillMaxWidth(),
+                        items(filteredNames) { name ->
+                            Box(contentAlignment = Alignment.Center) {
+                                Button(
+                                    onClick = {
+                                        onDismissRequest()
+                                        val model = viewmodel.loadGraph(name)
+                                        navigator.push(GraphScreen(model!!.first, model.second))
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        modifier = Modifier.fillMaxWidth()
                                     ) {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.SpaceBetween,
-                                            modifier = Modifier.fillMaxWidth()
-                                        ) {
-                                            Text(text = name)
-                                            IconButton(
+                                        Text(text = name)
+                                        IconButton(
 
-                                                onClick = {
-                                                    showDialog = true
-                                                    nameForConfirm = name
-                                                },
+                                            onClick = {
+                                                showDialog = true
+                                                nameForConfirm = name
+                                            },
 
-                                                ) {
-                                                Icon(
-                                                    imageVector = Icons.Default.Delete,
-                                                    contentDescription = "Delete",
-                                                )
-                                            }
+                                            ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Delete,
+                                                contentDescription = "Delete",
+                                            )
                                         }
                                     }
-
                                 }
+
                             }
                         }
                     }
-                    if (showDialog) {
-                        confirmationDialog(
-                            { showDialog = false },
-                            {
-                                viewmodel.deleteGraph(nameForConfirm)
-                                graphs.remove(nameForConfirm)
-                                showDialog = false
-                            },
-                            nameForConfirm
-                        )
-                    }
                 }
-                if(isLoading) {
-                    Box(Modifier.fillMaxSize()) {
-                        CircularProgressIndicator(Modifier.align(Alignment.Center))
-                    }
+                if (showDialog) {
+                    confirmationDialog(
+                        { showDialog = false },
+                        {
+                            viewmodel.deleteGraph(nameForConfirm)
+                            graphs.remove(nameForConfirm)
+                            showDialog = false
+                        },
+                        nameForConfirm
+                    )
                 }
             }
+            if (isLoading) {
+                Box(Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(Modifier.align(Alignment.Center))
+                }
+            }
+        }
 
     }
 
@@ -174,22 +174,29 @@ fun SQLiteView(viewmodel: SQLiteSearchScreenViewModel,
 @Composable
 fun confirmationDialog(onDismiss: () -> Unit,onYesClick: () -> Unit,name:String) {
     Dialog(onDismissRequest = onDismiss) {
-        Card (modifier = Modifier
-            .width(300.dp)
-            .height(200.dp),
+        Card(
+            modifier = Modifier
+                .width(300.dp)
+                .height(200.dp),
             shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
-            backgroundColor = CoolColors.Gray ){
-            Column (modifier = Modifier.fillMaxSize()) {
-                Text("Are you sure you want to delete this graph?",
-                        modifier = Modifier.padding(10.dp),
+            backgroundColor = CoolColors.Gray
+        ) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                Text(
+                    "Are you sure you want to delete this graph?",
+                    modifier = Modifier.padding(10.dp),
                     fontSize = 30.sp,
                     style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
-                    color = CoolColors.White)
-                Row(modifier = Modifier.fillMaxWidth().height(150.dp),horizontalArrangement = Arrangement.SpaceBetween) {
-                    Button(onClick = onYesClick,modifier = Modifier.weight(1f).fillMaxHeight()) {
+                    color = CoolColors.White
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth().height(150.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Button(onClick = onYesClick, modifier = Modifier.weight(1f).fillMaxHeight()) {
                         Text("Yes")
                     }
-                    Button(onClick = onDismiss,modifier = Modifier.weight(1f).fillMaxHeight()) {
+                    Button(onClick = onDismiss, modifier = Modifier.weight(1f).fillMaxHeight()) {
                         Text("No")
                     }
                 }
