@@ -34,7 +34,9 @@ class JsonConverter() {
             val graphInfo = writeGraphInfo(graph)
             return jsonSaver.toJson(graphInfo)
         } catch(e: Exception) {
-            throw IllegalStateException("Cannot save graph to JSON file: ${e.message}")
+            throw IllegalStateException("Cannot save graph to JSON file. " +
+                    (e.message?.substring(e.message?.indexOf(": ")?.plus(2) ?: 0) ?: "")
+            )
         }
     }
 
@@ -45,7 +47,9 @@ class JsonConverter() {
             return readGraphInfo(info)
         } catch (e: Exception) {
             print("ono")
-            throw IllegalStateException("Cannot read JSON file: ${e.message}")
+            throw IllegalStateException("Cannot read JSON file. " +
+                    (e.message?.substring(e.message?.indexOf(": ")?.plus(2) ?: 0) ?: "")
+            )
         }
     }
 

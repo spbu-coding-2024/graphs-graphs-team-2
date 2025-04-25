@@ -5,6 +5,9 @@ import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
+import view.graph.GraphView
+import viewModel.graph.EdgeViewModel
+import viewModel.graph.VertexViewModel
 
 
 object Graphs : IntIdTable() {
@@ -124,13 +127,51 @@ class SQLiteEXP(dbName: String) {
 
     fun makeListFromNames(): List<String> {
         val t=transaction {
-            Graphs.selectAll().map { it[Graphs.graphName] }
+            Graphs.slice(Graphs.graphName).selectAll().toList()
         }
-        return t
+        val p : MutableList<String> = ArrayList()
+        t.forEach{ row -> p.add(row[Graphs.graphName]) }
+        return p
+
     }
     fun deleteAll(){
         transaction {
             Graphs.deleteAll()
+        }
+    }
+
+    fun addAllvertices(id: Int , vertices: Collection<VertexViewModel>){
+        transaction(dbc) {
+            vertices.forEach {
+                val vert = it
+                try {
+                    Vertices.insert {
+                        it[graph_id] = id
+                        it[vertex] = vert.ID
+                        it[x] = vert.x.value
+                        it[y] = vert.y.value
+                        it[label] = vert.label
+                    }
+                }catch (e: ExposedSQLException) {
+                    throw e
+                }
+            }
+        }
+    }
+
+    fun addAllEdges(id: Int , edges: Collection<EdgeViewModel>){
+        transaction(dbc) {
+            edges.forEach {
+                val edge = it
+                Edges.insert {
+                    it[graph_id] = id
+                    it[Edges.edge]=edge.ID
+                    it[weight] = edge.weight.toFloat()
+                    it[vertexTO] = edge.u.ID
+                    it[vertexFrom] = edge.v.ID
+                    it[label]= edge.label
+                }
+            }
         }
     }
 

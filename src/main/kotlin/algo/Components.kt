@@ -7,7 +7,6 @@ class Components(private val graph: Graph) {
     private val _components = mutableListOf<MutableList<Long>>()
     val components: List<MutableList<Long>>
         get() {
-            if(_components.isEmpty()) compute()
             return _components.toList()
         }
 
@@ -48,7 +47,7 @@ class Components(private val graph: Graph) {
         }
     }
 
-    private fun compute() {
+    init {
         prepare()
         graph.vertices.forEach {
             used[it.id]?.let { isUsed -> if(!isUsed) dfsPrepare(it.id) }

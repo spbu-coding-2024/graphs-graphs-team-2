@@ -98,7 +98,6 @@ fun GreetingView() {
             )
         }
 
-
         if (dataSystem == DataSystems.Neo4j) {
             Neo4jView(username, password) { dataSystem = null }
             if (username.value != null && password.value != null) {
@@ -116,8 +115,6 @@ fun GreetingView() {
                 }
             }
         }
-
-
 
         if (dataSystem == DataSystems.JSON) {
             val fileChooser = JsonView()
