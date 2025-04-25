@@ -20,6 +20,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import io.ioNeo4j.WriteNeo4j
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import view.components.CoolColors
 import view.components.ErrorDialog
@@ -88,6 +90,23 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     .height(65.dp)
                     .fillMaxWidth()
                     .padding(horizontal = 7.dp),
+                onClick = {
+                    val scope = CoroutineScope(Dispatchers.Default)
+                    scope.launch {
+                        viewModel.graphViewModel.highlightComponents()
+                    }
+                },
+                text = "Find components",
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 3.dp
+            )
+            PurpleButton(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
                 onClick = { viewModel.graphViewModel.DrawBridges() },
                 text = "Find Bridges",
                 fontSize = 28.sp,
@@ -118,6 +137,23 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     .padding(horizontal = 7.dp),
                 onClick = { dataSystem = DataSystems.Neo4j},
                 text = "Write to Neo4j",
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 3.dp
+            )
+            PurpleButton(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
+                onClick = {
+                    val scope = CoroutineScope(Dispatchers.Default)
+                    scope.launch {
+                        viewModel.graphViewModel.resetColors()
+                        viewModel.graphViewModel.resetCords()
+                    }},
+                text = "Reset view",
                 fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
                 textPadding = 3.dp
