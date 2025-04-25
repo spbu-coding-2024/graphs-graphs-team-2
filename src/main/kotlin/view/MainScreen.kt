@@ -27,6 +27,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.ioNeo4j.WriteNeo4j
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import view.components.CoolColors
 import view.components.ErrorDialog
 import view.components.PurpleButton
@@ -34,6 +37,7 @@ import view.graph.GraphView
 import view.io.Neo4jView
 import viewModel.MainScreenViewModel
 import viewModel.graph.GraphViewModel
+import viewModel.placement.place
 import kotlin.math.max
 import kotlin.math.min
 
@@ -49,6 +53,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
         horizontalArrangement = Arrangement.spacedBy(5.dp),
         modifier = Modifier.background(CoolColors.Gray)
     ) {
+        var scale by remember { mutableStateOf(calculateScale(viewModel.graphViewModel)) }
         Column(
             modifier = Modifier
                 .width(370.dp)
@@ -95,6 +100,22 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     .height(65.dp)
                     .fillMaxWidth()
                     .padding(horizontal = 7.dp),
+                onClick = { val scope = CoroutineScope(Dispatchers.Default)
+                    scope.launch {
+                        place(800.0,600.0,viewModel.graphViewModel)
+                        scale = calculateScale(viewModel.graphViewModel)
+                    }},
+                text = "Placement",
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 3.dp
+            )
+            PurpleButton(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
                 onClick = { dataSystem = DataSystems.Neo4j},
                 text = "Write to Neo4j",
                 fontSize = 28.sp,
@@ -103,7 +124,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
             )
         }
 
-        var scale by remember { mutableStateOf(calculateScale(viewModel.graphViewModel)) }
+
 
         Surface(
             modifier = Modifier
