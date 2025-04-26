@@ -3,7 +3,7 @@ package viewModel.graph
 import algo.AlgoBridges
 import algo.AlgoDijkstra
 import algo.Components
-import androidx.compose.runtime.Composable
+import algo.SpanningTree
 import androidx.compose.runtime.State
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -11,11 +11,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import model.Graph
-import model.abstractGraph.AbstractGraph
 import model.abstractGraph.AbstractVertex
-import org.objectweb.asm.Label
 import view.components.CoolColors
-import viewModel.graph.VertexViewModel
 import kotlin.random.Random
 import kotlin.random.nextInt
 
@@ -94,6 +91,20 @@ class GraphViewModel(
         }
     }
 
+    suspend fun minimalSpanningTree() {
+        coroutineScope {
+            launch {
+                val minimalSpanning = async { SpanningTree(graph).minimalTree }
+                for (edge in minimalSpanning.await()) {
+                    _vertices[edge.first]?.color = CoolColors.Blue
+                    _vertices[edge.second]?.color = CoolColors.Blue
+                    _edges[edge]?.color = CoolColors.Blue
+                    _edges[edge.second to edge.first]?.color = CoolColors.Blue
+                }
+
+            }
+        }
+    }
 
     suspend fun highlightComponents() {
         coroutineScope {
