@@ -61,7 +61,7 @@ fun GreetingView() {
         verticalArrangement = Arrangement.Center,
     ) {
         Text(
-            "Choose your file system",
+            "Choose your data system",
             fontSize = 95.sp,
             style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
             modifier = Modifier.padding(20.dp),

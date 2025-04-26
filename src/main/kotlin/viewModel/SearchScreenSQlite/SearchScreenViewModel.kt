@@ -65,6 +65,13 @@ fun main(){
     for (i in 1..10000){
         graph.addEdge((1L..10000L).random(),(1L..10000L).random(),i.toString(),i.toLong(),1f)
     }
-    val gm = GraphViewModel(graph,placement, mutableStateOf(false),mutableStateOf(false),mutableStateOf(false))
+    val gm = GraphViewModel(
+        graph,
+        placement,
+        mutableStateOf(false),
+        mutableStateOf(false),
+        mutableStateOf(false),
+        mutableStateOf(false)
+    )
     SQLiteSearchScreenViewModel().writeGraph(gm,"megalo")
 }
