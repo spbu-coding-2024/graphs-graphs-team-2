@@ -1,6 +1,7 @@
 package viewModel.graph
 
 import algo.AlgoBridges
+import algo.AlgoDijkstra
 import algo.Components
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -18,22 +19,26 @@ import viewModel.graph.VertexViewModel
 import kotlin.random.Random
 import kotlin.random.nextInt
 
-class GraphViewModel (
+class GraphViewModel(
     private val graph: Graph,
     private val placement: Map<AbstractVertex, Pair<Dp?, Dp?>?>,
     showVerticesLabels: State<Boolean>,
+    showVerticesIds: State<Boolean>,
     showEdgesWeights: State<Boolean>,
     showEdgesLabels: State<Boolean>,
 ) {
     private val _vertices = graph.vertices.associate { v ->
         v.id to
+
         VertexViewModel(
             placement[v]?.first ?: Random.Default.nextInt(0..800).dp,
             placement[v]?.second ?: Random.Default.nextInt(0..600).dp,
             CoolColors.DarkPurple,
             v,
             showVerticesLabels,
+            showVerticesIds
         )
+
     }
 
     internal val isDirected: Boolean
@@ -47,13 +52,14 @@ class GraphViewModel (
         val snd = _vertices[e.vertices.second.id]
             ?: throw IllegalStateException("VertexView for ${e.vertices.second} not found")
         fst.ID to snd.ID to
-        EdgeViewModel(fst, snd,
-            CoolColors.DarkPurple,
-            2f,
-            e,
-            showEdgesWeights,
-            showEdgesLabels
-        )
+                EdgeViewModel(
+                    fst, snd,
+                    CoolColors.DarkPurple,
+                    2f,
+                    e,
+                    showEdgesWeights,
+                    showEdgesLabels
+                )
     }
 
     val vertices: Collection<VertexViewModel>
@@ -70,6 +76,25 @@ class GraphViewModel (
             _edges[bridge]?.width = 5f
         }
     }
+
+
+    fun Dijkstra(firstVId: String, secondVId: String) {
+        val firstId = firstVId.toLong()
+        val secondId = secondVId.toLong()
+        if (_vertices[firstId] == null || _vertices[secondId] == null) {
+            throw IllegalArgumentException("No such vertexes in graph")
+        }
+        val algoDijkstra = AlgoDijkstra(graph, firstId, secondId)
+        algoDijkstra.dijkstra(firstId)
+        val way = algoDijkstra.way
+        for (i in 0..way.size - 2) {
+            val edge = Pair(way[i], way[i + 1])
+            _edges[edge]?.color = CoolColors.Bardo
+            _edges[edge]?.width = 5f
+        }
+    }
+
+
     suspend fun highlightComponents() {
         coroutineScope {
             launch {
@@ -80,6 +105,7 @@ class GraphViewModel (
                         _vertices[vertexId]?.color = color
                     }
                 }
+
             }
         }
     }
