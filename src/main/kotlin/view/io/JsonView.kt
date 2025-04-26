@@ -11,18 +11,19 @@ import java.io.File
 import java.io.FilenameFilter
 
 class JsonView {
-    fun storeToJson(graph: GraphViewModel) {
+    fun storeToJson(graph: GraphViewModel, onDismissRequest: () -> Unit) {
         val frame = Frame()
-        val fileDialog = FileDialog(frame, "Save your graph in JSON:", FileDialog.SAVE).also {
-            it.setFilenameFilter(FilenameFilter { dir, file ->
+        val fileDialog = FileDialog(frame, "Save your graph in JSON:", FileDialog.SAVE).apply {
+            this.setFilenameFilter(FilenameFilter { dir, file ->
                 return@FilenameFilter file.endsWith(".json")
             })
-            it.setFile("*.json")
-            it.isVisible = true
+            this.setFile("*.json")
+            this.isVisible = true
         }
 
         if (fileDialog.file == null) { // file isn't selected
             frame.dispose()
+            onDismissRequest()
             return
         }
 
@@ -31,6 +32,7 @@ class JsonView {
         try {
             fileToSave.writeText(convertor.saveJson(graph))
             frame.dispose()
+            onDismissRequest()
         } catch (e: Exception) {
             frame.dispose()
             throw IllegalStateException("Conversation error: ${e.message}")
@@ -39,9 +41,12 @@ class JsonView {
 
     fun loadFromJson(): Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>? {
         val frame = Frame()
-        val fileDialog = FileDialog(frame, "Open your JSON file:", FileDialog.LOAD).also {
-            it.setFile("*.json")
-            it.isVisible = true
+        val fileDialog = FileDialog(frame, "Open your JSON file:", FileDialog.LOAD).apply {
+            this.setFilenameFilter(FilenameFilter { dir, file ->
+                return@FilenameFilter file.endsWith(".json")
+            })
+            this.setFile("*.json")
+            this.isVisible = true
         }
 
         if (fileDialog.file == null) { // file isn't selected

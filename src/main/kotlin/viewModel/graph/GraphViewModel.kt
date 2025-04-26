@@ -2,9 +2,13 @@ package viewModel.graph
 
 import algo.AlgoBridges
 import algo.Components
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import model.Graph
 import model.abstractGraph.AbstractGraph
 import model.abstractGraph.AbstractVertex
@@ -25,7 +29,7 @@ class GraphViewModel (
         v.id to
         VertexViewModel(
             placement[v]?.first ?: Random.Default.nextInt(0..800).dp,
-            placement[v]?.first ?: Random.Default.nextInt(0..600).dp,
+            placement[v]?.second ?: Random.Default.nextInt(0..600).dp,
             CoolColors.DarkPurple,
             v,
             showVerticesLabels,
@@ -66,13 +70,34 @@ class GraphViewModel (
             _edges[bridge]?.width = 5f
         }
     }
-    fun highlightComponents() {
-        val strongComponents = Components(graph).components
-        for ((_, community) in strongComponents.withIndex()) {
-            val color = CoolColors.RandomColor
-            for (vertexId in community) {
-                _vertices[vertexId]?.color = color
+    suspend fun highlightComponents() {
+        coroutineScope {
+            launch {
+                val strongComponents = async { Components(graph).components }
+                for (community in strongComponents.await()) {
+                    val color = CoolColors.RandomColor
+                    for (vertexId in community) {
+                        _vertices[vertexId]?.color = color
+                    }
+                }
             }
+        }
+    }
+
+    suspend fun resetColors() {
+        edges.onEach {
+            it.width = 1f
+            it.color = CoolColors.Purple
+        }
+        vertices.onEach {
+            it.radius = 25.dp
+            it.color = CoolColors.Purple
+        }
+    }
+    suspend fun resetCords() {
+        graph.vertices.onEach {
+            _vertices[it.id]?.x = placement[it]?.first ?: Random.Default.nextInt(0..800).dp
+            _vertices[it.id]?.y = placement[it]?.second ?: Random.Default.nextInt(0..800).dp
         }
     }
 }

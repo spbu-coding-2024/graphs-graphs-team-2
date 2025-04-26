@@ -1,5 +1,7 @@
 package view
 
+import GraphScreen
+import WelcomeScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
@@ -20,20 +22,23 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import io.ioNeo4j.WriteNeo4j
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import view.components.CoolColors
 import view.components.ErrorDialog
 import view.components.PurpleButton
 import view.graph.GraphView
+import view.io.JsonView
 import view.io.Neo4jView
 import viewModel.MainScreenViewModel
 import viewModel.graph.GraphViewModel
@@ -48,6 +53,9 @@ fun MainScreen(viewModel: MainScreenViewModel) {
     val password: MutableState<String?> = remember { mutableStateOf(null) }
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope { Dispatchers.Default }
+    var openNewGraph by remember { mutableStateOf(false) }
+    val navigator = LocalNavigator.currentOrThrow
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -88,6 +96,22 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     .height(65.dp)
                     .fillMaxWidth()
                     .padding(horizontal = 7.dp),
+                onClick = {
+                    scope.launch {
+                        viewModel.graphViewModel.highlightComponents()
+                    }
+                },
+                text = "Find components",
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 3.dp
+            )
+            PurpleButton(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
                 onClick = { viewModel.graphViewModel.DrawBridges() },
                 text = "Find Bridges",
                 fontSize = 28.sp,
@@ -100,7 +124,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     .height(65.dp)
                     .fillMaxWidth()
                     .padding(horizontal = 7.dp),
-                onClick = { val scope = CoroutineScope(Dispatchers.Default)
+                onClick = {
                     scope.launch {
                         place(800.0,600.0,viewModel.graphViewModel)
                         scale = calculateScale(viewModel.graphViewModel)
@@ -116,15 +140,53 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     .height(65.dp)
                     .fillMaxWidth()
                     .padding(horizontal = 7.dp),
+                onClick = {
+                    scope.launch {
+                        viewModel.graphViewModel.resetColors()
+                        viewModel.graphViewModel.resetCords()
+                    }},
+                text = "Reset view",
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 3.dp
+            )
+            PurpleButton(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
                 onClick = { dataSystem = DataSystems.Neo4j},
-                text = "Write to Neo4j",
+                text = "Save to Neo4j",
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 3.dp
+            )
+            PurpleButton(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
+                onClick = { dataSystem = DataSystems.JSON},
+                text = "Save to JSON",
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 3.dp
+            )
+            PurpleButton(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
+                onClick = { openNewGraph = true },
+                text = "Open new graph",
                 fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
                 textPadding = 3.dp
             )
         }
-
-
 
         Surface(
             modifier = Modifier
@@ -138,23 +200,41 @@ fun MainScreen(viewModel: MainScreenViewModel) {
         ) {
             GraphView(viewModel.graphViewModel, scale)
         }
-        
+
+        if (dataSystem == DataSystems.JSON) {
+            val fileChooser = JsonView()
+            try {
+                fileChooser.storeToJson(viewModel.graphViewModel) { dataSystem = null }
+            } catch(e: Exception) {
+                errorMessage = e.message ?: "Unknown error"
+                showErrorDialog = true
+                dataSystem = null
+            }
+        }
+
         if (dataSystem == DataSystems.Neo4j) {
             Neo4jView(username, password) { dataSystem = null }
             if (username.value != null && password.value != null) {
                 try {
-                    WriteNeo4j(username.value ?: "", password.value ?: "", viewModel.graphViewModel)
+                    WriteNeo4j(
+                        username.value ?: "",
+                        password.value ?: "",
+                        viewModel.graphViewModel
+                    )
                     dataSystem = null
                     username.value = null
                     password.value = null
                 } catch (e: Exception) {
-                    errorMessage = e.message ?: "Error"
+                    errorMessage = e.message ?: "Unknown error"
                     showErrorDialog = true
                     username.value = null
                     password.value = null
                     dataSystem = null
                 }
             }
+        }
+        if(openNewGraph) {
+            navigator.push(WelcomeScreen)
         }
         if (showErrorDialog) {
             ErrorDialog(errorMessage) { showErrorDialog = false }
