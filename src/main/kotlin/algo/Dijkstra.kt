@@ -1,50 +1,56 @@
 package algo
 
+import model.Graph
 
-class AlgoDijkstra(val graph: Array<Array<Pair<Int, Int>>>, val firstVertex: Int, val secondVertex: Int) {
-    private val infinity: Int = 1_000_000_000
-    private val sizeOfGraph = graph.size
-    private val distance = Array<Int>(sizeOfGraph) { if (it == firstVertex) 0 else infinity }
-    private val labels = Array<Boolean>(sizeOfGraph) { it == firstVertex }
-    private val parents = Array<Int>(sizeOfGraph) {infinity}
 
-    fun dijkstra(V: Int) {
-        for (i in 0..<graph[V].size) {
-            val OutV = graph[V][i].first
-            val weight = graph[V][i].second
-            if (!labels[OutV]) {
-                if(distance[V] + weight < distance[OutV]){
-                    distance[OutV] = distance[V] + weight
-                    parents[OutV] = V
+class AlgoDijkstra(val graph: Graph, val firstVertexId: Long, val secondVertexId: Long) {
+    private val infinity = 1_000_000_000_000_000_000F
+    private val distance =
+        graph.vertices.associate { it.id to if (it.id == firstVertexId) 0F else infinity }.toMutableMap()
+    private val labels = graph.vertices.associate { it.id to (it.id == firstVertexId) }.toMutableMap()
+    private val parents = graph.vertices.associate { it.id to -1L }.toMutableMap()
+    private val graphMap = graph.graphWeightedMap
+    val way = ArrayDeque<Long>()
+
+    fun dijkstra(Vid: Long) {
+        val edges = graphMap[Vid]
+        for (i in 0..<edges!!.size) {
+            val OutVid = edges[i].first
+            val weight = edges[i].second
+            if (!(labels[OutVid]!!)) {
+                if (distance[Vid]!! + weight < distance[OutVid]!!) {
+                    distance[OutVid] = distance[Vid]!! + weight
+                    parents[OutVid] = Vid
                 }
             }
         }
+
 
         var minDistance = infinity
-        var new_V : Int = infinity
-        for(i in 0..<sizeOfGraph){
-            if(!labels[i]){
-                if(distance[i] < minDistance){
-                    minDistance = distance[i]
-                    new_V = i
+        var new_Vid: Long = -1L
+        for (i in labels) {
+            if (!i.value) {
+                if (distance[i.key]!! < minDistance) {
+                    minDistance = distance[i.key]!!
+                    new_Vid = i.key
                 }
             }
         }
-        if(new_V != infinity) {
-            labels[new_V] = true
-            if(new_V == secondVertex){
-                findMinWay(new_V)
-            }
-            else{
-                dijkstra(new_V)
+        if (new_Vid != -1L) {
+            labels[new_Vid] = true
+            if (new_Vid == secondVertexId) {
+                findMinWay(new_Vid)
+            } else {
+                dijkstra(new_Vid)
             }
         }
     }
 
-    private fun findMinWay(V : Int){
-        println(V)
-        if(V != firstVertex) {
-            findMinWay(parents[V])
+
+    private fun findMinWay(V: Long) {
+        way.addFirst(V)
+        if (V != firstVertexId) {
+            findMinWay(parents[V]!!)
         }
     }
 }

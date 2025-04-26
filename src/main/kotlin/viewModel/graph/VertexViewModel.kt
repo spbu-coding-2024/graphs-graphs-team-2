@@ -14,6 +14,7 @@ class VertexViewModel (
     color: Color,
     private val v: AbstractVertex,
     private val _labelVisible: State<Boolean>,
+    private val _idVisible: State<Boolean>,
     var radius: Dp = 25.dp
 ) {
     private var _x = mutableStateOf(x)
@@ -40,6 +41,9 @@ class VertexViewModel (
 
     val labelVisible
         get() = _labelVisible.value
+
+    val idVisible
+        get() = _idVisible.value
 
     internal val ID
         get() = v.id
