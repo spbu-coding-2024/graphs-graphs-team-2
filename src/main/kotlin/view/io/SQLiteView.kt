@@ -11,61 +11,53 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import viewModel.SearchScreenSQlite.SQLiteSearchScreenViewModel
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.DrawerDefaults.backgroundColor
-import androidx.compose.material.DrawerDefaults.shape
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextGeometricTransform
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.Navigator
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import view.components.CoolColors
+import view.components.PurpleButton
 import kotlin.collections.filter
 import kotlin.text.contains
 import kotlin.text.isBlank
 
 @Composable
-fun SQLiteView(viewmodel: SQLiteSearchScreenViewModel,
-               onDismissRequest: () -> Unit, navigator: Navigator
+fun SQLiteSearchView(
+    viewmodel: SQLiteSearchScreenViewModel,
+    onDismissRequest: () -> Unit, navigator: Navigator
 ) {
     val scope = rememberCoroutineScope()
     var isLoading by remember { mutableStateOf(true) }
-    var graphs : MutableList<String> by remember { mutableStateOf(mutableListOf<String>()) }
+    var graphs: MutableList<String> by remember { mutableStateOf(mutableListOf<String>()) }
     scope.launch {
         isLoading = true
         graphs = viewmodel.graphList.toMutableStateList()
@@ -172,7 +164,7 @@ fun SQLiteView(viewmodel: SQLiteSearchScreenViewModel,
 }
 
 @Composable
-fun confirmationDialog(onDismiss: () -> Unit,onYesClick: () -> Unit,name:String) {
+fun confirmationDialog(onDismiss: () -> Unit, onYesClick: () -> Unit, name: String) {
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
@@ -200,6 +192,63 @@ fun confirmationDialog(onDismiss: () -> Unit,onYesClick: () -> Unit,name:String)
                         Text("No")
                     }
                 }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun SQLiteNameInputView(name: MutableState<String?>, onDismiss: () -> Unit) {
+    Dialog(onDismissRequest = {}) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(400.dp)
+                .padding(20.dp),
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+            backgroundColor = CoolColors.Gray
+        ) {
+            Column(modifier = Modifier.fillMaxSize().padding(10.dp)) {
+                Text(
+                    text = "Please enter a name for the graph",
+                    modifier = Modifier.padding(top = 20.dp, bottom = 10.dp),
+                    fontSize = 40.sp,
+                    style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
+                    color = CoolColors.DarkPurple
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                val input = remember { mutableStateOf("") }
+                OutlinedTextField(
+                    input.value,
+                    { input.value = it },
+                    textStyle = TextStyle(fontSize = 32.sp, color = CoolColors.DarkPurple),
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Name for the graph", fontSize = 28.sp, color = CoolColors.DarkPurple) },
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    PurpleButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.clip(shape = RoundedCornerShape(10.dp)).weight(1f),
+                        text = "Cancel",
+                        fontSize = 32.sp,
+                        textPadding = 10.dp
+                    )
+                    PurpleButton(
+                        onClick = {
+                            name.value = input.value
+                        },
+                        modifier = Modifier.clip(shape = RoundedCornerShape(10.dp)).weight(1f),
+                        text = "OK",
+                        fontSize = 32.sp,
+                        textPadding = 10.dp
+                    )
+                }
+
             }
         }
     }
