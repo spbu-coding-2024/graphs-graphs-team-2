@@ -131,6 +131,22 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     )
                 }
             }
+            PurpleButton(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
+                onClick = {
+                    scope.launch {
+                        viewModel.graphViewModel.findKeyVertices()
+                    }
+                },
+                text = "Find key vertices",
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 3.dp
+            )
             if (!viewModel.graphViewModel.isDirected) {
                 PurpleButton(
                     modifier =
@@ -210,8 +226,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                         .padding(horizontal = 7.dp),
                 onClick = {
                     scope.launch {
-                        viewModel.graphViewModel.resetColors()
-                        viewModel.graphViewModel.resetCords()
+                        viewModel.graphViewModel.resetView()
                     }
                 },
                 text = "Reset view",
