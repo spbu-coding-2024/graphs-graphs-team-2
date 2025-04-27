@@ -32,8 +32,8 @@ class GraphViewModel(
         graph.vertices.associate { v ->
             v.id to
                 VertexViewModel(
-                    placement[v]?.first ?: Random.Default.nextInt(0..800).dp,
-                    placement[v]?.second ?: Random.Default.nextInt(0..600).dp,
+                    placement[v]?.first ?: Random.nextInt(0..800).dp,
+                    placement[v]?.second ?: Random.nextInt(0..600).dp,
                     CoolColors.DarkPurple,
                     v,
                     showVerticesLabels,
@@ -170,8 +170,8 @@ class GraphViewModel(
 
     private fun resetCords() {
         graph.vertices.onEach {
-            _vertices[it.id]?.x = placement[it]?.first ?: Random.Default.nextInt(0..800).dp
-            _vertices[it.id]?.y = placement[it]?.second ?: Random.Default.nextInt(0..800).dp
+            _vertices[it.id]?.x = placement[it]?.first ?: Random.nextInt(0..800).dp
+            _vertices[it.id]?.y = placement[it]?.second ?: Random.nextInt(0..800).dp
         }
     }
 }
