@@ -12,14 +12,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextGeometricTransform
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -29,10 +29,11 @@ import model.abstractGraph.AbstractVertex
 import view.components.CoolColors
 import view.components.ErrorDialog
 import view.components.PurpleButton
-import view.io.JsonView
 import view.io.Neo4jView
+import view.io.JsonView
 import view.io.SQLiteSearchView
 import viewModel.SearchScreenSQlite.SQLiteSearchScreenViewModel
+
 
 enum class DataSystems {
     JSON,
@@ -44,17 +45,18 @@ enum class DataSystems {
 fun GreetingView() {
 
     var dataSystem by remember { mutableStateOf<DataSystems?>(null) }
-    var model by remember {
-        mutableStateOf<Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>?>(null)
-    }
+    var model by remember { mutableStateOf<Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>?>(null) }
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     val navigator = LocalNavigator.currentOrThrow
     val username: MutableState<String?> = remember { mutableStateOf(null) }
     val password: MutableState<String?> = remember { mutableStateOf(null) }
 
+
     Column(
-        modifier = Modifier.fillMaxSize().background(color = CoolColors.Gray),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = CoolColors.Gray),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -68,7 +70,7 @@ fun GreetingView() {
         )
         Row(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier.width(1000.dp),
+            modifier = Modifier.width(1000.dp)
         ) {
             PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.24f),
@@ -76,7 +78,7 @@ fun GreetingView() {
                 text = "JSON",
                 fontSize = 75.sp,
                 fontFamily = FontFamily.Monospace,
-                textPadding = 10.dp,
+                textPadding = 10.dp
             )
             PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.36f),
@@ -84,7 +86,7 @@ fun GreetingView() {
                 text = "SQLite",
                 fontSize = 75.sp,
                 fontFamily = FontFamily.Monospace,
-                textPadding = 10.dp,
+                textPadding = 10.dp
             )
             PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.3f),
@@ -92,7 +94,7 @@ fun GreetingView() {
                 text = "Neo4j",
                 fontSize = 75.sp,
                 fontFamily = FontFamily.Monospace,
-                textPadding = 10.dp,
+                textPadding = 10.dp
             )
         }
 
@@ -118,24 +120,21 @@ fun GreetingView() {
             val fileChooser = JsonView()
             try {
                 model = fileChooser.loadFromJson()
-                if (model == null) dataSystem = null
+                if(model == null) dataSystem = null
                 else navigator.push(GraphScreen(model!!.first, model!!.second))
-            } catch (e: Exception) {
+            } catch(e: Exception) {
                 errorMessage = e.message ?: ""
                 showErrorDialog = true
                 dataSystem = null
             }
         }
-        if (dataSystem == DataSystems.SQLite) {
-            SQLiteSearchView(
-                SQLiteSearchScreenViewModel(),
-                onDismissRequest = { dataSystem = null },
-                navigator,
-            )
+        if(dataSystem == DataSystems.SQLite) {
+            SQLiteSearchView(SQLiteSearchScreenViewModel(), onDismissRequest =  { dataSystem = null },navigator)
         }
 
-        if (showErrorDialog) {
+        if(showErrorDialog) {
             ErrorDialog(errorMessage) { showErrorDialog = false }
         }
     }
 }
+
