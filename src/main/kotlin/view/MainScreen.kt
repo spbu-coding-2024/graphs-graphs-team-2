@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,6 +41,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import view.components.CoolColors
 import view.components.ErrorDialog
 import view.components.InvertPurpleButton
@@ -163,11 +165,11 @@ fun MainScreen(viewModel: MainScreenViewModel) {
             )
             if (!viewModel.graphViewModel.isDirected) {
                 PurpleButton(
-                    modifier =
-                        Modifier.clip(shape = RoundedCornerShape(15.dp))
-                            .height(65.dp)
-                            .fillMaxWidth()
-                            .padding(horizontal = 7.dp),
+                    modifier = Modifier
+                        .clip(shape = RoundedCornerShape(15.dp))
+                        .height(65.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 7.dp),
                     onClick = { viewModel.graphViewModel.DrawBridges() },
                     text = "Find Bridges",
                     fontSize = 28.sp,
@@ -177,25 +179,34 @@ fun MainScreen(viewModel: MainScreenViewModel) {
             }
             if (!viewModel.graphViewModel.isDirected && viewModel.graphViewModel.isWeighted) {
                 PurpleButton(
-                    modifier =
-                        Modifier.clip(shape = RoundedCornerShape(15.dp))
-                            .height(65.dp)
-                            .fillMaxWidth()
-                            .padding(horizontal = 7.dp),
-                    onClick = { scope.launch { viewModel.graphViewModel.minimalSpanningTree() } },
-                    text = "Min spanning tree",
-                    fontSize = 28.sp,
-                    fontFamily = FontFamily.Monospace,
-                    textPadding = 3.dp,
-                )
-            }
-            PurpleButton(
-                modifier =
-                    Modifier.clip(shape = RoundedCornerShape(15.dp))
+                    modifier = Modifier
+                        .clip(shape = RoundedCornerShape(15.dp))
                         .height(65.dp)
                         .fillMaxWidth()
                         .padding(horizontal = 7.dp),
-                onClick = { scope.launch { viewModel.graphViewModel.highlightComponents() } },
+
+                    onClick = {
+                        scope.launch {
+                            viewModel.graphViewModel.minimalSpanningTree()
+                        }
+                    },
+                    text = "Min spanning tree",
+                    fontSize = 28.sp,
+                    fontFamily = FontFamily.Monospace,
+                    textPadding = 3.dp
+                )
+            }
+            PurpleButton(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
+                onClick = {
+                    scope.launch {
+                        viewModel.graphViewModel.highlightComponents()
+                    }
+                },
                 text = "Find components",
                 fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
@@ -212,7 +223,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     text = "Find Bridges",
                     fontSize = 28.sp,
                     fontFamily = FontFamily.Monospace,
-                    textPadding = 3.dp,
+                    textPadding = 3.dp
                 )
             }
 
@@ -266,11 +277,11 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 textPadding = 3.dp,
             )
             PurpleButton(
-                modifier =
-                    Modifier.clip(shape = RoundedCornerShape(15.dp))
-                        .height(65.dp)
-                        .fillMaxWidth()
-                        .padding(horizontal = 7.dp),
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
                 onClick = { dataSystem = DataSystems.Neo4j },
                 text = "Save to Neo4j",
                 fontSize = 28.sp,
@@ -278,11 +289,11 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 textPadding = 3.dp,
             )
             PurpleButton(
-                modifier =
-                    Modifier.clip(shape = RoundedCornerShape(15.dp))
-                        .height(65.dp)
-                        .fillMaxWidth()
-                        .padding(horizontal = 7.dp),
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
                 onClick = { dataSystem = DataSystems.JSON },
                 text = "Save to JSON",
                 fontSize = 28.sp,
@@ -290,11 +301,11 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 textPadding = 3.dp,
             )
             PurpleButton(
-                modifier =
-                    Modifier.clip(shape = RoundedCornerShape(15.dp))
-                        .height(65.dp)
-                        .fillMaxWidth()
-                        .padding(horizontal = 7.dp),
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
                 onClick = { dataSystem = DataSystems.SQLite },
                 text = "Save to SQLite",
                 fontSize = 28.sp,
