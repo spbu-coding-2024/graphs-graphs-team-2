@@ -48,6 +48,8 @@ import view.components.PurpleButton
 import view.graph.GraphView
 import view.io.JsonView
 import view.io.Neo4jView
+import view.io.SQLiteNameInputView
+import view.io.SQLiteSearchView
 import viewModel.MainScreenViewModel
 import viewModel.SearchScreenSQlite.SQLiteSearchScreenViewModel
 import viewModel.graph.GraphViewModel
@@ -60,7 +62,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
     var dataSystem by remember { mutableStateOf<DataSystems?>(null) }
     val username: MutableState<String?> = remember { mutableStateOf(null) }
     val password: MutableState<String?> = remember { mutableStateOf(null) }
-    val graphName : MutableState<String?> = remember { mutableStateOf(null) }
+    val graphName: MutableState<String?> = remember { mutableStateOf(null) }
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
 
@@ -118,7 +120,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     color = CoolColors.Purple
                 )
             }
-            if(viewModel.graphViewModel.isWeighted) {
+            if (viewModel.graphViewModel.isWeighted) {
                 Row {
                     Checkbox(
                         checked = viewModel.showEdgesWeights.value,
@@ -145,7 +147,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     textPadding = 3.dp
                 )
             }
-            if(!viewModel.graphViewModel.isDirected && viewModel.graphViewModel.isWeighted) {
+            if (!viewModel.graphViewModel.isDirected && viewModel.graphViewModel.isWeighted) {
                 PurpleButton(
                     modifier = Modifier
                         .clip(shape = RoundedCornerShape(15.dp))
@@ -200,9 +202,10 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     .padding(horizontal = 7.dp),
                 onClick = {
                     scope.launch {
-                        place(800.0,600.0,viewModel.graphViewModel)
+                        place(800.0, 600.0, viewModel.graphViewModel)
                         scale = calculateScale(viewModel.graphViewModel)
-                    }},
+                    }
+                },
                 text = "Placement",
                 fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
@@ -218,7 +221,8 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     scope.launch {
                         viewModel.graphViewModel.resetColors()
                         viewModel.graphViewModel.resetCords()
-                    }},
+                    }
+                },
                 text = "Reset view",
                 fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
@@ -242,19 +246,19 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     .height(65.dp)
                     .fillMaxWidth()
                     .padding(horizontal = 7.dp),
-                onClick = { dataSystem = DataSystems.JSON},
+                onClick = { dataSystem = DataSystems.JSON },
                 text = "Save to JSON",
                 fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
                 textPadding = 3.dp
             )
-            InvertPurpleButton(
+            PurpleButton(
                 modifier = Modifier
                     .clip(shape = RoundedCornerShape(15.dp))
                     .height(65.dp)
                     .fillMaxWidth()
                     .padding(horizontal = 7.dp),
-                onClick = { dataSystem = DataSystems.SQLite},
+                onClick = { dataSystem = DataSystems.SQLite },
                 text = "Save to SQLite",
                 fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
@@ -330,7 +334,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
             val fileChooser = JsonView()
             try {
                 fileChooser.storeToJson(viewModel.graphViewModel) { dataSystem = null }
-            } catch(e: Exception) {
+            } catch (e: Exception) {
                 errorMessage = e.message ?: "Unknown error"
                 showErrorDialog = true
                 dataSystem = null
@@ -359,15 +363,23 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 }
             }
         }
-        if(dataSystem == DataSystems.SQLite){
-
-            try{
-                SQLiteSearchScreenViewModel().writeGraph(viewModel.graphViewModel,graphName.value?:"")
-            }catch (e: ExposedSQLException){
+        if (dataSystem == DataSystems.SQLite) {
+            SQLiteNameInputView(graphName) { dataSystem = null }
+            if (graphName.value != null) {
+                try {
+                    SQLiteSearchScreenViewModel().writeGraph(viewModel.graphViewModel, graphName.value ?: "")
+                    dataSystem=null
+                    graphName.value = null
+                } catch (e: Exception) {
+                    errorMessage = e.message ?: "Unknown error"
+                    showErrorDialog = true
+                    graphName.value = null
+                    dataSystem = null
+                }
 
             }
         }
-        if(openNewGraph) {
+        if (openNewGraph) {
             navigator.push(WelcomeScreen)
         }
         if (showErrorDialog) {

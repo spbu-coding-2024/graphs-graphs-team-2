@@ -38,12 +38,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextGeometricTransform
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.Navigator
 import kotlinx.coroutines.launch
 import view.components.CoolColors
+import view.components.PurpleButton
 import kotlin.collections.filter
 import kotlin.text.contains
 import kotlin.text.isBlank
@@ -202,36 +204,51 @@ fun SQLiteNameInputView(name: MutableState<String?>, onDismiss: () -> Unit) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(500.dp)
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
+                .height(400.dp)
+                .padding(20.dp),
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+            backgroundColor = CoolColors.Gray
         ) {
-            Text(
-                text = "Please enter a name for the graph",
-                modifier = Modifier.padding(top = 20.dp, bottom = 10.dp),
-                fontSize = 40.sp,
-                style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
-                color = CoolColors.DarkPurple
-            )
-            val input = remember { mutableStateOf("") }
-            OutlinedTextField(
-                input.value,
-                { input.value = it },
-                textStyle = TextStyle(fontSize = 32.sp, color = CoolColors.DarkPurple),
-                modifier = Modifier.width(400.dp),
-                label = { Text("Name for the graph", fontSize = 28.sp, color = CoolColors.DarkPurple) },
-            )
-            Column(
-                modifier = Modifier.padding(top = 52.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-            ) {
+            Column(modifier = Modifier.fillMaxSize().padding(10.dp)) {
+                Text(
+                    text = "Please enter a name for the graph",
+                    modifier = Modifier.padding(top = 20.dp, bottom = 10.dp),
+                    fontSize = 40.sp,
+                    style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
+                    color = CoolColors.DarkPurple
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                val input = remember { mutableStateOf("") }
+                OutlinedTextField(
+                    input.value,
+                    { input.value = it },
+                    textStyle = TextStyle(fontSize = 32.sp, color = CoolColors.DarkPurple),
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Name for the graph", fontSize = 28.sp, color = CoolColors.DarkPurple) },
+                )
+                Spacer(modifier = Modifier.height(16.dp))
                 Row(
-                    modifier = Modifier,
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ){
-
+                ) {
+                    PurpleButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.clip(shape = RoundedCornerShape(10.dp)).weight(1f),
+                        text = "Cancel",
+                        fontSize = 32.sp,
+                        textPadding = 10.dp
+                    )
+                    PurpleButton(
+                        onClick = {
+                            name.value = input.value
+                        },
+                        modifier = Modifier.clip(shape = RoundedCornerShape(10.dp)).weight(1f),
+                        text = "OK",
+                        fontSize = 32.sp,
+                        textPadding = 10.dp
+                    )
                 }
+
             }
         }
     }
