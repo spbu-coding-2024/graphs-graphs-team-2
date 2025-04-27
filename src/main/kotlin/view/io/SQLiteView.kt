@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
@@ -38,10 +39,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextGeometricTransform
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import cafe.adriel.voyager.navigator.Navigator
+
 import kotlin.collections.filter
 import kotlin.text.contains
 import kotlin.text.isBlank
@@ -184,6 +185,7 @@ fun confirmationDialog(onDismiss: () -> Unit, onYesClick: () -> Unit, name: Stri
     }
 }
 
+
 @Composable
 fun SQLiteNameInputView(name: MutableState<String?>, onDismiss: () -> Unit) {
     Dialog(onDismissRequest = {}) {
@@ -191,6 +193,7 @@ fun SQLiteNameInputView(name: MutableState<String?>, onDismiss: () -> Unit) {
             modifier = Modifier.fillMaxWidth().height(400.dp).padding(20.dp),
             shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
             backgroundColor = CoolColors.Gray,
+
         ) {
             Column(modifier = Modifier.fillMaxSize().padding(10.dp)) {
                 Text(
@@ -214,7 +217,9 @@ fun SQLiteNameInputView(name: MutableState<String?>, onDismiss: () -> Unit) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
+
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
+
                 ) {
                     PurpleButton(
                         onClick = onDismiss,
@@ -235,3 +240,4 @@ fun SQLiteNameInputView(name: MutableState<String?>, onDismiss: () -> Unit) {
         }
     }
 }
+

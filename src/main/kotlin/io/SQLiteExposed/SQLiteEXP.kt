@@ -163,6 +163,7 @@ class SQLiteEXP(dbName: String) {
         transaction { Graphs.deleteAll() }
     }
 
+<<
     fun addAllVertices(id: Int, vertices: Collection<VertexViewModel>) {
         transaction(dbc) {
             vertices.forEach {

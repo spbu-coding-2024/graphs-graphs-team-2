@@ -40,6 +40,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import view.components.CoolColors
 import view.components.ErrorDialog
 import view.components.PurpleButton
@@ -363,6 +364,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     graphName.value = null
                     dataSystem = null
                 }
+
             }
         }
         if (openNewGraph) {

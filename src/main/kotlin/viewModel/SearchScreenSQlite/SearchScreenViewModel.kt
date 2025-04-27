@@ -12,6 +12,7 @@ import model.abstractGraph.AbstractVertex
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import viewModel.graph.GraphViewModel
 
+
 class SQLiteSearchScreenViewModel {
     private val _isLoading = mutableStateOf(false)
     val isLoading = _isLoading
@@ -46,6 +47,7 @@ class SQLiteSearchScreenViewModel {
         try {
             converter.saveToSQLiteDB(viewModel, name)
         } catch (e: ExposedSQLException) {
+
             throw e
         }
     }
