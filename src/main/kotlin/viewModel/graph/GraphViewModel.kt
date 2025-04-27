@@ -101,18 +101,19 @@ class GraphViewModel(
         coroutineScope {
             resetSizes()
             val harmonicCentrality = HarmonicCentrality(graph)
-            vertices
-                .forEach {
-                    val centrality = async { harmonicCentrality.getVertexCentrality(it.ID) }
-                    it.radius *= (1 + centrality.await() / 2)
-                    it.color = Color(
+            vertices.forEach {
+                val centrality = async { harmonicCentrality.getVertexCentrality(it.ID) }
+                it.radius *= (1 + centrality.await() / 2)
+                it.color =
+                    Color(
                         red = it.color.red * (1 - centrality.await() / 4),
                         blue = it.color.blue * (1 - centrality.await() / 4),
                         green = it.color.green * (1 - centrality.await() / 4),
                     )
-                }
+            }
         }
     }
+
     suspend fun minimalSpanningTree() {
         coroutineScope {
             launch {
@@ -123,7 +124,6 @@ class GraphViewModel(
                     _edges[edge]?.color = CoolColors.Blue
                     _edges[edge.second to edge.first]?.color = CoolColors.Blue
                 }
-
             }
         }
     }
@@ -149,21 +149,13 @@ class GraphViewModel(
     }
 
     private fun resetColors() {
-        edges.onEach {
-            it.color = CoolColors.Purple
-        }
-        vertices.onEach {
-            it.color = CoolColors.Purple
-        }
+        edges.onEach { it.color = CoolColors.Purple }
+        vertices.onEach { it.color = CoolColors.Purple }
     }
 
     private fun resetSizes() {
-        vertices.onEach {
-            it.radius = 25.dp
-        }
-        edges.onEach {
-            it.width = 1f
-        }
+        vertices.onEach { it.radius = 25.dp }
+        edges.onEach { it.width = 1f }
     }
 
     private fun resetCords() {
