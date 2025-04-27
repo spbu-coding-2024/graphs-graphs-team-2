@@ -2,12 +2,14 @@ package algo
 
 import model.Graph
 
-
 class AlgoDijkstra(val graph: Graph, val firstVertexId: Long, val secondVertexId: Long) {
     private val infinity = 1_000_000_000_000_000_000F
     private val distance =
-        graph.vertices.associate { it.id to if (it.id == firstVertexId) 0F else infinity }.toMutableMap()
-    private val labels = graph.vertices.associate { it.id to (it.id == firstVertexId) }.toMutableMap()
+        graph.vertices
+            .associate { it.id to if (it.id == firstVertexId) 0F else infinity }
+            .toMutableMap()
+    private val labels =
+        graph.vertices.associate { it.id to (it.id == firstVertexId) }.toMutableMap()
     private val parents = graph.vertices.associate { it.id to -1L }.toMutableMap()
     private val graphMap = graph.graphWeightedMap
     val way = ArrayDeque<Long>()
@@ -24,7 +26,6 @@ class AlgoDijkstra(val graph: Graph, val firstVertexId: Long, val secondVertexId
                 }
             }
         }
-
 
         var minDistance = infinity
         var new_Vid: Long = -1L
@@ -45,7 +46,6 @@ class AlgoDijkstra(val graph: Graph, val firstVertexId: Long, val secondVertexId
             }
         }
     }
-
 
     private fun findMinWay(V: Long) {
         way.addFirst(V)

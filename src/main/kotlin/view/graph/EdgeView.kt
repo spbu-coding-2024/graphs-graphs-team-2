@@ -10,18 +10,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.dp
-import viewModel.graph.EdgeViewModel
 import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
+import viewModel.graph.EdgeViewModel
 
 @Composable
-fun EdgeView(
-    viewModel: EdgeViewModel,
-    isDirect: Boolean,
-    modifier: Modifier = Modifier,
-) {
+fun EdgeView(viewModel: EdgeViewModel, isDirect: Boolean, modifier: Modifier = Modifier) {
     Canvas(modifier = modifier.fillMaxSize()) {
         val x1 = mutableStateOf(viewModel.u.x.toPx())
         val x2 = mutableStateOf(viewModel.v.x.toPx())
@@ -44,18 +40,12 @@ fun EdgeView(
         val indentY = endY - r2.value * sin(angle)
 
         drawLine(
-            start = Offset(
-                firstX,
-                firstY,
-            ),
-            end = Offset(
-                indentX,
-                indentY,
-            ),
+            start = Offset(firstX, firstY),
+            end = Offset(indentX, indentY),
             strokeWidth = viewModel.width,
             color = viewModel.color,
         )
-        if(isDirect) {
+        if (isDirect) {
             val arrowLength = r1.value / 2
             val arrowAngle = PI / 6
 
@@ -64,22 +54,23 @@ fun EdgeView(
             val arrowEndX = (indentX - arrowLength * cos(angle + arrowAngle)).toFloat()
             val arrowEndY = (indentY - arrowLength * sin(angle + arrowAngle)).toFloat()
             drawPath(
-                path = Path().apply {
-                    moveTo(indentX, indentY)
-                    lineTo(arrowBeginX, arrowBeginY)
-                    lineTo(arrowEndX, arrowEndY)
-                    close()
-                },
+                path =
+                    Path().apply {
+                        moveTo(indentX, indentY)
+                        lineTo(arrowBeginX, arrowBeginY)
+                        lineTo(arrowEndX, arrowEndY)
+                        close()
+                    },
                 color = viewModel.color,
             )
         }
     }
     if (viewModel.weightVisible) {
         Text(
-            modifier = Modifier
-                .offset(
+            modifier =
+                Modifier.offset(
                     viewModel.u.x + (viewModel.v.x - viewModel.u.x) / 2 + 30.dp,
-                    viewModel.u.y + (viewModel.v.y - viewModel.u.y) / 2 + 30.dp
+                    viewModel.u.y + (viewModel.v.y - viewModel.u.y) / 2 + 30.dp,
                 ),
             text = viewModel.weight,
             color = viewModel.color,
@@ -88,14 +79,13 @@ fun EdgeView(
     if (viewModel.labelVisible) {
 
         Text(
-            modifier = Modifier
-                .offset(
+            modifier =
+                Modifier.offset(
                     viewModel.u.x + (viewModel.v.x - viewModel.u.x) / 2 - 10.dp,
-                    viewModel.u.y + (viewModel.v.y - viewModel.u.y) / 2 - 10.dp
+                    viewModel.u.y + (viewModel.v.y - viewModel.u.y) / 2 - 10.dp,
                 ),
             text = viewModel.label,
-            color = viewModel.color
-
+            color = viewModel.color,
         )
     }
 }
