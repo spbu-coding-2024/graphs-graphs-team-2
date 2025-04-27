@@ -19,4 +19,4 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew test
       - name: Code formatting test
-        run: ./gradlew ktfmtFormatTest
+        run: ./gradlew ktfmtCheck
