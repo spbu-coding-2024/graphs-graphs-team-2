@@ -37,6 +37,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import io.ioNeo4j.WriteNeo4j
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import view.components.CoolColors
 import view.components.ErrorDialog
 import view.components.PurpleButton
@@ -44,6 +45,7 @@ import view.graph.GraphView
 import view.io.JsonView
 import view.io.Neo4jView
 import viewModel.MainScreenViewModel
+import viewModel.SearchScreenSQlite.SQLiteSearchScreenViewModel
 import viewModel.graph.GraphViewModel
 import viewModel.placement.place
 import kotlin.math.max
@@ -54,6 +56,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
     var dataSystem by remember { mutableStateOf<DataSystems?>(null) }
     val username: MutableState<String?> = remember { mutableStateOf(null) }
     val password: MutableState<String?> = remember { mutableStateOf(null) }
+    val graphName : MutableState<String?> = remember { mutableStateOf(null) }
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
 
@@ -240,6 +243,18 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     .height(65.dp)
                     .fillMaxWidth()
                     .padding(horizontal = 7.dp),
+                onClick = { dataSystem = DataSystems.SQLite},
+                text = "Save to SQLite",
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 3.dp
+            )
+            PurpleButton(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
                 onClick = { openNewGraph = true },
                 text = "Open new graph",
 
@@ -331,6 +346,14 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     password.value = null
                     dataSystem = null
                 }
+            }
+        }
+        if(dataSystem == DataSystems.SQLite){
+
+            try{
+                SQLiteSearchScreenViewModel().writeGraph(viewModel.graphViewModel,graphName.value?:"")
+            }catch (e: ExposedSQLException){
+
             }
         }
         if(openNewGraph) {

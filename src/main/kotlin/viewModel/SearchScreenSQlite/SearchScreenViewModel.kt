@@ -13,9 +13,11 @@ import kotlinx.coroutines.launch
 import model.Graph
 import model.abstractGraph.AbstractGraph
 import model.abstractGraph.AbstractVertex
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import viewModel.graph.GraphViewModel
 import java.io.File
 import java.nio.file.Paths
+import java.sql.SQLException
 
 
 class SQLiteSearchScreenViewModel {
@@ -50,7 +52,11 @@ class SQLiteSearchScreenViewModel {
     }
 
     fun writeGraph(viewModel: GraphViewModel, name: String){
-        converter.saveToSQLiteDB(viewModel, name)
+        try {
+            converter.saveToSQLiteDB(viewModel, name)
+        }catch (e: ExposedSQLException){
+            throw e
+        }
     }
 }
 
@@ -65,6 +71,6 @@ fun main(){
     for (i in 1..10000){
         graph.addEdge((1L..10000L).random(),(1L..10000L).random(),i.toString(),i.toLong(),1f)
     }
-    val gm = GraphViewModel(graph,placement, mutableStateOf(false),mutableStateOf(false),mutableStateOf(false))
+    val gm = GraphViewModel(graph,placement, mutableStateOf(false),mutableStateOf(false),mutableStateOf(false),mutableStateOf(false))
     SQLiteSearchScreenViewModel().writeGraph(gm,"megalo")
 }
