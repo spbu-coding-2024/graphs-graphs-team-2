@@ -140,7 +140,7 @@ class SQLiteEXP(dbName: String) {
         }
     }
 
-    fun addAllvertices(id: Int , vertices: Collection<VertexViewModel>){
+    fun addAllVertices(id: Int , vertices: Collection<VertexViewModel>){
         transaction(dbc) {
             vertices.forEach {
                 val vert = it
