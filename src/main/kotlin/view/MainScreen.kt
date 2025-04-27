@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,8 +41,10 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import view.components.CoolColors
 import view.components.ErrorDialog
+import view.components.InvertPurpleButton
 import view.components.PurpleButton
 import view.graph.GraphView
 import view.io.JsonView
@@ -131,13 +134,46 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     )
                 }
             }
+            PurpleButton(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
+                onClick = {
+                    scope.launch {
+                        place(800.0, 600.0, viewModel.graphViewModel)
+                        scale = calculateScale(viewModel.graphViewModel)
+                    }
+                },
+                text = "Placement",
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 3.dp
+            )
+            PurpleButton(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
+                onClick = {
+                    scope.launch {
+                        viewModel.graphViewModel.findKeyVertices()
+                    }
+                },
+                text = "Find key vertices",
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 3.dp
+            )
             if (!viewModel.graphViewModel.isDirected) {
                 PurpleButton(
-                    modifier =
-                        Modifier.clip(shape = RoundedCornerShape(15.dp))
-                            .height(65.dp)
-                            .fillMaxWidth()
-                            .padding(horizontal = 7.dp),
+                    modifier = Modifier
+                        .clip(shape = RoundedCornerShape(15.dp))
+                        .height(65.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 7.dp),
                     onClick = { viewModel.graphViewModel.DrawBridges() },
                     text = "Find Bridges",
                     fontSize = 28.sp,
@@ -147,25 +183,34 @@ fun MainScreen(viewModel: MainScreenViewModel) {
             }
             if (!viewModel.graphViewModel.isDirected && viewModel.graphViewModel.isWeighted) {
                 PurpleButton(
-                    modifier =
-                        Modifier.clip(shape = RoundedCornerShape(15.dp))
-                            .height(65.dp)
-                            .fillMaxWidth()
-                            .padding(horizontal = 7.dp),
-                    onClick = { scope.launch { viewModel.graphViewModel.minimalSpanningTree() } },
-                    text = "Min spanning tree",
-                    fontSize = 28.sp,
-                    fontFamily = FontFamily.Monospace,
-                    textPadding = 3.dp,
-                )
-            }
-            PurpleButton(
-                modifier =
-                    Modifier.clip(shape = RoundedCornerShape(15.dp))
+                    modifier = Modifier
+                        .clip(shape = RoundedCornerShape(15.dp))
                         .height(65.dp)
                         .fillMaxWidth()
                         .padding(horizontal = 7.dp),
-                onClick = { scope.launch { viewModel.graphViewModel.highlightComponents() } },
+
+                    onClick = {
+                        scope.launch {
+                            viewModel.graphViewModel.minimalSpanningTree()
+                        }
+                    },
+                    text = "Min spanning tree",
+                    fontSize = 28.sp,
+                    fontFamily = FontFamily.Monospace,
+                    textPadding = 3.dp
+                )
+            }
+            PurpleButton(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
+                onClick = {
+                    scope.launch {
+                        viewModel.graphViewModel.highlightComponents()
+                    }
+                },
                 text = "Find components",
                 fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
@@ -182,111 +227,30 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     text = "Find Bridges",
                     fontSize = 28.sp,
                     fontFamily = FontFamily.Monospace,
-                    textPadding = 3.dp,
+                    textPadding = 3.dp
                 )
             }
-            PurpleButton(
-                modifier =
-                    Modifier.clip(shape = RoundedCornerShape(15.dp))
-                        .height(65.dp)
-                        .fillMaxWidth()
-                        .padding(horizontal = 7.dp),
-                onClick = {
-                    scope.launch {
-                        place(800.0, 600.0, viewModel.graphViewModel)
-                        scale = calculateScale(viewModel.graphViewModel)
-                    }
-                },
-                text = "Placement",
-                fontSize = 28.sp,
-                fontFamily = FontFamily.Monospace,
-                textPadding = 3.dp,
-            )
-            PurpleButton(
-                modifier =
-                    Modifier.clip(shape = RoundedCornerShape(15.dp))
-                        .height(65.dp)
-                        .fillMaxWidth()
-                        .padding(horizontal = 7.dp),
-                onClick = {
-                    scope.launch {
-                        viewModel.graphViewModel.resetColors()
-                        viewModel.graphViewModel.resetCords()
-                    }
-                },
-                text = "Reset view",
-                fontSize = 28.sp,
-                fontFamily = FontFamily.Monospace,
-                textPadding = 3.dp,
-            )
-            PurpleButton(
-                modifier =
-                    Modifier.clip(shape = RoundedCornerShape(15.dp))
-                        .height(65.dp)
-                        .fillMaxWidth()
-                        .padding(horizontal = 7.dp),
-                onClick = { dataSystem = DataSystems.Neo4j },
-                text = "Save to Neo4j",
-                fontSize = 28.sp,
-                fontFamily = FontFamily.Monospace,
-                textPadding = 3.dp,
-            )
-            PurpleButton(
-                modifier =
-                    Modifier.clip(shape = RoundedCornerShape(15.dp))
-                        .height(65.dp)
-                        .fillMaxWidth()
-                        .padding(horizontal = 7.dp),
-                onClick = { dataSystem = DataSystems.JSON },
-                text = "Save to JSON",
-                fontSize = 28.sp,
-                fontFamily = FontFamily.Monospace,
-                textPadding = 3.dp,
-            )
-            PurpleButton(
-                modifier =
-                    Modifier.clip(shape = RoundedCornerShape(15.dp))
-                        .height(65.dp)
-                        .fillMaxWidth()
-                        .padding(horizontal = 7.dp),
-                onClick = { dataSystem = DataSystems.SQLite },
-                text = "Save to SQLite",
-                fontSize = 28.sp,
-                fontFamily = FontFamily.Monospace,
-                textPadding = 3.dp,
-            )
-            PurpleButton(
-                modifier =
-                    Modifier.clip(shape = RoundedCornerShape(15.dp))
-                        .height(65.dp)
-                        .fillMaxWidth()
-                        .padding(horizontal = 7.dp),
-                onClick = { openNewGraph = true },
-                text = "Open new graph",
-                fontSize = 28.sp,
-                fontFamily = FontFamily.Monospace,
-                textPadding = 3.dp,
-            )
+
             if (viewModel.graphViewModel.isDirected) {
                 Row {
                     OutlinedTextField(
                         firstIdDijkstra,
                         { firstIdDijkstra = it },
                         textStyle = TextStyle(fontSize = 28.sp, color = CoolColors.DarkPurple),
-                        modifier = Modifier.width(90.dp).height(65.dp),
+                        modifier = Modifier.width(90.dp).height(65.dp)
                     )
                     OutlinedTextField(
                         secondIdDijkstra,
                         { secondIdDijkstra = it },
                         textStyle = TextStyle(fontSize = 28.sp, color = CoolColors.DarkPurple),
-                        modifier = Modifier.width(90.dp).height(65.dp),
+                        modifier = Modifier.width(90.dp).height(65.dp)
                     )
                     PurpleButton(
-                        modifier =
-                            Modifier.clip(shape = RoundedCornerShape(15.dp))
-                                .height(65.dp)
-                                .fillMaxSize()
-                                .padding(horizontal = 7.dp),
+                        modifier = Modifier
+                            .clip(shape = RoundedCornerShape(15.dp))
+                            .height(65.dp)
+                            .fillMaxSize()
+                            .padding(horizontal = 7.dp),
                         onClick = {
                             try {
                                 viewModel.graphViewModel.Dijkstra(firstIdDijkstra, secondIdDijkstra)
@@ -300,10 +264,74 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                         text = "Dijkstra",
                         fontSize = 28.sp,
                         fontFamily = FontFamily.Monospace,
-                        textPadding = 3.dp,
+                        textPadding = 3.dp
                     )
                 }
             }
+            PurpleButton(
+                modifier =
+                    Modifier.clip(shape = RoundedCornerShape(15.dp))
+                        .height(65.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 7.dp),
+                onClick = {
+                    scope.launch {
+                        viewModel.graphViewModel.resetView()
+                    }
+                },
+                text = "Reset view",
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 3.dp,
+            )
+            PurpleButton(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
+                onClick = { dataSystem = DataSystems.Neo4j },
+                text = "Save to Neo4j",
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 3.dp,
+            )
+            PurpleButton(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
+                onClick = { dataSystem = DataSystems.JSON },
+                text = "Save to JSON",
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 3.dp,
+            )
+            PurpleButton(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
+                onClick = { dataSystem = DataSystems.SQLite },
+                text = "Save to SQLite",
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 3.dp,
+            )
+            InvertPurpleButton(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
+                onClick = { openNewGraph = true },
+                text = "Open new graph",
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 3.dp,
+            )
         }
 
         Surface(

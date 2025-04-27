@@ -3,8 +3,10 @@ package viewModel.graph
 import algo.AlgoBridges
 import algo.AlgoDijkstra
 import algo.Components
+import algo.HarmonicCentrality
 import algo.SpanningTree
 import androidx.compose.runtime.State
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.random.Random
@@ -28,8 +30,8 @@ class GraphViewModel(
         graph.vertices.associate { v ->
             v.id to
                 VertexViewModel(
-                    placement[v]?.first ?: Random.Default.nextInt(0..800).dp,
-                    placement[v]?.second ?: Random.Default.nextInt(0..600).dp,
+                    placement[v]?.first ?: Random.nextInt(0..800).dp,
+                    placement[v]?.second ?: Random.nextInt(0..600).dp,
                     CoolColors.DarkPurple,
                     v,
                     showVerticesLabels,
@@ -95,6 +97,22 @@ class GraphViewModel(
         }
     }
 
+    suspend fun findKeyVertices() {
+        coroutineScope {
+            resetSizes()
+            val harmonicCentrality = HarmonicCentrality(graph)
+            vertices
+                .forEach {
+                    val centrality = async { harmonicCentrality.getVertexCentrality(it.ID) }
+                    it.radius *= (1 + centrality.await() / 2)
+                    it.color = Color(
+                        red = it.color.red * (1 - centrality.await() / 4),
+                        blue = it.color.blue * (1 - centrality.await() / 4),
+                        green = it.color.green * (1 - centrality.await() / 4),
+                    )
+                }
+        }
+    }
     suspend fun minimalSpanningTree() {
         coroutineScope {
             launch {
@@ -105,6 +123,7 @@ class GraphViewModel(
                     _edges[edge]?.color = CoolColors.Blue
                     _edges[edge.second to edge.first]?.color = CoolColors.Blue
                 }
+
             }
         }
     }
@@ -123,21 +142,34 @@ class GraphViewModel(
         }
     }
 
-    suspend fun resetColors() {
+    fun resetView() {
+        resetColors()
+        resetSizes()
+        resetCords()
+    }
+
+    private fun resetColors() {
         edges.onEach {
-            it.width = 1f
             it.color = CoolColors.Purple
         }
         vertices.onEach {
-            it.radius = 25.dp
             it.color = CoolColors.Purple
         }
     }
 
-    suspend fun resetCords() {
+    private fun resetSizes() {
+        vertices.onEach {
+            it.radius = 25.dp
+        }
+        edges.onEach {
+            it.width = 1f
+        }
+    }
+
+    private fun resetCords() {
         graph.vertices.onEach {
-            _vertices[it.id]?.x = placement[it]?.first ?: Random.Default.nextInt(0..800).dp
-            _vertices[it.id]?.y = placement[it]?.second ?: Random.Default.nextInt(0..800).dp
+            _vertices[it.id]?.x = placement[it]?.first ?: Random.nextInt(0..800).dp
+            _vertices[it.id]?.y = placement[it]?.second ?: Random.nextInt(0..800).dp
         }
     }
 }
