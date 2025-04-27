@@ -182,18 +182,20 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 fontFamily = FontFamily.Monospace,
                 textPadding = 3.dp
             )
-            PurpleButton(
-                modifier = Modifier
-                    .clip(shape = RoundedCornerShape(15.dp))
-                    .height(65.dp)
-                    .fillMaxWidth()
-                    .padding(horizontal = 7.dp),
-                onClick = { viewModel.graphViewModel.DrawBridges() },
-                text = "Find Bridges",
-                fontSize = 28.sp,
-                fontFamily = FontFamily.Monospace,
-                textPadding = 3.dp
-            )
+            if (!viewModel.graphViewModel.isDirected) {
+                PurpleButton(
+                    modifier = Modifier
+                        .clip(shape = RoundedCornerShape(15.dp))
+                        .height(65.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 7.dp),
+                    onClick = { viewModel.graphViewModel.DrawBridges() },
+                    text = "Find Bridges",
+                    fontSize = 28.sp,
+                    fontFamily = FontFamily.Monospace,
+                    textPadding = 3.dp
+                )
+            }
             PurpleButton(
                 modifier = Modifier
                     .clip(shape = RoundedCornerShape(15.dp))

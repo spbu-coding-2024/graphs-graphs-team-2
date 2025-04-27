@@ -11,6 +11,7 @@ class AlgoDijkstra(val graph: Graph, val firstVertexId: Long, val secondVertexId
     private val parents = graph.vertices.associate { it.id to -1L }.toMutableMap()
     private val graphMap = graph.graphWeightedMap
     val way = ArrayDeque<Long>()
+    var weightMinWay : Float? = null
 
     fun dijkstra(Vid: Long) {
         val edges = graphMap[Vid]
@@ -27,7 +28,7 @@ class AlgoDijkstra(val graph: Graph, val firstVertexId: Long, val secondVertexId
 
 
         var minDistance = infinity
-        var new_Vid: Long = -1L
+        var new_Vid: Long? = null
         for (i in labels) {
             if (!i.value) {
                 if (distance[i.key]!! < minDistance) {
@@ -36,9 +37,10 @@ class AlgoDijkstra(val graph: Graph, val firstVertexId: Long, val secondVertexId
                 }
             }
         }
-        if (new_Vid != -1L) {
+        if (new_Vid != null) {
             labels[new_Vid] = true
             if (new_Vid == secondVertexId) {
+                weightMinWay = minDistance
                 findMinWay(new_Vid)
             } else {
                 dijkstra(new_Vid)
