@@ -1,15 +1,17 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+
 plugins {
     kotlin("jvm") version "2.1.10"
     id("org.jetbrains.kotlin.plugin.compose") version "2.1.20"
     id("org.jetbrains.compose") version "1.7.1"
     id("org.springframework.boot") version "3.4.4"
     id("io.spring.dependency-management") version "1.1.7"
+    id("com.ncorti.ktfmt.gradle") version "0.22.0"
 }
 
 group = "org.example"
-version = "1.0-SNAPSHOT"
 
+version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -25,7 +27,7 @@ dependencies {
     testImplementation(kotlin("test"))
     implementation("org.xerial:sqlite-jdbc:3.49.1.0")
     implementation("org.neo4j.driver", "neo4j-java-driver", "5.28.4")
-    implementation("org.gephi","gephi-toolkit" ,"0.10.1" , classifier = "all")
+    implementation("org.gephi", "gephi-toolkit", "0.10.1", classifier = "all")
     implementation("cafe.adriel.voyager:voyager-navigator:1.0.0")
     implementation("cafe.adriel.voyager:voyager-screenmodel:1.0.0")
     implementation("org.gephi", "gephi-toolkit", "0.10.1", classifier = "all")
@@ -39,15 +41,11 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-core:0.44.0")
     implementation("org.jetbrains.exposed:exposed-dao:0.44.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.44.0")
-
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
-kotlin {
-    jvmToolchain(23)
-}
+tasks.test { useJUnitPlatform() }
+
+kotlin { jvmToolchain(23) }
 
 compose.desktop {
     application {
@@ -58,6 +56,6 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
-
-
 }
+
+ktfmt { kotlinLangStyle() }

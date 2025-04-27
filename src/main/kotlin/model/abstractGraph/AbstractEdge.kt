@@ -1,6 +1,5 @@
 package model.abstractGraph
 
-
 interface AbstractEdge {
     val id: Long
     val label: String

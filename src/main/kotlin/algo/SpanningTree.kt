@@ -2,14 +2,14 @@ package algo
 
 import model.Graph
 
-
 class SpanningTree(graph: Graph) {
     private val weightedMap = graph.graphWeightedMap.toMutableMap()
 
     val minimalTree = mutableListOf<Pair<Long, Long>>()
 
     private val minEdge = graph.vertices.associate { it.id to Float.MAX_VALUE }.toMutableMap()
-    private val endEdge: MutableMap<Long, Long?> = graph.vertices.associate { it.id to null }.toMutableMap()
+    private val endEdge: MutableMap<Long, Long?> =
+        graph.vertices.associate { it.id to null }.toMutableMap()
     private val used = graph.vertices.associate { it.id to false }.toMutableMap()
 
     init {
@@ -21,7 +21,7 @@ class SpanningTree(graph: Graph) {
 
         val queue = ArrayDeque<Pair<Float, Long>>()
         queue.add(-Float.MIN_VALUE to graph.vertices.first().id)
-        while(queue.isNotEmpty()) {
+        while (queue.isNotEmpty()) {
             val u = queue.removeFirst().second
             used[u] = true
 

@@ -8,14 +8,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import model.abstractGraph.AbstractVertex
 
-class VertexViewModel (
+class VertexViewModel(
     x: Dp = 0.dp,
     y: Dp = 0.dp,
     color: Color,
     private val v: AbstractVertex,
     private val _labelVisible: State<Boolean>,
     private val _idVisible: State<Boolean>,
-    var radius: Dp = 25.dp
+    var radius: Dp = 25.dp,
 ) {
     private var _x = mutableStateOf(x)
     var x: Dp
@@ -23,12 +23,14 @@ class VertexViewModel (
         set(value) {
             _x.value = value
         }
+
     private var _y = mutableStateOf(y)
     var y: Dp
         get() = _y.value
         set(value) {
             _y.value = value
         }
+
     private var _color = mutableStateOf(color)
     var color: Color
         get() = _color.value
