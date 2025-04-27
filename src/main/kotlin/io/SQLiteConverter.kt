@@ -5,8 +5,10 @@ import androidx.compose.ui.unit.dp
 import io.SQLiteExposed.SQLiteEXP
 import model.Graph
 import model.abstractGraph.AbstractVertex
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 
 import viewModel.graph.GraphViewModel
+import java.sql.SQLException
 import kotlin.collections.forEach
 import kotlin.text.toFloat
 import kotlin.to
@@ -15,12 +17,22 @@ import kotlin.to
 class SQLiteConverter(val connection: SQLiteEXP){
 
     fun saveToSQLiteDB(viewModel: GraphViewModel, name :String){
-        val id=connection.addGraph(name,viewModel.isDirected,viewModel.isWeighted)
-        if(id==-1){
+        var graphID = 0
+        try {
+            val id = connection.addGraph(name, viewModel.isDirected, viewModel.isWeighted)
+            graphID = id
+        }catch (e: ExposedSQLException){
+            throw e
+        }
+        if(graphID==-1){
             return
         }
-        connection.addAllvertices(id,viewModel.vertices)
-        connection.addAllEdges(id,viewModel.edges)
+        try {
+            connection.addAllVertices(graphID, viewModel.vertices)
+        }catch (e: ExposedSQLException){
+            throw e
+        }
+        connection.addAllEdges(graphID,viewModel.edges)
     }
 
     fun readFromSQLiteDB(graphName:String):Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>?{

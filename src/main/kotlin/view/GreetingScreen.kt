@@ -31,7 +31,7 @@ import view.components.ErrorDialog
 import view.components.PurpleButton
 import view.io.Neo4jView
 import view.io.JsonView
-import view.io.SQLiteView
+import view.io.SQLiteSearchView
 import viewModel.SearchScreenSQlite.SQLiteSearchScreenViewModel
 
 
@@ -129,7 +129,7 @@ fun GreetingView() {
             }
         }
         if(dataSystem == DataSystems.SQLite) {
-            SQLiteView(SQLiteSearchScreenViewModel(), onDismissRequest =  { dataSystem = null },navigator)
+            SQLiteSearchView(SQLiteSearchScreenViewModel(), onDismissRequest =  { dataSystem = null },navigator)
         }
 
         if(showErrorDialog) {
