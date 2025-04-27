@@ -124,7 +124,6 @@ class GraphViewModel(
                     _edges[edge]?.color = CoolColors.Blue
                     _edges[edge.second to edge.first]?.color = CoolColors.Blue
                 }
-
             }
         }
     }
