@@ -14,22 +14,23 @@ import viewModel.graph.GraphViewModel
 @Composable
 fun GraphView(viewModel: GraphViewModel, scale: Float) {
 
-  var offsetX by remember { mutableStateOf(5f) }
-  var offsetY by remember { mutableStateOf(5f) }
+    var offsetX by remember { mutableStateOf(5f) }
+    var offsetY by remember { mutableStateOf(5f) }
 
-  Box(
-      modifier =
-          Modifier.fillMaxSize()
-              .pointerInput(Unit) {
-                detectDragGestures { change, dragAmount ->
-                  change.consume()
-                  offsetX += dragAmount.x
-                  offsetY += dragAmount.y
+    Box(
+        modifier =
+            Modifier.fillMaxSize()
+                .pointerInput(Unit) {
+                    detectDragGestures { change, dragAmount ->
+                        change.consume()
+                        offsetX += dragAmount.x
+                        offsetY += dragAmount.y
+                    }
                 }
-              }
-              .offset(offsetX.dp, offsetY.dp)
-              .graphicsLayer(scaleX = scale, scaleY = scale)) {
+                .offset(offsetX.dp, offsetY.dp)
+                .graphicsLayer(scaleX = scale, scaleY = scale)
+    ) {
         viewModel.vertices.forEach { v -> VertexView(v, Modifier) }
         viewModel.edges.forEach { e -> EdgeView(e, viewModel.isDirected) }
-      }
+    }
 }

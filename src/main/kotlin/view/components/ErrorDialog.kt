@@ -24,40 +24,31 @@ import androidx.compose.ui.window.Dialog
 fun ErrorDialog(message: String, onDismissRequest: () -> Unit) {
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(400.dp),
+            modifier = Modifier.fillMaxWidth().height(400.dp),
             shape = RoundedCornerShape(25.dp),
-            backgroundColor = CoolColors.Gray
+            backgroundColor = CoolColors.Gray,
         ) {
-            Column(modifier = Modifier.fillMaxSize(),
+            Column(
+                modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Row(
-                    modifier = Modifier
-                        .padding(top = 25.dp),
-                    horizontalArrangement = Arrangement.Center
+                    modifier = Modifier.padding(top = 25.dp),
+                    horizontalArrangement = Arrangement.Center,
                 ) {
-                    Text(
-                        text = "Error",
-                        fontSize = 30.sp,
-                        color = CoolColors.Bardo,
-                    )
+                    Text(text = "Error", fontSize = 30.sp, color = CoolColors.Bardo)
                 }
-                Row(
-                    modifier = Modifier
-                        .padding(10.dp),
-                ) {
+                Row(modifier = Modifier.padding(10.dp)) {
                     Text(
                         text = message,
                         modifier = Modifier.padding(10.dp),
                         fontSize = 30.sp,
-                        style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
-                        color = CoolColors.White
+                        style =
+                            TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
+                        color = CoolColors.White,
                     )
                 }
-
             }
             Row(
                 modifier = Modifier.padding(25.dp),
@@ -69,7 +60,7 @@ fun ErrorDialog(message: String, onDismissRequest: () -> Unit) {
                     modifier = Modifier.clip(shape = RoundedCornerShape(10.dp)),
                     text = "OK",
                     fontSize = 32.sp,
-                    textPadding = 7.dp
+                    textPadding = 7.dp,
                 )
             }
         }

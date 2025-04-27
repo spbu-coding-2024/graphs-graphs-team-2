@@ -20,49 +20,42 @@ import viewModel.graph.VertexViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun VertexView(
-    viewModel: VertexViewModel,
-    modifier: Modifier = Modifier,
-) {
+fun VertexView(viewModel: VertexViewModel, modifier: Modifier = Modifier) {
     var dragBeginColor by remember { mutableStateOf(viewModel.color) }
-    Box(modifier = modifier
-        .size(viewModel.radius * 2, viewModel.radius * 2)
-        .offset(viewModel.x, viewModel.y)
-        .background(
-            color = viewModel.color,
-            shape = CircleShape
-        )
-        .pointerInput(viewModel) {
-            detectDragGestures (
-                onDragStart =  {
-                    dragBeginColor = viewModel.color
+    Box(
+        modifier =
+            modifier
+                .size(viewModel.radius * 2, viewModel.radius * 2)
+                .offset(viewModel.x, viewModel.y)
+                .background(color = viewModel.color, shape = CircleShape)
+                .pointerInput(viewModel) {
+                    detectDragGestures(
+                        onDragStart = {
+                            dragBeginColor = viewModel.color
 
-                    viewModel.radius += 5.dp
-                    viewModel.color = CoolColors.Pink
-                },
-                onDragEnd =  {
-                    viewModel.radius -= 5.dp
-                    viewModel.color = dragBeginColor
-                }) { change, dragAmount ->
-                change.consume()
-                viewModel.onDrag(dragAmount)
-            }
-        }
+                            viewModel.radius += 5.dp
+                            viewModel.color = CoolColors.Pink
+                        },
+                        onDragEnd = {
+                            viewModel.radius -= 5.dp
+                            viewModel.color = dragBeginColor
+                        },
+                    ) { change, dragAmount ->
+                        change.consume()
+                        viewModel.onDrag(dragAmount)
+                    }
+                }
     ) {
         if (viewModel.labelVisible) {
             Text(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .offset(0.dp, -viewModel.radius - 10.dp),
+                modifier = Modifier.align(Alignment.Center).offset(0.dp, -viewModel.radius - 10.dp),
                 text = viewModel.label,
                 color = viewModel.color,
             )
         }
         if (viewModel.idVisible) {
             Text(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .offset(0.dp, viewModel.radius + 10.dp),
+                modifier = Modifier.align(Alignment.Center).offset(0.dp, viewModel.radius + 10.dp),
                 text = viewModel.ID.toString(),
                 color = viewModel.color,
             )
