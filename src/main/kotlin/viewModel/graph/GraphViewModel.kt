@@ -17,8 +17,6 @@ import kotlinx.coroutines.launch
 import model.Graph
 import model.abstractGraph.AbstractVertex
 import view.components.CoolColors
-import kotlin.random.Random
-import kotlin.random.nextInt
 
 class GraphViewModel(
     private val graph: Graph,
