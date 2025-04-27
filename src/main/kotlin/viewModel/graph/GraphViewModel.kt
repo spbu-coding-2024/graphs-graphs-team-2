@@ -9,6 +9,8 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlin.random.Random
+import kotlin.random.nextInt
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -26,40 +28,45 @@ class GraphViewModel(
     showEdgesWeights: State<Boolean>,
     showEdgesLabels: State<Boolean>,
 ) {
-    private val _vertices = graph.vertices.associate { v ->
-        v.id to
-
-        VertexViewModel(
-            placement[v]?.first ?: Random.Default.nextInt(0..800).dp,
-            placement[v]?.second ?: Random.Default.nextInt(0..600).dp,
-            CoolColors.DarkPurple,
-            v,
-            showVerticesLabels,
-            showVerticesIds
-        )
-
-    }
+    private val _vertices =
+        graph.vertices.associate { v ->
+            v.id to
+                VertexViewModel(
+                    placement[v]?.first ?: Random.Default.nextInt(0..800).dp,
+                    placement[v]?.second ?: Random.Default.nextInt(0..600).dp,
+                    CoolColors.DarkPurple,
+                    v,
+                    showVerticesLabels,
+                    showVerticesIds,
+                )
+        }
 
     internal val isDirected: Boolean
         get() = graph.isDirected
+
     internal val isWeighted: Boolean
         get() = graph.isWeighted
 
-    private val _edges = graph.edges.associate { e ->
-        val fst = _vertices[e.vertices.first.id]
-            ?: throw IllegalStateException("VertexView for ${e.vertices.first} not found")
-        val snd = _vertices[e.vertices.second.id]
-            ?: throw IllegalStateException("VertexView for ${e.vertices.second} not found")
-        fst.ID to snd.ID to
+    private val _edges =
+        graph.edges.associate { e ->
+            val fst =
+                _vertices[e.vertices.first.id]
+                    ?: throw IllegalStateException("VertexView for ${e.vertices.first} not found")
+            val snd =
+                _vertices[e.vertices.second.id]
+                    ?: throw IllegalStateException("VertexView for ${e.vertices.second} not found")
+            fst.ID to
+                snd.ID to
                 EdgeViewModel(
-                    fst, snd,
+                    fst,
+                    snd,
                     CoolColors.DarkPurple,
                     2f,
                     e,
                     showEdgesWeights,
-                    showEdgesLabels
+                    showEdgesLabels,
                 )
-    }
+        }
 
     val vertices: Collection<VertexViewModel>
         get() = _vertices.values
@@ -75,7 +82,6 @@ class GraphViewModel(
             _edges[bridge]?.width = 5f
         }
     }
-
 
     fun Dijkstra(firstVId: String, secondVId: String) {
         val firstId = firstVId.toLong()
@@ -109,7 +115,6 @@ class GraphViewModel(
                 }
         }
     }
-
     suspend fun minimalSpanningTree() {
         coroutineScope {
             launch {
@@ -135,7 +140,6 @@ class GraphViewModel(
                         _vertices[vertexId]?.color = color
                     }
                 }
-
             }
         }
     }
@@ -154,6 +158,7 @@ class GraphViewModel(
             it.color = CoolColors.Purple
         }
     }
+
     private fun resetSizes() {
         vertices.onEach {
             it.radius = 25.dp
@@ -162,6 +167,7 @@ class GraphViewModel(
             it.width = 1f
         }
     }
+
     private fun resetCords() {
         graph.vertices.onEach {
             _vertices[it.id]?.x = placement[it]?.first ?: Random.Default.nextInt(0..800).dp

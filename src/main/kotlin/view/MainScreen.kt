@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -38,6 +37,8 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import io.ioNeo4j.WriteNeo4j
+import kotlin.math.max
+import kotlin.math.min
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.exposed.exceptions.ExposedSQLException
@@ -49,13 +50,10 @@ import view.graph.GraphView
 import view.io.JsonView
 import view.io.Neo4jView
 import view.io.SQLiteNameInputView
-import view.io.SQLiteSearchView
 import viewModel.MainScreenViewModel
 import viewModel.SearchScreenSQlite.SQLiteSearchScreenViewModel
 import viewModel.graph.GraphViewModel
 import viewModel.placement.place
-import kotlin.math.max
-import kotlin.math.min
 
 @Composable
 fun MainScreen(viewModel: MainScreenViewModel) {
@@ -73,63 +71,66 @@ fun MainScreen(viewModel: MainScreenViewModel) {
     var openNewGraph by remember { mutableStateOf(false) }
     val navigator = LocalNavigator.currentOrThrow
 
-
     Row(
         horizontalArrangement = Arrangement.spacedBy(5.dp),
-        modifier = Modifier.background(CoolColors.Gray)
+        modifier = Modifier.background(CoolColors.Gray),
     ) {
         var scale by remember { mutableStateOf(calculateScale(viewModel.graphViewModel)) }
         Column(
-            modifier = Modifier
-                .width(370.dp)
-                .background(CoolColors.Gray)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            modifier =
+                Modifier.width(370.dp)
+                    .background(CoolColors.Gray)
+                    .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Row {
                 Checkbox(
                     checked = viewModel.showVerticesLabels.value,
-                    onCheckedChange = { viewModel.showVerticesLabels.value = it })
+                    onCheckedChange = { viewModel.showVerticesLabels.value = it },
+                )
                 Text(
                     "Show vertices labels",
                     fontSize = 28.sp,
                     modifier = Modifier.padding(4.dp),
-                    color = CoolColors.Purple
+                    color = CoolColors.Purple,
                 )
             }
 
             Row {
-                Checkbox(checked = viewModel.showEdgesLabels.value, onCheckedChange = {
-                    viewModel.showEdgesLabels.value = it
-                })
+                Checkbox(
+                    checked = viewModel.showEdgesLabels.value,
+                    onCheckedChange = { viewModel.showEdgesLabels.value = it },
+                )
                 Text(
                     "Show edges labels",
                     fontSize = 28.sp,
                     modifier = Modifier.padding(4.dp),
-                    color = CoolColors.Purple
+                    color = CoolColors.Purple,
                 )
             }
             Row {
                 Checkbox(
                     checked = viewModel.showVerticesIds.value,
-                    onCheckedChange = { viewModel.showVerticesIds.value = it })
+                    onCheckedChange = { viewModel.showVerticesIds.value = it },
+                )
                 Text(
                     "Show vertices ids",
                     fontSize = 28.sp,
                     modifier = Modifier.padding(4.dp),
-                    color = CoolColors.Purple
+                    color = CoolColors.Purple,
                 )
             }
             if (viewModel.graphViewModel.isWeighted) {
                 Row {
                     Checkbox(
                         checked = viewModel.showEdgesWeights.value,
-                        onCheckedChange = { viewModel.showEdgesWeights.value = it })
+                        onCheckedChange = { viewModel.showEdgesWeights.value = it },
+                    )
                     Text(
                         "Show edges weights",
                         fontSize = 28.sp,
                         modifier = Modifier.padding(4.dp),
-                        color = CoolColors.Purple
+                        color = CoolColors.Purple,
                     )
                 }
             }
@@ -177,7 +178,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     text = "Find Bridges",
                     fontSize = 28.sp,
                     fontFamily = FontFamily.Monospace,
-                    textPadding = 3.dp
+                    textPadding = 3.dp,
                 )
             }
             if (!viewModel.graphViewModel.isDirected && viewModel.graphViewModel.isWeighted) {
@@ -213,15 +214,15 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 text = "Find components",
                 fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
-                textPadding = 3.dp
+                textPadding = 3.dp,
             )
             if (!viewModel.graphViewModel.isDirected) {
                 PurpleButton(
-                    modifier = Modifier
-                        .clip(shape = RoundedCornerShape(15.dp))
-                        .height(65.dp)
-                        .fillMaxWidth()
-                        .padding(horizontal = 7.dp),
+                    modifier =
+                        Modifier.clip(shape = RoundedCornerShape(15.dp))
+                            .height(65.dp)
+                            .fillMaxWidth()
+                            .padding(horizontal = 7.dp),
                     onClick = { viewModel.graphViewModel.DrawBridges() },
                     text = "Find Bridges",
                     fontSize = 28.sp,
@@ -268,11 +269,11 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 }
             }
             PurpleButton(
-                modifier = Modifier
-                    .clip(shape = RoundedCornerShape(15.dp))
-                    .height(65.dp)
-                    .fillMaxWidth()
-                    .padding(horizontal = 7.dp),
+                modifier =
+                    Modifier.clip(shape = RoundedCornerShape(15.dp))
+                        .height(65.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 7.dp),
                 onClick = {
                     scope.launch {
                         viewModel.graphViewModel.resetView()
@@ -281,7 +282,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 text = "Reset view",
                 fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
-                textPadding = 3.dp
+                textPadding = 3.dp,
             )
             PurpleButton(
                 modifier = Modifier
@@ -293,7 +294,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 text = "Save to Neo4j",
                 fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
-                textPadding = 3.dp
+                textPadding = 3.dp,
             )
             PurpleButton(
                 modifier = Modifier
@@ -305,7 +306,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 text = "Save to JSON",
                 fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
-                textPadding = 3.dp
+                textPadding = 3.dp,
             )
             PurpleButton(
                 modifier = Modifier
@@ -317,9 +318,8 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 text = "Save to SQLite",
                 fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
-                textPadding = 3.dp
+                textPadding = 3.dp,
             )
-
             InvertPurpleButton(
                 modifier = Modifier
                     .clip(shape = RoundedCornerShape(15.dp))
@@ -328,26 +328,28 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     .padding(horizontal = 7.dp),
                 onClick = { openNewGraph = true },
                 text = "Open new graph",
-
                 fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
-                textPadding = 3.dp
+                textPadding = 3.dp,
             )
         }
 
         Surface(
-            modifier = Modifier
-                .weight(1f)
-                .scrollable(orientation = Orientation.Vertical, state = rememberScrollableState { delta ->
-                    scale *= 1f + delta / 500
-                    scale = scale.coerceIn(0.000001f, 100f)
-                    delta
-                }),
+            modifier =
+                Modifier.weight(1f)
+                    .scrollable(
+                        orientation = Orientation.Vertical,
+                        state =
+                            rememberScrollableState { delta ->
+                                scale *= 1f + delta / 500
+                                scale = scale.coerceIn(0.000001f, 100f)
+                                delta
+                            },
+                    ),
             color = CoolColors.DarkGray,
         ) {
             GraphView(viewModel.graphViewModel, scale)
         }
-
 
         if (dataSystem == DataSystems.JSON) {
             val fileChooser = JsonView()
@@ -360,16 +362,11 @@ fun MainScreen(viewModel: MainScreenViewModel) {
             }
         }
 
-
         if (dataSystem == DataSystems.Neo4j) {
             Neo4jView(username, password) { dataSystem = null }
             if (username.value != null && password.value != null) {
                 try {
-                    WriteNeo4j(
-                        username.value ?: "",
-                        password.value ?: "",
-                        viewModel.graphViewModel
-                    )
+                    WriteNeo4j(username.value ?: "", password.value ?: "", viewModel.graphViewModel)
                     dataSystem = null
                     username.value = null
                     password.value = null
@@ -386,8 +383,9 @@ fun MainScreen(viewModel: MainScreenViewModel) {
             SQLiteNameInputView(graphName) { dataSystem = null }
             if (graphName.value != null) {
                 try {
-                    SQLiteSearchScreenViewModel().writeGraph(viewModel.graphViewModel, graphName.value ?: "")
-                    dataSystem=null
+                    SQLiteSearchScreenViewModel()
+                        .writeGraph(viewModel.graphViewModel, graphName.value ?: "")
+                    dataSystem = null
                     graphName.value = null
                 } catch (e: Exception) {
                     errorMessage = e.message ?: "Unknown error"
@@ -395,7 +393,6 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     graphName.value = null
                     dataSystem = null
                 }
-
             }
         }
         if (openNewGraph) {
