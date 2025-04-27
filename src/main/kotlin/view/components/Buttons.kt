@@ -26,7 +26,32 @@ fun PurpleButton (modifier: Modifier = Modifier,
     Button (
         colors = ButtonDefaults.textButtonColors(
             backgroundColor = CoolColors.Purple,
-            contentColor = CoolColors.Gray,
+            contentColor = CoolColors.DarkGray,
+        ),
+        modifier = modifier.pointerHoverIcon(PointerIcon(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))),
+        onClick = onClick,
+    ) {
+        Text(
+            text,
+            style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
+            fontSize = fontSize,
+            modifier = Modifier.padding(textPadding),
+            fontFamily = fontFamily,
+        )
+    }
+}
+
+@Composable
+fun InvertPurpleButton (modifier: Modifier = Modifier,
+                  onClick: () -> Unit,
+                  text: String,
+                  fontSize: TextUnit,
+                  fontFamily: FontFamily = FontFamily.Default,
+                  textPadding: Dp,) {
+    Button (
+        colors = ButtonDefaults.textButtonColors(
+            backgroundColor = CoolColors.DarkGray,
+            contentColor = CoolColors.Purple,
         ),
         modifier = modifier.pointerHoverIcon(PointerIcon(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))),
         onClick = onClick,

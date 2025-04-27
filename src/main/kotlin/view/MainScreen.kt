@@ -1,11 +1,11 @@
 package view
 
-import GraphScreen
 import WelcomeScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,7 +14,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
@@ -40,6 +43,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import view.components.CoolColors
 import view.components.ErrorDialog
+import view.components.InvertPurpleButton
 import view.components.PurpleButton
 import view.graph.GraphView
 import view.io.JsonView
@@ -76,7 +80,8 @@ fun MainScreen(viewModel: MainScreenViewModel) {
         Column(
             modifier = Modifier
                 .width(370.dp)
-                .background(CoolColors.Gray),
+                .background(CoolColors.Gray)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Row {
@@ -140,20 +145,26 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     textPadding = 3.dp
                 )
             }
-            PurpleButton(
-                modifier = Modifier
-                    .clip(shape = RoundedCornerShape(15.dp))
-                    .height(65.dp)
-                    .fillMaxWidth()
-                    .padding(horizontal = 7.dp),
-              
-                onClick = { dataSystem = DataSystems.Neo4j },
-                text = "Write to Neo4j",
-              fontSize = 28.sp,
-                fontFamily = FontFamily.Monospace,
-                textPadding = 3.dp
-            )
+            if(!viewModel.graphViewModel.isDirected && viewModel.graphViewModel.isWeighted) {
                 PurpleButton(
+                    modifier = Modifier
+                        .clip(shape = RoundedCornerShape(15.dp))
+                        .height(65.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 7.dp),
+
+                    onClick = {
+                        scope.launch {
+                            viewModel.graphViewModel.minimalSpanningTree()
+                        }
+                    },
+                    text = "Min spanning tree",
+                    fontSize = 28.sp,
+                    fontFamily = FontFamily.Monospace,
+                    textPadding = 3.dp
+                )
+            }
+            PurpleButton(
                 modifier = Modifier
                     .clip(shape = RoundedCornerShape(15.dp))
                     .height(65.dp)
@@ -219,7 +230,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     .height(65.dp)
                     .fillMaxWidth()
                     .padding(horizontal = 7.dp),
-                onClick = { dataSystem = DataSystems.Neo4j},
+                onClick = { dataSystem = DataSystems.Neo4j },
                 text = "Save to Neo4j",
                 fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
@@ -237,7 +248,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 fontFamily = FontFamily.Monospace,
                 textPadding = 3.dp
             )
-            PurpleButton(
+            InvertPurpleButton(
                 modifier = Modifier
                     .clip(shape = RoundedCornerShape(15.dp))
                     .height(65.dp)
