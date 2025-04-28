@@ -42,6 +42,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import view.components.CoolColors
 import view.components.ErrorDialog
+import view.components.InvertPurpleButton
 import view.components.PurpleButton
 import view.graph.GraphView
 import view.io.JsonView
@@ -131,6 +132,35 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     )
                 }
             }
+            PurpleButton(
+                modifier =
+                    Modifier.clip(shape = RoundedCornerShape(15.dp))
+                        .height(65.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 7.dp),
+                onClick = {
+                    scope.launch {
+                        place(800.0, 600.0, viewModel.graphViewModel)
+                        scale = calculateScale(viewModel.graphViewModel)
+                    }
+                },
+                text = "Placement",
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 3.dp,
+            )
+            PurpleButton(
+                modifier =
+                    Modifier.clip(shape = RoundedCornerShape(15.dp))
+                        .height(65.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 7.dp),
+                onClick = { scope.launch { viewModel.graphViewModel.findKeyVertices() } },
+                text = "Find key vertices",
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 3.dp,
+            )
             if (!viewModel.graphViewModel.isDirected) {
                 PurpleButton(
                     modifier =
@@ -185,35 +215,51 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     textPadding = 3.dp,
                 )
             }
+
+            if (viewModel.graphViewModel.isDirected) {
+                Row {
+                    OutlinedTextField(
+                        firstIdDijkstra,
+                        { firstIdDijkstra = it },
+                        textStyle = TextStyle(fontSize = 28.sp, color = CoolColors.DarkPurple),
+                        modifier = Modifier.width(90.dp).height(65.dp),
+                    )
+                    OutlinedTextField(
+                        secondIdDijkstra,
+                        { secondIdDijkstra = it },
+                        textStyle = TextStyle(fontSize = 28.sp, color = CoolColors.DarkPurple),
+                        modifier = Modifier.width(90.dp).height(65.dp),
+                    )
+                    PurpleButton(
+                        modifier =
+                            Modifier.clip(shape = RoundedCornerShape(15.dp))
+                                .height(65.dp)
+                                .fillMaxSize()
+                                .padding(horizontal = 7.dp),
+                        onClick = {
+                            try {
+                                viewModel.graphViewModel.Dijkstra(firstIdDijkstra, secondIdDijkstra)
+                            } catch (e: Exception) {
+                                errorMessage = e.message ?: "Graph is built incorrectly"
+                                showErrorDialog = true
+                                firstIdDijkstra = ""
+                                secondIdDijkstra = ""
+                            }
+                        },
+                        text = "Dijkstra",
+                        fontSize = 28.sp,
+                        fontFamily = FontFamily.Monospace,
+                        textPadding = 3.dp,
+                    )
+                }
+            }
             PurpleButton(
                 modifier =
                     Modifier.clip(shape = RoundedCornerShape(15.dp))
                         .height(65.dp)
                         .fillMaxWidth()
                         .padding(horizontal = 7.dp),
-                onClick = {
-                    scope.launch {
-                        place(800.0, 600.0, viewModel.graphViewModel)
-                        scale = calculateScale(viewModel.graphViewModel)
-                    }
-                },
-                text = "Placement",
-                fontSize = 28.sp,
-                fontFamily = FontFamily.Monospace,
-                textPadding = 3.dp,
-            )
-            PurpleButton(
-                modifier =
-                    Modifier.clip(shape = RoundedCornerShape(15.dp))
-                        .height(65.dp)
-                        .fillMaxWidth()
-                        .padding(horizontal = 7.dp),
-                onClick = {
-                    scope.launch {
-                        viewModel.graphViewModel.resetColors()
-                        viewModel.graphViewModel.resetCords()
-                    }
-                },
+                onClick = { scope.launch { viewModel.graphViewModel.resetView() } },
                 text = "Reset view",
                 fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
@@ -255,7 +301,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 fontFamily = FontFamily.Monospace,
                 textPadding = 3.dp,
             )
-            PurpleButton(
+            InvertPurpleButton(
                 modifier =
                     Modifier.clip(shape = RoundedCornerShape(15.dp))
                         .height(65.dp)
@@ -267,43 +313,6 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 fontFamily = FontFamily.Monospace,
                 textPadding = 3.dp,
             )
-            if (viewModel.graphViewModel.isDirected) {
-                Row {
-                    OutlinedTextField(
-                        firstIdDijkstra,
-                        { firstIdDijkstra = it },
-                        textStyle = TextStyle(fontSize = 28.sp, color = CoolColors.DarkPurple),
-                        modifier = Modifier.width(90.dp).height(65.dp),
-                    )
-                    OutlinedTextField(
-                        secondIdDijkstra,
-                        { secondIdDijkstra = it },
-                        textStyle = TextStyle(fontSize = 28.sp, color = CoolColors.DarkPurple),
-                        modifier = Modifier.width(90.dp).height(65.dp),
-                    )
-                    PurpleButton(
-                        modifier =
-                            Modifier.clip(shape = RoundedCornerShape(15.dp))
-                                .height(65.dp)
-                                .fillMaxSize()
-                                .padding(horizontal = 7.dp),
-                        onClick = {
-                            try {
-                                viewModel.graphViewModel.Dijkstra(firstIdDijkstra, secondIdDijkstra)
-                            } catch (e: Exception) {
-                                errorMessage = e.message ?: "Graph is built incorrectly"
-                                showErrorDialog = true
-                                firstIdDijkstra = ""
-                                secondIdDijkstra = ""
-                            }
-                        },
-                        text = "Dijkstra",
-                        fontSize = 28.sp,
-                        fontFamily = FontFamily.Monospace,
-                        textPadding = 3.dp,
-                    )
-                }
-            }
         }
 
         Surface(
