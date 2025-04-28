@@ -161,20 +161,6 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 fontFamily = FontFamily.Monospace,
                 textPadding = 3.dp,
             )
-            if (!viewModel.graphViewModel.isDirected) {
-                PurpleButton(
-                    modifier =
-                        Modifier.clip(shape = RoundedCornerShape(15.dp))
-                            .height(65.dp)
-                            .fillMaxWidth()
-                            .padding(horizontal = 7.dp),
-                    onClick = { viewModel.graphViewModel.DrawBridges() },
-                    text = "Find Bridges",
-                    fontSize = 28.sp,
-                    fontFamily = FontFamily.Monospace,
-                    textPadding = 3.dp,
-                )
-            }
             if (!viewModel.graphViewModel.isDirected && viewModel.graphViewModel.isWeighted) {
                 PurpleButton(
                     modifier =
@@ -216,42 +202,40 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 )
             }
 
-            if (viewModel.graphViewModel.isDirected) {
-                Row {
-                    OutlinedTextField(
-                        firstIdDijkstra,
-                        { firstIdDijkstra = it },
-                        textStyle = TextStyle(fontSize = 28.sp, color = CoolColors.DarkPurple),
-                        modifier = Modifier.width(90.dp).height(65.dp),
-                    )
-                    OutlinedTextField(
-                        secondIdDijkstra,
-                        { secondIdDijkstra = it },
-                        textStyle = TextStyle(fontSize = 28.sp, color = CoolColors.DarkPurple),
-                        modifier = Modifier.width(90.dp).height(65.dp),
-                    )
-                    PurpleButton(
-                        modifier =
-                            Modifier.clip(shape = RoundedCornerShape(15.dp))
-                                .height(65.dp)
-                                .fillMaxSize()
-                                .padding(horizontal = 7.dp),
-                        onClick = {
-                            try {
-                                viewModel.graphViewModel.Dijkstra(firstIdDijkstra, secondIdDijkstra)
-                            } catch (e: Exception) {
-                                errorMessage = e.message ?: "Graph is built incorrectly"
-                                showErrorDialog = true
-                                firstIdDijkstra = ""
-                                secondIdDijkstra = ""
-                            }
-                        },
-                        text = "Dijkstra",
-                        fontSize = 28.sp,
-                        fontFamily = FontFamily.Monospace,
-                        textPadding = 3.dp,
-                    )
-                }
+            Row {
+                OutlinedTextField(
+                    firstIdDijkstra,
+                    { firstIdDijkstra = it },
+                    textStyle = TextStyle(fontSize = 28.sp, color = CoolColors.DarkPurple),
+                    modifier = Modifier.width(90.dp).height(65.dp),
+                )
+                OutlinedTextField(
+                    secondIdDijkstra,
+                    { secondIdDijkstra = it },
+                    textStyle = TextStyle(fontSize = 28.sp, color = CoolColors.DarkPurple),
+                    modifier = Modifier.width(90.dp).height(65.dp),
+                )
+                PurpleButton(
+                    modifier =
+                        Modifier.clip(shape = RoundedCornerShape(15.dp))
+                            .height(65.dp)
+                            .fillMaxSize()
+                            .padding(horizontal = 7.dp),
+                    onClick = {
+                        try {
+                            viewModel.graphViewModel.Dijkstra(firstIdDijkstra, secondIdDijkstra)
+                        } catch (e: Exception) {
+                            errorMessage = e.message ?: "Graph is built incorrectly"
+                            showErrorDialog = true
+                            firstIdDijkstra = ""
+                            secondIdDijkstra = ""
+                        }
+                    },
+                    text = "Dijkstra",
+                    fontSize = 28.sp,
+                    fontFamily = FontFamily.Monospace,
+                    textPadding = 3.dp,
+                )
             }
             PurpleButton(
                 modifier =

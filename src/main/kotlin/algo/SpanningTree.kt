@@ -3,7 +3,7 @@ package algo
 import model.Graph
 
 class SpanningTree(graph: Graph) {
-    private val weightedMap = graph.graphWeightedMap.toMutableMap()
+    private val weightedMap = graph.weightedMap.toMutableMap()
 
     val minimalTree = mutableListOf<Pair<Long, Long>>()
 
