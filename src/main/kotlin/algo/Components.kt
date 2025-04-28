@@ -15,7 +15,7 @@ class Components(private val graph: Graph) {
     private val order = mutableListOf<Long>()
     private var currComponent = mutableListOf<Long>()
 
-    val graphMap = graph.graphMap
+    val graphMap = graph.map
 
     val transGraphMap: Map<Long, ArrayDeque<Long>> =
         graph.vertices.associate { it.id to ArrayDeque() }

@@ -10,8 +10,8 @@ class AlgoDijkstra(val graph: Graph, val firstVertexId: Long, val secondVertexId
             .toMutableMap()
     private val labels =
         graph.vertices.associate { it.id to (it.id == firstVertexId) }.toMutableMap()
-    private val parents = graph.vertices.associate { it.id to -1L }.toMutableMap()
-    private val graphMap = graph.graphWeightedMap
+    private val parents = graph.vertices.associate { it.id to null as Long? }.toMutableMap()
+    private val graphMap = graph.weightedMap
     val way = ArrayDeque<Long>()
 
     var weightMinWay: Float? = null
