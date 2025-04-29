@@ -36,14 +36,14 @@ class GraphViewModel(
     private val _vertices =
         graph.vertices.associate { v ->
             v.id to
-                VertexViewModel(
-                    placement[v]?.first ?: Random.nextInt(0..800).dp,
-                    placement[v]?.second ?: Random.nextInt(0..600).dp,
-                    CoolColors.DarkPurple,
-                    v,
-                    showVerticesLabels,
-                    showVerticesIds,
-                )
+                    VertexViewModel(
+                        placement[v]?.first ?: Random.nextInt(0..800).dp,
+                        placement[v]?.second ?: Random.nextInt(0..600).dp,
+                        CoolColors.DarkPurple,
+                        v,
+                        showVerticesLabels,
+                        showVerticesIds,
+                    )
         }
 
     internal val isDirected: Boolean
@@ -61,16 +61,16 @@ class GraphViewModel(
                 _vertices[e.vertices.second.id]
                     ?: throw IllegalStateException("VertexView for ${e.vertices.second} not found")
             fst.ID to
-                snd.ID to
-                EdgeViewModel(
-                    fst,
-                    snd,
-                    CoolColors.DarkPurple,
-                    2f,
-                    e,
-                    showEdgesWeights,
-                    showEdgesLabels,
-                )
+                    snd.ID to
+                    EdgeViewModel(
+                        fst,
+                        snd,
+                        CoolColors.DarkPurple,
+                        2f,
+                        e,
+                        showEdgesWeights,
+                        showEdgesLabels,
+                    )
         }
 
     val vertices: Collection<VertexViewModel>
@@ -124,7 +124,7 @@ class GraphViewModel(
     }
 
     fun Louvain() {
-        resetView()
+        resetColors()
         val result = louvain(graph)
         val colours = result.first.values.associateWith { CoolColors.RandomColor }
         result.first.forEach { community ->
