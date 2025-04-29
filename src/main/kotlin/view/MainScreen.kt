@@ -1,6 +1,7 @@
 package view
 
 import WelcomeScreen
+import algo.louvain
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
@@ -238,6 +239,18 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     .padding(horizontal = 7.dp),
                 onClick = { dataSystem = DataSystems.Neo4j },
                 text = "Save to Neo4j",
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 3.dp
+            )
+            PurpleButton(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .height(65.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 7.dp),
+                onClick = { viewModel.graphViewModel.Louvain() },
+                text = "Find Communities",
                 fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
                 textPadding = 3.dp

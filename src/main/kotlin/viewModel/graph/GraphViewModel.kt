@@ -4,6 +4,7 @@ import algo.AlgoBridges
 import algo.AlgoDijkstra
 import algo.Components
 import algo.SpanningTree
+import algo.louvain
 import androidx.compose.runtime.State
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -27,14 +28,14 @@ class GraphViewModel(
     private val _vertices = graph.vertices.associate { v ->
         v.id to
 
-        VertexViewModel(
-            placement[v]?.first ?: Random.Default.nextInt(0..800).dp,
-            placement[v]?.second ?: Random.Default.nextInt(0..600).dp,
-            CoolColors.DarkPurple,
-            v,
-            showVerticesLabels,
-            showVerticesIds
-        )
+                VertexViewModel(
+                    placement[v]?.first ?: Random.Default.nextInt(0..800).dp,
+                    placement[v]?.second ?: Random.Default.nextInt(0..600).dp,
+                    CoolColors.DarkPurple,
+                    v,
+                    showVerticesLabels,
+                    showVerticesIds
+                )
 
     }
 
@@ -91,6 +92,17 @@ class GraphViewModel(
         }
     }
 
+    fun Louvain() {
+        val result = louvain(graph)
+        val colours = result.first.values.associateWith { CoolColors.RandomColor }
+        result.first.forEach { community ->
+            _vertices[community.key]?.color = colours[community.value] ?: CoolColors.DarkPurple
+        }
+        result.second.forEach { community ->
+            _edges[community.key]?.color = colours[community.value] ?: CoolColors.DarkPurple
+        }
+    }
+
     suspend fun minimalSpanningTree() {
         coroutineScope {
             launch {
@@ -131,6 +143,7 @@ class GraphViewModel(
             it.color = CoolColors.Purple
         }
     }
+
     suspend fun resetCords() {
         graph.vertices.onEach {
             _vertices[it.id]?.x = placement[it]?.first ?: Random.Default.nextInt(0..800).dp
