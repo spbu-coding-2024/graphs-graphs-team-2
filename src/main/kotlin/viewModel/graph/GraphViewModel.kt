@@ -173,6 +173,12 @@ class GraphViewModel(
         }
     }
 
+    fun findLoops(vertId: String) {
+        resetColors()
+        val id = vertId.toLong()
+        
+    }
+
     fun resetView() {
         resetColors()
         resetSizes()
