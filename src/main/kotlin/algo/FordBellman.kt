@@ -1,6 +1,7 @@
 package algo
 
 import model.Graph
+import java.util.LinkedList
 
 class FordBellman (val graph: Graph, val firstVertexId: Long, val secondVertexId: Long) {
     private val infinity =  Float.POSITIVE_INFINITY
@@ -8,10 +9,10 @@ class FordBellman (val graph: Graph, val firstVertexId: Long, val secondVertexId
         graph.vertices
             .associate { it.id to if (it.id == firstVertexId) 0F else infinity }
             .toMutableMap()
-    private val graphMap = graph.graphWeightedMap
+    private val graphMap = graph.weightedMap
     val path=mutableMapOf<Long,Long>()
-    val pathFromStartToEnd = ArrayDeque<Pair<Long,Long>>()
-    fun FordBellman() {
+    val pathFromStartToEnd = LinkedHashSet<Pair<Long, Long>>()
+    fun FordBellman():Boolean {
         for (i in 0..graph.vertices.size - 1) {
             for (e in graphMap) {
                 val d1 = distance[e.key]
@@ -28,10 +29,10 @@ class FordBellman (val graph: Graph, val firstVertexId: Long, val secondVertexId
             }
         }
         var currentId=secondVertexId
-        var prevId: Long= path[currentId] ?:  return
+        var prevId: Long= path[currentId] ?: return false
         pathFromStartToEnd.add(prevId to currentId)
         while(prevId != firstVertexId) {
-            prevId = path[currentId] ?:  return
+            prevId = path[currentId] ?:  return false
             pathFromStartToEnd.addFirst(prevId to currentId)
             currentId = prevId
         }
@@ -48,5 +49,6 @@ class FordBellman (val graph: Graph, val firstVertexId: Long, val secondVertexId
                 }
             }
         }
+        return true
     }
 }

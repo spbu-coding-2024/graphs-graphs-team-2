@@ -147,20 +147,24 @@ class GraphViewModel(
     }
 
     fun findPathByFordBellman(firstVId: String, secondVId: String){
+        resetColors()
         val firstId = firstVId.toLong()
         val secondId = secondVId.toLong()
         if (_vertices[firstId] == null || _vertices[secondId] == null) {
             throw IllegalArgumentException("No such vertexes in graph")
         }
         val algoFB= FordBellman(graph,firstId,secondId)
-        algoFB.FordBellman()
-        val way=algoFB.pathFromStartToEnd
-        if(way.isEmpty()){
-            error("Way does not exist")
+        val flag=algoFB.FordBellman()
+        if(!flag){
+            return
         }
-        for(i in 0..way.size - 1) {
-            _edges[way[i]]?.color = CoolColors.Bardo
-            _edges[way[i]]?.width = 5f
+        val way=try {algoFB.pathFromStartToEnd }catch (e:Exception){throw e}
+        for(el in way ) {
+            val revEdge=Pair(el.second,el.first)
+            _edges[el]?.color = CoolColors.Bardo
+            _edges[el]?.width = 5f
+            _edges[revEdge]?.color = CoolColors.Bardo
+            _edges[revEdge]?.width = 20f
         }
 
     }
