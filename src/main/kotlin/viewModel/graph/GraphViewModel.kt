@@ -3,8 +3,7 @@ package viewModel.graph
 import algo.AlgoBridges
 import algo.AlgoDijkstra
 
-import algo.Components
-import algo.SpanningTree
+
 import algo.louvain
 
 import algo.FordBellman
@@ -125,6 +124,7 @@ class GraphViewModel(
     }
 
     fun Louvain() {
+        resetView()
         val result = louvain(graph)
         val colours = result.first.values.associateWith { CoolColors.RandomColor }
         result.first.forEach { community ->
