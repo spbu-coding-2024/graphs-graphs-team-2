@@ -5,10 +5,8 @@ import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
-import view.graph.GraphView
 import viewModel.graph.EdgeViewModel
 import viewModel.graph.VertexViewModel
-
 
 object Graphs : IntIdTable() {
     val graphName = varchar("graph_name", 255).uniqueIndex()
@@ -22,6 +20,7 @@ object Vertices : IntIdTable() {
     val y = float("y")
     val label = text("label")
     val graph_id = integer("graph_id").references(Graphs.id, onDelete = ReferenceOption.CASCADE)
+
     init {
         uniqueIndex(vertex, graph_id)
     }
@@ -37,10 +36,13 @@ object Edges : IntIdTable() {
 }
 
 class SQLiteEXP(dbName: String) {
-    var dbc =Database.connect(
-        "jdbc:sqlite:$dbName",
-        driver = "org.sqlite.JDBC",
-        setupConnection = { it.createStatement().execute("PRAGMA foreign_keys=ON") })
+    var dbc =
+        Database.connect(
+            "jdbc:sqlite:$dbName",
+            driver = "org.sqlite.JDBC",
+            setupConnection = { it.createStatement().execute("PRAGMA foreign_keys=ON") },
+        )
+
     init {
         transaction(dbc) {
             addLogger(StdOutSqlLogger)
@@ -48,38 +50,45 @@ class SQLiteEXP(dbName: String) {
         }
     }
 
-
-    fun addGraph(name: String,isDir: Boolean,isWeigh: Boolean): Int {
-        var id  = 0
+    fun addGraph(name: String, isDir: Boolean, isWeigh: Boolean): Int {
+        var id = 0
         transaction(dbc) {
             try {
-                val t = Graphs.insertAndGetId {
-                    it[graphName] = name
-                    it[isDirected] = isDir
-                    it[isWeighted] = isWeigh
-                }
-                id=t.value
-            }catch (e: ExposedSQLException) {
+                val t =
+                    Graphs.insertAndGetId {
+                        it[graphName] = name
+                        it[isDirected] = isDir
+                        it[isWeighted] = isWeigh
+                    }
+                id = t.value
+            } catch (e: ExposedSQLException) {
                 throw e
             }
         }
         return id
     }
 
-    fun addEdge(graphId: Int, fromVertex: Long, toVertex: Long, weight_d : Float,edge_d:Long, label_d : String) {
+    fun addEdge(
+        graphId: Int,
+        fromVertex: Long,
+        toVertex: Long,
+        weight_d: Float,
+        edge_d: Long,
+        label_d: String,
+    ) {
         transaction(dbc) {
             Edges.insert {
                 it[graph_id] = graphId
-                it[edge]=edge_d
+                it[edge] = edge_d
                 it[weight] = weight_d
                 it[vertexTO] = toVertex
                 it[vertexFrom] = fromVertex
-                it[label]=label_d
+                it[label] = label_d
             }
         }
     }
 
-    fun addVertex(graphId: Int, vertexnum: Long, xc: Float, yc: Float,labell:String) {
+    fun addVertex(graphId: Int, vertexnum: Long, xc: Float, yc: Float, labell: String) {
         transaction {
             try {
                 Vertices.insert {
@@ -89,16 +98,19 @@ class SQLiteEXP(dbName: String) {
                     it[y] = yc
                     it[label] = labell
                 }
-            }catch (e: ExposedSQLException) {
+            } catch (e: ExposedSQLException) {
                 throw e
             }
         }
-
     }
 
-    fun findGraph(name: String): graphInfo?{
+    fun findGraph(name: String): graphInfo? {
         val c = transaction {
-            Graphs.select { Graphs.graphName eq name }.singleOrNull()?.let{it -> graphInfo(it[Graphs.id].value,it[Graphs.isDirected], it[Graphs.isWeighted])}
+            Graphs.select { Graphs.graphName eq name }
+                .singleOrNull()
+                ?.let { it ->
+                    graphInfo(it[Graphs.id].value, it[Graphs.isDirected], it[Graphs.isWeighted])
+                }
         }
         return c
     }
@@ -106,41 +118,52 @@ class SQLiteEXP(dbName: String) {
     fun findVertices(graphId: Int): List<vertexInfo> {
         val p = transaction {
             Vertices.select { Vertices.graph_id eq graphId }
-                .map { vertexInfo(it[Vertices.vertex], it[Vertices.x], it[Vertices.y], it[Vertices.label]) }
+                .map {
+                    vertexInfo(
+                        it[Vertices.vertex],
+                        it[Vertices.x],
+                        it[Vertices.y],
+                        it[Vertices.label],
+                    )
+                }
         }
         return p
     }
 
     fun findEdges(graphId: Int): List<edgeInfo> {
         val p = transaction {
-            Edges.select { Edges.graph_id eq graphId }.map { edgeInfo(it[Edges.vertexFrom], it[Edges.vertexTO],it[Edges.weight], it[Edges.edge],it[Edges.label]) }
+            Edges.select { Edges.graph_id eq graphId }
+                .map {
+                    edgeInfo(
+                        it[Edges.vertexFrom],
+                        it[Edges.vertexTO],
+                        it[Edges.weight],
+                        it[Edges.edge],
+                        it[Edges.label],
+                    )
+                }
         }
         return p
     }
 
     fun deleteGraph(graphId: Int) {
-        //Database.connect("jdbc:sqlite:$path", driver = "org.sqlite.JDBC", setupConnection = { it.createStatement().execute("PRAGMA foreign_keys=ON") })
-        transaction {
-            Graphs.deleteWhere { Graphs.id eq graphId }
-        }
+        // Database.connect("jdbc:sqlite:$path", driver = "org.sqlite.JDBC", setupConnection = {
+        // it.createStatement().execute("PRAGMA foreign_keys=ON") })
+        transaction { Graphs.deleteWhere { Graphs.id eq graphId } }
     }
 
     fun makeListFromNames(): List<String> {
-        val t=transaction {
-            Graphs.slice(Graphs.graphName).selectAll().toList()
-        }
-        val p : MutableList<String> = ArrayList()
-        t.forEach{ row -> p.add(row[Graphs.graphName]) }
+        val t = transaction { Graphs.slice(Graphs.graphName).selectAll().toList() }
+        val p: MutableList<String> = ArrayList()
+        t.forEach { row -> p.add(row[Graphs.graphName]) }
         return p
-
-    }
-    fun deleteAll(){
-        transaction {
-            Graphs.deleteAll()
-        }
     }
 
-    fun addAllVertices(id: Int , vertices: Collection<VertexViewModel>){
+    fun deleteAll() {
+        transaction { Graphs.deleteAll() }
+    }
+
+    fun addAllVertices(id: Int, vertices: Collection<VertexViewModel>) {
         transaction(dbc) {
             vertices.forEach {
                 val vert = it
@@ -152,31 +175,38 @@ class SQLiteEXP(dbName: String) {
                         it[y] = vert.y.value
                         it[label] = vert.label
                     }
-                }catch (e: ExposedSQLException) {
+                } catch (e: ExposedSQLException) {
                     throw e
                 }
             }
         }
     }
 
-    fun addAllEdges(id: Int , edges: Collection<EdgeViewModel>){
+    fun addAllEdges(id: Int, edges: Collection<EdgeViewModel>) {
         transaction(dbc) {
             edges.forEach {
                 val edge = it
                 Edges.insert {
                     it[graph_id] = id
-                    it[Edges.edge]=edge.ID
+                    it[Edges.edge] = edge.ID
                     it[weight] = edge.weight.toFloat()
                     it[vertexTO] = edge.u.ID
                     it[vertexFrom] = edge.v.ID
-                    it[label]= edge.label
+                    it[label] = edge.label
                 }
             }
         }
     }
-
 }
 
-data class vertexInfo(val vert: Long, val x: Float, val y: Float, val label : String)
-data class edgeInfo(val vertexFrom: Long, val vertexTo: Long, val weight: Float, val id:Long, val label:String)
-data class graphInfo(val id:Int, val isDirected:Boolean, val isWeighted:Boolean)
+data class vertexInfo(val vert: Long, val x: Float, val y: Float, val label: String)
+
+data class edgeInfo(
+    val vertexFrom: Long,
+    val vertexTo: Long,
+    val weight: Float,
+    val id: Long,
+    val label: String,
+)
+
+data class graphInfo(val id: Int, val isDirected: Boolean, val isWeighted: Boolean)

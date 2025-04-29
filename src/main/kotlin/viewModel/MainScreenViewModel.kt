@@ -6,14 +6,20 @@ import model.Graph
 import model.abstractGraph.AbstractVertex
 import viewModel.graph.GraphViewModel
 
-class MainScreenViewModel(val graph: Graph, placement: Map<AbstractVertex, Pair<Dp?, Dp?>?>) {
+class MainScreenViewModel(graph: Graph, placement: Map<AbstractVertex, Pair<Dp?, Dp?>?>) {
 
     val showVerticesLabels = mutableStateOf(false)
     val showVerticesIds = mutableStateOf(false)
     val showEdgesWeights = mutableStateOf(false)
     val showEdgesLabels = mutableStateOf(false)
 
-    val graphViewModel = GraphViewModel(graph, placement, showVerticesLabels,showVerticesIds, showEdgesWeights, showEdgesLabels)
-
-
+    val graphViewModel =
+        GraphViewModel(
+            graph,
+            placement,
+            showVerticesLabels,
+            showVerticesIds,
+            showEdgesWeights,
+            showEdgesLabels,
+        )
 }

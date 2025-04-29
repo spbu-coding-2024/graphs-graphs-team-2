@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import model.abstractGraph.AbstractEdge
 
-class EdgeViewModel (
+class EdgeViewModel(
     val u: VertexViewModel,
     val v: VertexViewModel,
     color: Color,
@@ -22,7 +22,6 @@ class EdgeViewModel (
 
     val label
         get() = e.label
-
 
     val labelVisible
         get() = _labelVisible.value
@@ -43,5 +42,4 @@ class EdgeViewModel (
         set(value) {
             _color.value = value
         }
-
 }

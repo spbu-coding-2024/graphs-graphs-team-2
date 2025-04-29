@@ -2,7 +2,7 @@ package algo
 
 import model.Graph
 
-class Components(private val graph: Graph) {
+class StronglyConnectedComponents(private val graph: Graph) {
 
     private val _components = mutableListOf<MutableList<Long>>()
     val components: List<MutableList<Long>>
@@ -10,15 +10,15 @@ class Components(private val graph: Graph) {
             return _components.toList()
         }
 
-
     private val size = graph.vertices.size
     private var used = graph.vertices.associate { it.id to false }.toMutableMap()
     private val order = mutableListOf<Long>()
     private var currComponent = mutableListOf<Long>()
 
-    val graphMap = graph.graphMap
+    val graphMap = graph.map
 
-    val transGraphMap: Map<Long, ArrayDeque<Long>> = graph.vertices.associate { it.id to ArrayDeque() }
+    val transGraphMap: Map<Long, ArrayDeque<Long>> =
+        graph.vertices.associate { it.id to ArrayDeque() }
 
     private fun prepare() {
         graph.edges.forEach {
@@ -31,7 +31,7 @@ class Components(private val graph: Graph) {
         used[v] = true
         graphMap[v]?.forEach {
             used[it]?.let { isUsed ->
-                if(!isUsed) {
+                if (!isUsed) {
                     dfsPrepare(it)
                 }
             }
@@ -42,21 +42,17 @@ class Components(private val graph: Graph) {
     private fun dfsBack(v: Long) {
         used[v] = true
         currComponent.add(v)
-        transGraphMap[v]?.forEach {
-            used[it]?.let { isUsed -> if(!isUsed) dfsBack(it) }
-        }
+        transGraphMap[v]?.forEach { used[it]?.let { isUsed -> if (!isUsed) dfsBack(it) } }
     }
 
     init {
         prepare()
-        graph.vertices.forEach {
-            used[it.id]?.let { isUsed -> if(!isUsed) dfsPrepare(it.id) }
-        }
+        graph.vertices.forEach { used[it.id]?.let { isUsed -> if (!isUsed) dfsPrepare(it.id) } }
         used = graph.vertices.associate { it.id to false }.toMutableMap()
-        for(i in 0..<size) {
+        for (i in 0..<size) {
             val v = order[size - i - 1]
-            used[v]?.let {isUsed ->
-                if(!isUsed) {
+            used[v]?.let { isUsed ->
+                if (!isUsed) {
                     dfsBack(v)
                     _components.add(currComponent)
                     currComponent = mutableListOf()
@@ -64,5 +60,4 @@ class Components(private val graph: Graph) {
             }
         }
     }
-
 }
