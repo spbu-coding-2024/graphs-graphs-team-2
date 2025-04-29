@@ -64,7 +64,8 @@ fun MainScreen(viewModel: MainScreenViewModel) {
 
     var firstIdDijkstra by remember { mutableStateOf("") }
     var secondIdDijkstra by remember { mutableStateOf("") }
-
+    var firstIDFB by remember { mutableStateOf("") }
+    var secondIDFB by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope { Dispatchers.Default }
     var openNewGraph by remember { mutableStateOf(false) }
     val navigator = LocalNavigator.currentOrThrow
@@ -232,6 +233,46 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                         }
                     },
                     text = "Dijkstra",
+                    fontSize = 28.sp,
+                    fontFamily = FontFamily.Monospace,
+                    textPadding = 3.dp,
+                )
+            }
+            Row {
+                OutlinedTextField(
+                    firstIDFB,
+                    { firstIDFB = it },
+                    textStyle = TextStyle(fontSize = 28.sp, color = CoolColors.DarkPurple),
+                    modifier = Modifier.width(90.dp).height(65.dp),
+                )
+                OutlinedTextField(
+                    secondIDFB,
+                    { secondIDFB = it },
+                    textStyle = TextStyle(fontSize = 28.sp, color = CoolColors.DarkPurple),
+                    modifier = Modifier.width(90.dp).height(65.dp),
+                )
+                PurpleButton(
+                    modifier =
+                        Modifier.clip(shape = RoundedCornerShape(15.dp))
+                            .height(65.dp)
+                            .fillMaxSize()
+                            .padding(horizontal = 7.dp),
+                    onClick = {
+                        try {
+                            scope.launch {
+                                viewModel.graphViewModel.findPathByFordBellman(
+                                    firstIDFB,
+                                    secondIDFB,
+                                )
+                            }
+                        } catch (e: Exception) {
+                            errorMessage = e.message ?: "Graph is built incorrectly"
+                            showErrorDialog = true
+                            firstIDFB = ""
+                            secondIDFB = ""
+                        }
+                    },
+                    text = "Ford Bellman",
                     fontSize = 28.sp,
                     fontFamily = FontFamily.Monospace,
                     textPadding = 3.dp,

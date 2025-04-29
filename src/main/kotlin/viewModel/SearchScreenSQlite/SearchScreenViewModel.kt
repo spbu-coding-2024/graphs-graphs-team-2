@@ -70,5 +70,5 @@ fun main() {
             mutableStateOf(false),
             mutableStateOf(false),
         )
-    SQLiteSearchScreenViewModel().writeGraph(gm, "megalo")
+    SQLiteSearchScreenViewModel().writeGraph(gm, "megalolo")
 }

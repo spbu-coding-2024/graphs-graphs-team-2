@@ -28,7 +28,7 @@ fun place(width: Double, height: Double, graphViewModel: GraphViewModel) {
         n.label = p
         n.setX(abs(Random.nextFloat() * 1000))
         n.setY(abs(Random.nextFloat() * 1000))
-
+        n.setSize(vert.radius.value)
         gr.addNode(n)
         con[p] = n
     }
@@ -38,12 +38,9 @@ fun place(width: Double, height: Double, graphViewModel: GraphViewModel) {
     val lay = ForceAtlas2(null)
     lay.setGraphModel(gm)
     lay.initAlgo()
-    lay.resetPropertiesValues()
     lay.isLinLogMode = true
-    lay.gravity = 0.5
-    lay.scalingRatio = 3.5
-    lay.isBarnesHutOptimize = true
-    lay.isOutboundAttractionDistribution = true
+    lay.gravity = 1.5
+    lay.scalingRatio = 25.0
 
     var i = 0
     while (i < 100) {
