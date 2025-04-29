@@ -3,8 +3,10 @@ package viewModel.graph
 import algo.AlgoBridges
 import algo.AlgoDijkstra
 import algo.Components
+import algo.FordBellman
 import algo.HarmonicCentrality
 import algo.SpanningTree
+import algoritms.FordBellman
 import androidx.compose.runtime.State
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
@@ -140,6 +142,25 @@ class GraphViewModel(
                 }
             }
         }
+    }
+
+    fun findPathByFordBellman(firstVId: String, secondVId: String){
+        val firstId = firstVId.toLong()
+        val secondId = secondVId.toLong()
+        if (_vertices[firstId] == null || _vertices[secondId] == null) {
+            throw IllegalArgumentException("No such vertexes in graph")
+        }
+        val algoFB= FordBellman(graph,firstId,secondId)
+        algoFB.FordBellman()
+        val way=algoFB.pathFromStartToEnd
+        if(way.isEmpty()){
+            error("Way does not exist")
+        }
+        for(i in 0..way.size - 1) {
+            _edges[way[i]]?.color = CoolColors.Bardo
+            _edges[way[i]]?.width = 5f
+        }
+
     }
 
     fun resetView() {
