@@ -14,9 +14,7 @@ class AlgoDijkstra(val graph: Graph, val firstVertexId: Long, val secondVertexId
     private val graphMap = graph.weightedMap
     val way = ArrayDeque<Long>()
 
-
     var weightMinWay: Float? = null
-
 
     fun dijkstra(Vid: Long) {
         val edges = graphMap[Vid]

@@ -1,7 +1,6 @@
 package view
 
 import WelcomeScreen
-import algo.louvain
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.Orientation
@@ -299,16 +298,16 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 textPadding = 3.dp,
             )
             PurpleButton(
-                modifier = Modifier
-                    .clip(shape = RoundedCornerShape(15.dp))
-                    .height(65.dp)
-                    .fillMaxWidth()
-                    .padding(horizontal = 7.dp),
+                modifier =
+                    Modifier.clip(shape = RoundedCornerShape(15.dp))
+                        .height(65.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 7.dp),
                 onClick = { viewModel.graphViewModel.Louvain() },
                 text = "Find Communities",
                 fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
-                textPadding = 3.dp
+                textPadding = 3.dp,
             )
             if (!viewModel.graphViewModel.isDirected && viewModel.graphViewModel.isWeighted) {
                 PurpleButton(
@@ -537,7 +536,6 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                         .height(65.dp)
                         .fillMaxWidth()
                         .padding(horizontal = 7.dp),
-
                 onClick = { openNewGraph = true },
                 text = "Open new graph",
                 fontSize = 28.sp,

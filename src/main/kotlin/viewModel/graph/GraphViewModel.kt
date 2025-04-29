@@ -2,15 +2,11 @@ package viewModel.graph
 
 import algo.AlgoBridges
 import algo.AlgoDijkstra
-
-
-import algo.louvain
-
 import algo.FordBellman
 import algo.HarmonicCentrality
 import algo.PrimSpanningTree
 import algo.StronglyConnectedComponents
-
+import algo.louvain
 import androidx.compose.runtime.State
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
@@ -36,14 +32,14 @@ class GraphViewModel(
     private val _vertices =
         graph.vertices.associate { v ->
             v.id to
-                    VertexViewModel(
-                        placement[v]?.first ?: Random.nextInt(0..800).dp,
-                        placement[v]?.second ?: Random.nextInt(0..600).dp,
-                        CoolColors.DarkPurple,
-                        v,
-                        showVerticesLabels,
-                        showVerticesIds,
-                    )
+                VertexViewModel(
+                    placement[v]?.first ?: Random.nextInt(0..800).dp,
+                    placement[v]?.second ?: Random.nextInt(0..600).dp,
+                    CoolColors.DarkPurple,
+                    v,
+                    showVerticesLabels,
+                    showVerticesIds,
+                )
         }
 
     internal val isDirected: Boolean
@@ -61,16 +57,16 @@ class GraphViewModel(
                 _vertices[e.vertices.second.id]
                     ?: throw IllegalStateException("VertexView for ${e.vertices.second} not found")
             fst.ID to
-                    snd.ID to
-                    EdgeViewModel(
-                        fst,
-                        snd,
-                        CoolColors.DarkPurple,
-                        2f,
-                        e,
-                        showEdgesWeights,
-                        showEdgesLabels,
-                    )
+                snd.ID to
+                EdgeViewModel(
+                    fst,
+                    snd,
+                    CoolColors.DarkPurple,
+                    2f,
+                    e,
+                    showEdgesWeights,
+                    showEdgesLabels,
+                )
         }
 
     val vertices: Collection<VertexViewModel>
@@ -189,7 +185,6 @@ class GraphViewModel(
             _edges[revEdge]?.width = 20f
         }
     }
-
 
     fun resetView() {
         resetColors()

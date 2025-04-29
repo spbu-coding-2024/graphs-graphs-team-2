@@ -2,15 +2,13 @@ package algo
 
 import org.gephi.graph.api.Graph
 import org.gephi.graph.api.GraphModel
-import org.gephi.statistics.plugin.Modularity
 import org.gephi.graph.api.Node
-
+import org.gephi.statistics.plugin.Modularity
 
 fun louvain(graphModelApp: model.Graph): Pair<Map<Long, Int>, Map<Pair<Long, Long>, Int>> {
 
     val graphModel = GraphModel.Factory.newInstance()
     val graph: Graph
-
 
     if (graphModelApp.isDirected) {
         graph = graphModel.directedGraph
@@ -27,14 +25,14 @@ fun louvain(graphModelApp: model.Graph): Pair<Map<Long, Int>, Map<Pair<Long, Lon
     }
 
     graphModelApp.edges.forEach { edge ->
-
         graph.addEdge(
-            graphModel.factory()
+            graphModel
+                .factory()
                 .newEdge(
                     nodes[edge.vertices.first.id],
                     nodes[edge.vertices.second.id],
                     (edge.weight * 100).toInt(),
-                    graphModelApp.isDirected
+                    graphModelApp.isDirected,
                 )
         )
     }
@@ -46,7 +44,6 @@ fun louvain(graphModelApp: model.Graph): Pair<Map<Long, Int>, Map<Pair<Long, Lon
 
     val communityMapVertex = mutableMapOf<Long, Int>()
     val communityMapEdge = mutableMapOf<Pair<Long, Long>, Int>()
-
 
     graph.getNodes().forEach { node ->
         val nodeId = node.id.toString().toLong()
@@ -67,5 +64,3 @@ fun louvain(graphModelApp: model.Graph): Pair<Map<Long, Int>, Map<Pair<Long, Lon
 
     return Pair(communityMapVertex, communityMapEdge)
 }
-
-
