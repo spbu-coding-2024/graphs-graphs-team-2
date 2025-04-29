@@ -24,6 +24,9 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import io.ioNeo4j.ReadNeo4j
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import model.Graph
 import model.abstractGraph.AbstractVertex
 import view.components.CoolColors
@@ -115,15 +118,17 @@ fun GreetingView() {
         }
 
         if (dataSystem == DataSystems.JSON) {
-            val fileChooser = JsonView()
-            try {
-                model = fileChooser.loadFromJson()
-                if (model == null) dataSystem = null
-                else navigator.push(GraphScreen(model!!.first, model!!.second))
-            } catch (e: Exception) {
-                errorMessage = e.message ?: ""
-                showErrorDialog = true
-                dataSystem = null
+            CoroutineScope(Dispatchers.IO).launch {
+                val fileChooser = JsonView()
+                try {
+                    model = fileChooser.loadFromJson()
+                    if (model == null) dataSystem = null
+                    else navigator.push(GraphScreen(model!!.first, model!!.second))
+                } catch (e: Exception) {
+                    errorMessage = e.message ?: ""
+                    showErrorDialog = true
+                    dataSystem = null
+                }
             }
         }
         if (dataSystem == DataSystems.SQLite) {

@@ -2,7 +2,7 @@ package algo
 
 import model.Graph
 
-class SpanningTree(graph: Graph) {
+class PrimSpanningTree(graph: Graph) {
     private val weightedMap = graph.weightedMap.toMutableMap()
 
     val minimalTree = mutableListOf<Pair<Long, Long>>()
