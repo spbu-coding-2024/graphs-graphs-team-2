@@ -6,6 +6,7 @@ import algo.FordBellman
 import algo.HarmonicCentrality
 import algo.PrimSpanningTree
 import algo.StronglyConnectedComponents
+import algo.louvain
 import androidx.compose.runtime.State
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
@@ -27,6 +28,7 @@ class GraphViewModel(
     showEdgesWeights: State<Boolean>,
     showEdgesLabels: State<Boolean>,
 ) {
+
     private val _vertices =
         graph.vertices.associate { v ->
             v.id to
@@ -117,6 +119,18 @@ class GraphViewModel(
         }
     }
 
+    fun Louvain() {
+        resetColors()
+        val result = louvain(graph)
+        val colours = result.first.values.associateWith { CoolColors.RandomColor }
+        result.first.forEach { community ->
+            _vertices[community.key]?.color = colours[community.value] ?: CoolColors.DarkPurple
+        }
+        result.second.forEach { community ->
+            _edges[community.key]?.color = colours[community.value] ?: CoolColors.DarkPurple
+        }
+    }
+
     suspend fun minimalSpanningTree() {
         coroutineScope {
             launch {
@@ -189,6 +203,7 @@ class GraphViewModel(
     }
 
     private fun resetCords() {
+
         graph.vertices.onEach {
             _vertices[it.id]?.x = placement[it]?.first ?: Random.nextInt(0..800).dp
             _vertices[it.id]?.y = placement[it]?.second ?: Random.nextInt(0..800).dp

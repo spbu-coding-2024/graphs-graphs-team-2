@@ -297,6 +297,18 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 fontFamily = FontFamily.Monospace,
                 textPadding = 3.dp,
             )
+            PurpleButton(
+                modifier =
+                    Modifier.clip(shape = RoundedCornerShape(15.dp))
+                        .height(65.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 7.dp),
+                onClick = { viewModel.graphViewModel.Louvain() },
+                text = "Find Communities",
+                fontSize = 28.sp,
+                fontFamily = FontFamily.Monospace,
+                textPadding = 3.dp,
+            )
             if (!viewModel.graphViewModel.isDirected && viewModel.graphViewModel.isWeighted) {
                 PurpleButton(
                     modifier =
@@ -427,6 +439,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 fontFamily = FontFamily.Monospace,
                 textPadding = 3.dp,
             )
+
             Button(
                 modifier =
                     Modifier.clip(shape = RoundedCornerShape(15.dp))
