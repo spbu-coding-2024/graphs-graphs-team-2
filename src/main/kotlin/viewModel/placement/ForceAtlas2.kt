@@ -42,9 +42,6 @@ fun place(width: Double, height: Double, graphViewModel: GraphViewModel) {
     lay.gravity = 1.5
     lay.scalingRatio = 25.0
 
-
-
-
     var i = 0
     while (i < 100) {
         if (lay.canAlgo()) {
@@ -54,7 +51,7 @@ fun place(width: Double, height: Double, graphViewModel: GraphViewModel) {
         }
         for (nod in vertices) {
             val m = con[nod.ID.toString()]
-            nod.x =m?.x()?.dp ?: nod.x
+            nod.x = m?.x()?.dp ?: nod.x
             nod.y = m?.y()?.dp ?: nod.y
         }
 

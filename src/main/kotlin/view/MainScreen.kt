@@ -64,8 +64,8 @@ fun MainScreen(viewModel: MainScreenViewModel) {
 
     var firstIdDijkstra by remember { mutableStateOf("") }
     var secondIdDijkstra by remember { mutableStateOf("") }
-    var firstIDFB by  remember { mutableStateOf("") }
-    var secondIDFB by  remember { mutableStateOf("") }
+    var firstIDFB by remember { mutableStateOf("") }
+    var secondIDFB by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope { Dispatchers.Default }
     var openNewGraph by remember { mutableStateOf(false) }
     val navigator = LocalNavigator.currentOrThrow
@@ -241,7 +241,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
             Row {
                 OutlinedTextField(
                     firstIDFB,
-                    { firstIDFB= it },
+                    { firstIDFB = it },
                     textStyle = TextStyle(fontSize = 28.sp, color = CoolColors.DarkPurple),
                     modifier = Modifier.width(90.dp).height(65.dp),
                 )
@@ -260,7 +260,10 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     onClick = {
                         try {
                             scope.launch {
-                                viewModel.graphViewModel.findPathByFordBellman(firstIDFB, secondIDFB)
+                                viewModel.graphViewModel.findPathByFordBellman(
+                                    firstIDFB,
+                                    secondIDFB,
+                                )
                             }
                         } catch (e: Exception) {
                             errorMessage = e.message ?: "Graph is built incorrectly"
