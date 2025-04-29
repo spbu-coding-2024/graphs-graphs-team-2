@@ -41,33 +41,41 @@ class Graph(private val direction: Boolean = false, private val weight: Boolean 
         return _edges.getOrPut(edgeID) { Edge(edgeLabel, edgeID, first, second, weight) }
     }
 
-    private var _graphMap = mapOf<Long, ArrayDeque<Long>>()
-    val graphMap: Map<Long, ArrayDeque<Long>>
+    private var _map = mapOf<Long, MutableList<Long>>()
+    val map: Map<Long, MutableList<Long>>
         get() {
-            if (_graphMap.isEmpty()) computeMap()
-            return _graphMap
+            if (_map.isEmpty()) computeMap()
+            return _map
         }
 
     private fun computeMap() {
-        _graphMap = _vertices.keys.associateWith { ArrayDeque() }
+        _map = _vertices.keys.associateWith { mutableListOf() }
         edges.forEach {
-            _graphMap[it.vertices.first.id]?.add(it.vertices.second.id)
+            _map[it.vertices.first.id]?.add(it.vertices.second.id)
                 ?: throw IllegalStateException("Edge ${it.id} contains non-existing vertex")
+            if (!isDirected) {
+                _map[it.vertices.second.id]?.add(it.vertices.first.id)
+                    ?: throw IllegalStateException("Edge ${it.id} contains non-existing vertex")
+            }
         }
     }
 
-    private var _graphWeightedMap = mapOf<Long, ArrayDeque<Pair<Long, Float>>>()
-    val graphWeightedMap: Map<Long, ArrayDeque<Pair<Long, Float>>>
+    private var _weightedMap = mapOf<Long, MutableList<Pair<Long, Float>>>()
+    val weightedMap: Map<Long, MutableList<Pair<Long, Float>>>
         get() {
-            if (_graphWeightedMap.isEmpty()) computeWeightedMap()
-            return _graphWeightedMap
+            if (_weightedMap.isEmpty()) computeWeightedMap()
+            return _weightedMap
         }
 
     private fun computeWeightedMap() {
-        _graphWeightedMap = _vertices.keys.associateWith { ArrayDeque() }
+        _weightedMap = _vertices.keys.associateWith { mutableListOf() }
         edges.forEach {
-            _graphWeightedMap[it.vertices.first.id]?.add(it.vertices.second.id to it.weight)
+            _weightedMap[it.vertices.first.id]?.add(it.vertices.second.id to it.weight)
                 ?: throw IllegalStateException("Edge ${it.id} contains non-existing vertex")
+            if (!isDirected) {
+                _weightedMap[it.vertices.second.id]?.add(it.vertices.first.id to it.weight)
+                    ?: throw IllegalStateException("Edge ${it.id} contains non-existing vertex")
+            }
         }
     }
 

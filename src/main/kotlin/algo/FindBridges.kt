@@ -10,7 +10,7 @@ class AlgoBridges(val graph: Graph) {
     private val tin = graph.vertices.associate { it.id to 0 }.toMutableMap()
     private val fup = graph.vertices.associate { it.id to 0 }.toMutableMap()
 
-    val graphMap = graph.graphMap
+    val graphMap = graph.map
 
     val bridges = ArrayDeque<Pair<Long, Long>>()
 

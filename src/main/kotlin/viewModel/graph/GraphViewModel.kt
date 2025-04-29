@@ -93,9 +93,11 @@ class GraphViewModel(
         algoDijkstra.dijkstra(firstId)
         val way = algoDijkstra.way
         for (i in 0..way.size - 2) {
-            val edge = Pair(way[i], way[i + 1])
-            _edges[edge]?.color = CoolColors.Bardo
-            _edges[edge]?.width = 5f
+            val edges = Pair(way[i], way[i + 1]) to Pair(way[i + 1], way[i])
+            _edges[edges.first]?.color = CoolColors.Bardo
+            _edges[edges.first]?.width = 5f
+            _edges[edges.second]?.color = CoolColors.Bardo
+            _edges[edges.second]?.width = 5f
         }
     }
 
@@ -105,12 +107,12 @@ class GraphViewModel(
             val harmonicCentrality = HarmonicCentrality(graph)
             vertices.forEach {
                 val centrality = async { harmonicCentrality.getVertexCentrality(it.ID) }
-                it.radius *= (1 + centrality.await() / 2)
+                it.radius *= (1 + centrality.await() / 4)
                 it.color =
                     Color(
-                        red = it.color.red * (1 - centrality.await() / 4),
-                        blue = it.color.blue * (1 - centrality.await() / 4),
-                        green = it.color.green * (1 - centrality.await() / 4),
+                        red = it.color.red * (1 + centrality.await() / 4),
+                        blue = it.color.blue * (1 + centrality.await() / 4),
+                        green = it.color.green * (1 + centrality.await() / 4),
                     )
             }
         }
