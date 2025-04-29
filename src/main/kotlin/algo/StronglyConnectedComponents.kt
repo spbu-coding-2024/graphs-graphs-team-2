@@ -2,7 +2,7 @@ package algo
 
 import model.Graph
 
-class Components(private val graph: Graph) {
+class StronglyConnectedComponents(private val graph: Graph) {
 
     private val _components = mutableListOf<MutableList<Long>>()
     val components: List<MutableList<Long>>

@@ -2,11 +2,10 @@ package viewModel.graph
 
 import algo.AlgoBridges
 import algo.AlgoDijkstra
-import algo.Components
 import algo.FordBellman
 import algo.HarmonicCentrality
-import algo.SpanningTree
-import algoritms.FordBellman
+import algo.PrimSpanningTree
+import algo.StronglyConnectedComponents
 import androidx.compose.runtime.State
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
@@ -121,7 +120,7 @@ class GraphViewModel(
     suspend fun minimalSpanningTree() {
         coroutineScope {
             launch {
-                val minimalSpanning = async { SpanningTree(graph).minimalTree }
+                val minimalSpanning = async { PrimSpanningTree(graph).minimalTree }
                 for (edge in minimalSpanning.await()) {
                     _vertices[edge.first]?.color = CoolColors.Blue
                     _vertices[edge.second]?.color = CoolColors.Blue
@@ -135,7 +134,7 @@ class GraphViewModel(
     suspend fun highlightComponents() {
         coroutineScope {
             launch {
-                val strongComponents = async { Components(graph).components }
+                val strongComponents = async { StronglyConnectedComponents(graph).components }
                 for (community in strongComponents.await()) {
                     val color = CoolColors.RandomColor
                     for (vertexId in community) {
