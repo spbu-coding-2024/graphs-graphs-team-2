@@ -2,6 +2,7 @@ package viewModel.graph
 
 import algo.AlgoBridges
 import algo.AlgoDijkstra
+import algo.FindLoops
 import algo.FordBellman
 import algo.HarmonicCentrality
 import algo.PrimSpanningTree
@@ -183,6 +184,31 @@ class GraphViewModel(
             _edges[el]?.width = 5f
             _edges[revEdge]?.color = CoolColors.Bardo
             _edges[revEdge]?.width = 20f
+        }
+    }
+
+    fun findLoopForVertex(vId: String) {
+        resetColors()
+        val id = vId.toLong()
+        if (_vertices[id] == null) {
+            throw IllegalArgumentException("No such vertexes in graph")
+        }
+        val algoLoops = FindLoops(graph, id)
+        if (graph.isDirected) {
+            algoLoops.findLoopInDirectedGraph()
+        } else {
+            algoLoops.findLoopInUndirectedGraph()
+        }
+        val loop = algoLoops.loopEdges
+        if (loop.isEmpty()) {
+            return
+        }
+        for (i in 0..loop.size - 2) {
+            val edges = Pair(loop[i], loop[i + 1]) to Pair(loop[i + 1], loop[i])
+            _edges[edges.first]?.color = CoolColors.Bardo
+            _edges[edges.first]?.width = 5f
+            _edges[edges.second]?.color = CoolColors.Bardo
+            _edges[edges.second]?.width = 5f
         }
     }
 
