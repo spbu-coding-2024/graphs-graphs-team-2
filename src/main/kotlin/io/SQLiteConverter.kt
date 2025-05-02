@@ -20,9 +20,6 @@ class SQLiteConverter(val connection: SQLiteEXP) {
         } catch (e: ExposedSQLException) {
             throw e
         }
-        if (graphID == -1) {
-            return
-        }
         try {
             connection.addAllVertices(graphID, viewModel.vertices)
         } catch (e: ExposedSQLException) {
@@ -32,14 +29,14 @@ class SQLiteConverter(val connection: SQLiteEXP) {
     }
 
     fun readFromSQLiteDB(graphName: String): Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>? {
-        val gi = connection.findGraph(graphName)
-        if (gi == null) {
+        val graphInfo = connection.findGraph(graphName)
+        if (graphInfo == null) {
             return null
         }
-        val vertices = connection.findVertices(gi.id)
-        val edges = connection.findEdges(gi.id)
+        val vertices = connection.findVertices(graphInfo.id)
+        val edges = connection.findEdges(graphInfo.id)
         val placement = mutableMapOf<AbstractVertex, Pair<Dp, Dp>>()
-        val graph = Graph(gi.isDirected, gi.isWeighted)
+        val graph = Graph(graphInfo.isDirected, graphInfo.isWeighted)
         vertices.forEach { placement.put(graph.addVertex(it.vert, it.label), it.x.dp to it.y.dp) }
         edges.forEach { graph.addEdge(it.vertexFrom, it.vertexTo, it.label, it.id, it.weight) }
         return graph to placement

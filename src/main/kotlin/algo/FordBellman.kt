@@ -3,7 +3,7 @@ package algo
 import model.Graph
 
 class FordBellman(val graph: Graph, val firstVertexId: Long, val secondVertexId: Long) {
-    private val infinity = Float.POSITIVE_INFINITY
+    private val infinity = 1_000_000_000_000_000_000F
     private val distance =
         graph.vertices
             .associate { it.id to if (it.id == firstVertexId) 0F else infinity }
@@ -13,7 +13,7 @@ class FordBellman(val graph: Graph, val firstVertexId: Long, val secondVertexId:
     val pathFromStartToEnd = LinkedHashSet<Pair<Long, Long>>()
 
     fun FordBellman(): Boolean {
-        for (i in 0..graph.vertices.size - 1) {
+        for (i in 1..graph.vertices.size - 1) {
             for (e in graphMap) {
                 val d1 = distance[e.key]
                 for (edge in e.value) {
@@ -30,12 +30,18 @@ class FordBellman(val graph: Graph, val firstVertexId: Long, val secondVertexId:
         }
         var currentId = secondVertexId
         var prevId: Long = path[currentId] ?: return false
-        pathFromStartToEnd.add(prevId to currentId)
+        val visited = mutableMapOf<Long, Boolean>()
+        visited[currentId] = true
         while (prevId != firstVertexId) {
             prevId = path[currentId] ?: return false
+            if (visited[prevId] == true) {
+                error("Path contains negative loop")
+            }
+            visited[prevId] = true
             pathFromStartToEnd.addFirst(prevId to currentId)
             currentId = prevId
         }
+
         for (e in graphMap) {
             val d1 = distance[e.key]
             for (edge in e.value) {
