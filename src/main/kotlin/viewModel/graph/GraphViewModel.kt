@@ -2,7 +2,7 @@ package viewModel.graph
 
 import algo.AlgoBridges
 import algo.AlgoDijkstra
-import algo.FindLoops
+import algo.FindLoop
 import algo.FordBellman
 import algo.HarmonicCentrality
 import algo.PrimSpanningTree
@@ -193,7 +193,7 @@ class GraphViewModel(
         if (_vertices[id] == null) {
             throw IllegalArgumentException("No such vertexes in graph")
         }
-        val algoLoops = FindLoops(graph, id)
+        val algoLoops = FindLoop(graph, id)
         if (graph.isDirected) {
             algoLoops.findLoopInDirectedGraph()
         } else {

@@ -53,7 +53,6 @@ class SQLiteSearchScreenViewModel {
 
 fun main() {
     val graph = Graph()
-    val viewModel = SQLiteSearchScreenViewModel()
     val placement = mutableMapOf<AbstractVertex, Pair<Dp, Dp>>()
     for (i in 1..10000) {
         placement.put(graph.addVertex(i.toLong(), i.toString()), 0.dp to 0.dp)

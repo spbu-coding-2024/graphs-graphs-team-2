@@ -104,7 +104,8 @@ fun SQLiteSearchView(
                                     onClick = {
                                         onDismissRequest()
                                         val model = viewmodel.loadGraph(name)
-                                        navigator.push(GraphScreen(model!!.first, model.second))
+                                        if (model == null) return@Button
+                                        navigator.push(GraphScreen(model.first, model.second))
                                     },
                                     modifier = Modifier.fillMaxWidth(),
                                 ) {

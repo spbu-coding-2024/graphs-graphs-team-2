@@ -68,42 +68,6 @@ class SQLiteEXP(dbName: String) {
         return id
     }
 
-    fun addEdge(
-        graphId: Int,
-        fromVertex: Long,
-        toVertex: Long,
-        weight_d: Float,
-        edge_d: Long,
-        label_d: String,
-    ) {
-        transaction(dbc) {
-            Edges.insert {
-                it[graph_id] = graphId
-                it[edge] = edge_d
-                it[weight] = weight_d
-                it[vertexTO] = toVertex
-                it[vertexFrom] = fromVertex
-                it[label] = label_d
-            }
-        }
-    }
-
-    fun addVertex(graphId: Int, vertexnum: Long, xc: Float, yc: Float, labell: String) {
-        transaction {
-            try {
-                Vertices.insert {
-                    it[graph_id] = graphId
-                    it[vertex] = vertexnum
-                    it[x] = xc
-                    it[y] = yc
-                    it[label] = labell
-                }
-            } catch (e: ExposedSQLException) {
-                throw e
-            }
-        }
-    }
-
     fun findGraph(name: String): graphInfo? {
         val c = transaction {
             Graphs.select { Graphs.graphName eq name }
@@ -190,8 +154,8 @@ class SQLiteEXP(dbName: String) {
                     it[graph_id] = id
                     it[Edges.edge] = edge.ID
                     it[weight] = edge.weight.toFloat()
-                    it[vertexTO] = edge.u.ID
-                    it[vertexFrom] = edge.v.ID
+                    it[vertexTO] = edge.v.ID
+                    it[vertexFrom] = edge.u.ID
                     it[label] = edge.label
                 }
             }
