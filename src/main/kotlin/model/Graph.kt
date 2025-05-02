@@ -8,7 +8,7 @@ class Graph(private val direction: Boolean = false, private val weight: Boolean 
     AbstractGraph {
 
     private val _vertices = hashMapOf<Long, Vertex>()
-    private val _edges = hashMapOf<Long, Edge>()
+    private val _edges = hashMapOf<Pair<Long, Long>, Edge>()
 
     override val vertices: Collection<AbstractVertex>
         get() = _vertices.values
@@ -33,12 +33,20 @@ class Graph(private val direction: Boolean = false, private val weight: Boolean 
         weight: Float,
     ): AbstractEdge {
 
-        val first = _vertices[firstID]
-        val second = _vertices[secondID]
-        if (first == null || second == null)
-            throw IllegalStateException("Graph has no vertices with ID $firstID and $secondID")
+        val first =
+            _vertices[firstID]
+                ?: throw IllegalStateException("Error: Graph has no vertex with ID $firstID")
+        val second =
+            _vertices[secondID]
+                ?: throw IllegalStateException("Error: Graph has no vertex with ID $secondID")
+        if (_edges.containsKey(firstID to secondID))
+            throw IllegalStateException(
+                "Error: Graph already contains edge from $firstID to $secondID"
+            )
 
-        return _edges.getOrPut(edgeID) { Edge(edgeLabel, edgeID, first, second, weight) }
+        return _edges.getOrPut(firstID to secondID) {
+            Edge(edgeLabel, edgeID, first, second, weight)
+        }
     }
 
     private var _map = mapOf<Long, MutableList<Long>>()
