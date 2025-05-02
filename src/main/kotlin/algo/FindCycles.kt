@@ -2,7 +2,8 @@ package algo
 
 import model.Graph
 
-class FindLoops(val graph: Graph, val vertex: Long) {
+class FindLoop(val graph: Graph, val vertex: Long) {
+
     private val isVisited = graph.vertices.associate { it.id to false }.toMutableMap()
     private val graphMap = graph.weightedMap
     private val parents = mutableMapOf<Long, Long>()
