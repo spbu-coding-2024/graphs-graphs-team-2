@@ -134,17 +134,14 @@ class GraphViewModel(
         }
     }
 
-    suspend fun minimalSpanningTree() {
-        coroutineScope {
-            launch {
-                val minimalSpanning = async { PrimSpanningTree(graph).minimalTree }
-                for (edge in minimalSpanning.await()) {
-                    _vertices[edge.first]?.color = CoolColors.Blue
-                    _vertices[edge.second]?.color = CoolColors.Blue
-                    _edges[edge]?.color = CoolColors.Blue
-                    _edges[edge.second to edge.first]?.color = CoolColors.Blue
-                }
-            }
+    fun minimalSpanningTree() {
+        val minimalSpanning = PrimSpanningTree(graph).minimalTree
+        if (minimalSpanning == null) throw IllegalStateException("Graph is not connected")
+        for (edge in minimalSpanning) {
+            _vertices[edge.first]?.color = CoolColors.Blue
+            _vertices[edge.second]?.color = CoolColors.Blue
+            _edges[edge]?.color = CoolColors.Blue
+            _edges[edge.second to edge.first]?.color = CoolColors.Blue
         }
     }
 

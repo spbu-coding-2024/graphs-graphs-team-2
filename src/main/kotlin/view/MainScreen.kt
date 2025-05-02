@@ -319,7 +319,16 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                             .height(65.dp)
                             .fillMaxWidth()
                             .padding(horizontal = 7.dp),
-                    onClick = { scope.launch { viewModel.graphViewModel.minimalSpanningTree() } },
+                    onClick = {
+                        scope.launch {
+                            try {
+                                viewModel.graphViewModel.minimalSpanningTree()
+                            } catch (e: Exception) {
+                                showErrorDialog = true
+                                errorMessage = e.message ?: ("Graph is not connected")
+                            }
+                        }
+                    },
                     text = "Min spanning tree",
                     fontSize = 28.sp,
                     fontFamily = FontFamily.Monospace,
