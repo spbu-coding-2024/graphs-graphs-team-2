@@ -1,14 +1,16 @@
 package SQLiteTest
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import io.SQLiteExposed.Edges
 import io.SQLiteExposed.Graphs
 import io.SQLiteExposed.SQLiteEXP
 import io.SQLiteExposed.Vertices
-import io.SQLiteExposed.edgeInfo
-import io.SQLiteExposed.vertexInfo
 import java.io.File
-import kotlin.random.Random
 import kotlin.test.assertEquals
+import model.Graph
+import model.abstractGraph.AbstractVertex
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.selectAll
@@ -17,6 +19,7 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import viewModel.graph.GraphViewModel
 
 class SQLiteTest {
 
@@ -72,58 +75,46 @@ class SQLiteTest {
     }
 
     @Test
-    fun testAddAndGetVertices() {
-        val c1 = connection.addGraph("graph14", false, false)
-        val vertices1 =
-            Array<vertexInfo>(
-                3,
-                { vertexInfo(Random.nextLong(), Random.nextFloat(), Random.nextFloat(), "52") },
-            )
-        vertices1.forEach { connection.addVertex(c1, it.vert, it.x, it.y, it.label) }
-        val vert2 = connection.findVertices(c1)
-        assertEquals(vertices1.size, vert2.size)
-        vertices1.forEach { assert(vert2.contains(it)) }
-    }
-
-    @Test
-    fun testAddandGetEdges() {
-        val c1 = connection.addGraph("graph15", false, false)
-        val vertices1 =
-            Array<vertexInfo>(
-                3,
-                { vertexInfo(Random.nextLong(), Random.nextFloat(), Random.nextFloat(), "52") },
-            )
-        vertices1.forEach { connection.addVertex(c1, it.vert, it.x, it.y, it.label) }
-        val edges1 = mutableListOf<edgeInfo>()
-        for (i in 0..2) {
-            edges1.add(
-                edgeInfo(
-                    vertices1[i].vert,
-                    vertices1[(i + 1) % 3].vert,
-                    Random.nextFloat(),
-                    i.toLong(),
-                    i.toString(),
-                )
-            )
+    fun addAndGetVerticesAndEdges() {
+        val id = connection.addGraph("graph17", false, false)
+        val graph = Graph()
+        val placement = mutableMapOf<AbstractVertex, Pair<Dp, Dp>>()
+        for (i in 1..10) {
+            placement.put(graph.addVertex(i.toLong(), i.toString()), 0.dp to 0.dp)
         }
-        edges1.forEach {
-            connection.addEdge(c1, it.vertexFrom, it.vertexTo, it.weight, it.id, it.label)
+        for (i in 1..10) {
+            graph.addEdge((1L..10L).random(), (1L..10L).random(), i.toString(), i.toLong(), 1f)
         }
-        val edges2 = connection.findEdges(c1)
-        assertEquals(edges1.size, edges2.size)
-        edges1.forEach { assert(edges2.contains(it)) }
-    }
-
-    @Test
-    fun addVertexTwice() {
-        val c1 = connection.addGraph("graph16", false, false)
-        val vertex = vertexInfo(1L, 1f, 1f, "0")
-        connection.addVertex(c1, vertex.vert, vertex.x, vertex.y, vertex.label)
-        val exception =
-            assertThrows<ExposedSQLException> {
-                connection.addVertex(c1, vertex.vert, vertex.x, vertex.y, vertex.label)
-            }
-        assert(exception.message?.contains("A UNIQUE constraint failed") ?: false)
+        val graphVM =
+            GraphViewModel(
+                graph,
+                placement,
+                mutableStateOf(false),
+                mutableStateOf(false),
+                mutableStateOf(false),
+                mutableStateOf(false),
+            )
+        connection.addAllVertices(id, graphVM.vertices)
+        connection.addAllEdges(id, graphVM.edges)
+        val vertices = connection.findVertices(id)
+        val edges = connection.findEdges(id)
+        assertEquals(graphVM.vertices.size, vertices.size)
+        assertEquals(graphVM.edges.size, edges.size)
+        val graph2 = Graph()
+        val placement2 = mutableMapOf<AbstractVertex, Pair<Dp, Dp>>()
+        vertices.forEach { placement2.put(graph2.addVertex(it.vert, it.label), it.x.dp to it.y.dp) }
+        edges.forEach { graph2.addEdge(it.vertexFrom, it.vertexTo, it.label, it.id, it.weight) }
+        assertEquals(placement2.size, placement.size)
+        for (key in placement2.keys) {
+            assert(placement.keys.contains(key))
+            assertEquals(placement2[key], placement[key])
+        }
+        for (vertex in graph2.vertices) {
+            assert(graph.vertices.contains(vertex))
+        }
+        for (edge in graph2.edges) {
+            assert(graph.edges.contains(edge))
+        }
     }
 
     companion object {
