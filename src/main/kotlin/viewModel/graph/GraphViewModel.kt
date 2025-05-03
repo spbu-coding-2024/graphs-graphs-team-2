@@ -146,12 +146,13 @@ class GraphViewModel(
     }
 
     suspend fun highlightComponents() {
+        resetColors()
         coroutineScope {
             launch {
                 val strongComponents = async { StronglyConnectedComponents(graph).components }
-                for (community in strongComponents.await()) {
+                for (component in strongComponents.await()) {
                     val color = CoolColors.RandomColor
-                    for (vertexId in community) {
+                    for (vertexId in component) {
                         _vertices[vertexId]?.color = color
                     }
                 }

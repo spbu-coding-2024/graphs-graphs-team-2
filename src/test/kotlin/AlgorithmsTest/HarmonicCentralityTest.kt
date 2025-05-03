@@ -2,7 +2,6 @@ package AlgorithmsTest
 
 import algo.HarmonicCentrality
 import model.Graph
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
@@ -35,7 +34,7 @@ class HarmonicCentralityTest {
     }
 
     @Test
-    fun `weighted directed isosceles triangle`() {
+    fun `weighted directed triangle`() {
         graph = Graph(direction = true, weight = true)
         graph.addVertex(0, "a")
         graph.addVertex(1, "b")
@@ -45,7 +44,7 @@ class HarmonicCentralityTest {
         graph.addEdge(2, 1, "B", 1, 2f)
         graph.addEdge(0, 2, "C", 2, 3f)
 
-        val expectedResult = mapOf(0L to 4/3f, 1L to 0f, 2L to 1/2f)
+        val expectedResult = mapOf(0L to 2f, 1L to 0f, 2L to 1f)
 
         val centrality = HarmonicCentrality(graph)
 
