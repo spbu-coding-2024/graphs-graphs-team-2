@@ -55,6 +55,7 @@ class StronglyConnectedComponents(private val graph: Graph) {
                 if (!isUsed) {
                     dfsBack(v)
                     _components = _components.plusElement(currComponent)
+                    println(currComponent.joinToString(" "))
                     currComponent = setOf()
                 }
             }
