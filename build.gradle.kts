@@ -2,6 +2,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
     kotlin("jvm") version "2.1.10"
+    jacoco
     id("org.jetbrains.kotlin.plugin.compose") version "2.1.20"
     id("org.jetbrains.compose") version "1.7.1"
     id("org.springframework.boot") version "3.4.4"
@@ -42,7 +43,19 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:0.44.0")
 }
 
-tasks.test { useJUnitPlatform() }
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
+}
+
+tasks.test {
+    useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+    reportsDirectory = layout.buildDirectory.dir("reports/jacoco")
+}
 
 kotlin { jvmToolchain(23) }
 

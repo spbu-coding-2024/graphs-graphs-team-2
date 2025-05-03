@@ -75,7 +75,7 @@ class JsonConverter() {
                 it.value.to,
                 it.value.label,
                 it.key,
-                if(graphInfo.weight == true) it.value.weight ?: 1f else 1f,
+                if (graphInfo.weight == true) it.value.weight ?: 1f else 1f,
             )
         }
 

@@ -1,14 +1,14 @@
 package AlgorithmsTest
 
 import algo.StronglyConnectedComponents
+import kotlin.test.assertEquals
 import model.Graph
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertContentEquals
-import kotlin.test.assertEquals
 
 class ComponentsTest {
     private lateinit var graph: Graph
+
     @BeforeEach
     fun initGraph() {
         graph = Graph(direction = true, weight = false)
@@ -50,7 +50,6 @@ class ComponentsTest {
         graph.addEdge(4, 5, "E", 4)
         graph.addEdge(5, 3, "F", 5)
 
-
         val components = StronglyConnectedComponents(graph).components
         val expectedResult = setOf(setOf(0L, 1L, 2L), setOf(3L, 4L, 5L))
         assertEquals(expectedResult, components)
@@ -71,7 +70,6 @@ class ComponentsTest {
         graph.addEdge(4, 5, "E", 4)
         graph.addEdge(5, 3, "F", 5)
         graph.addEdge(0, 3, "G", 6)
-
 
         val components = StronglyConnectedComponents(graph).components
         val expectedResult = setOf(setOf(0L, 1L, 2L), setOf(3L, 4L, 5L))

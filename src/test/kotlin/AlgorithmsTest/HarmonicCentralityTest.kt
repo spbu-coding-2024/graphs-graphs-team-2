@@ -1,9 +1,9 @@
 package AlgorithmsTest
 
 import algo.HarmonicCentrality
+import kotlin.test.assertEquals
 import model.Graph
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
 
 class HarmonicCentralityTest {
     private lateinit var graph: Graph

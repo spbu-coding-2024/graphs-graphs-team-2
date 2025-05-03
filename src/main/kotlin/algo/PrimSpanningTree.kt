@@ -18,7 +18,7 @@ class PrimSpanningTree(graph: Graph) {
     init {
 
         val queue = ArrayDeque<Pair<Float, Long>>()
-        if (graph.vertices.isNotEmpty()){
+        if (graph.vertices.isNotEmpty()) {
             queue.add(Float.MIN_VALUE to graph.vertices.first().id)
             _minimalTree = mutableListOf()
         }
