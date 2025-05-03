@@ -73,6 +73,4 @@ class MinSpanningTreeTest {
         val expectedResult = listOf(1L to 0L, 2L to 1L)
         assertEquals(expectedResult, actualResult)
     }
-
-
 }
