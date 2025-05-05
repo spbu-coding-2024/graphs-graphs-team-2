@@ -10,8 +10,8 @@ import kotlin.apply
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import viewModel.io.JSONViewModel
 import viewModel.graph.GraphViewModel
+import viewModel.io.JSONViewModel
 
 @Composable
 fun storeToJson(viewModel: JSONViewModel, graph: GraphViewModel, onDismissRequest: () -> Unit) {

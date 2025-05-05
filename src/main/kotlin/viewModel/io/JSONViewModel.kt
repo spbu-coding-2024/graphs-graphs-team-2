@@ -2,11 +2,11 @@ package viewModel.io
 
 import androidx.compose.ui.unit.Dp
 import io.JsonConverter
+import java.awt.FileDialog
+import java.io.File
 import model.Graph
 import model.abstractGraph.AbstractVertex
 import viewModel.graph.GraphViewModel
-import java.awt.FileDialog
-import java.io.File
 
 class JSONViewModel() {
     fun loadFromJson(fileDialog: FileDialog): Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>> {

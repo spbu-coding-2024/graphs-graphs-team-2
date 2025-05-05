@@ -62,10 +62,10 @@ import view.graph.GraphView
 import view.io.Neo4jView
 import view.io.SQLiteNameInputView
 import view.io.storeToJson
-import viewModel.io.JSONViewModel
 import viewModel.MainScreenViewModel
-import viewModel.io.SQLiteSearchScreenViewModel
 import viewModel.graph.GraphViewModel
+import viewModel.io.JSONViewModel
+import viewModel.io.SQLiteSearchScreenViewModel
 import viewModel.placement.place
 
 @Composable
