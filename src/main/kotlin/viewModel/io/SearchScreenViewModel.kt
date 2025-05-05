@@ -1,4 +1,4 @@
-package viewModel.SearchScreenSQlite
+package viewModel.io
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.Dp
