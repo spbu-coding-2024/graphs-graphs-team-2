@@ -9,7 +9,8 @@ import model.abstractGraph.AbstractVertex
 import viewModel.graph.GraphViewModel
 
 class JSONViewModel() {
-    fun loadFromJson(fileDialog: FileDialog): Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>> {
+
+    fun loadJson(fileDialog: FileDialog): Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>> {
         if (fileDialog.file == null) throw IllegalArgumentException("File wasn't selected")
 
         val fileToOpen = File(fileDialog.directory, fileDialog.file)
@@ -22,7 +23,7 @@ class JSONViewModel() {
         }
     }
 
-    fun storeToJson(graph: GraphViewModel, fileDialog: FileDialog) {
+    fun storeJson(graph: GraphViewModel, fileDialog: FileDialog) {
         if (fileDialog.file == null) throw IllegalArgumentException("File wasn't selected")
 
         val fileToSave = File(fileDialog.directory, fileDialog.file)
