@@ -5,53 +5,53 @@ import model.Graph
 class FindLoop(val graph: Graph, val vertex: Long) {
     private val visitedVertices = graph.vertices.associate { it.id to false }.toMutableMap()
     private val graphMap = graph.weightedMap
-    val loopEdges = ArrayDeque<Long>()
+    val loop = ArrayDeque<Long>()
 
     fun findLoopInDirectedGraph() {
-        loopEdges.addLast(vertex)
-        outer@ while (!loopEdges.isEmpty()) {
-            val vert = loopEdges.first()
-            visitedVertices[vert] = true
-            val edges = graphMap[vert]
+        loop.addLast(vertex)
+        outer@ while (!loop.isEmpty()) {
+            val currentVertex = loop.first()
+            visitedVertices[currentVertex] = true
+            val edges = graphMap[currentVertex]
 
             if (edges != null) {
                 for (el in edges) {
                     if (visitedVertices[el.first] == false) {
-                        loopEdges.addFirst(el.first)
+                        loop.addFirst(el.first)
                         continue@outer
                     } else if (el.first == vertex) {
-                        loopEdges.addFirst(vertex)
+                        loop.addFirst(vertex)
                         return
                     }
                 }
             }
-            loopEdges.removeFirst()
+            loop.removeFirst()
         }
-        loopEdges.clear()
+        loop.clear()
     }
 
     fun findLoopInUndirectedGraph() {
         val parents = mutableMapOf<Long, Long>()
-        loopEdges.addFirst(vertex)
-        outer@ while (!loopEdges.isEmpty()) {
-            val vert = loopEdges.first()
-            visitedVertices[vert] = true
-            val edges = graphMap[vert]
+        loop.addFirst(vertex)
+        outer@ while (!loop.isEmpty()) {
+            val currentVertex = loop.first()
+            visitedVertices[currentVertex] = true
+            val edges = graphMap[currentVertex]
 
             if (edges != null) {
                 for (el in edges) {
                     if (visitedVertices[el.first] == false) {
-                        parents[el.first] = vert
-                        loopEdges.addFirst(el.first)
+                        parents[el.first] = currentVertex
+                        loop.addFirst(el.first)
                         continue@outer
-                    } else if (el.first == vertex && parents[vert] != vertex) {
-                        loopEdges.addFirst(vertex)
+                    } else if (el.first == vertex && parents[currentVertex] != vertex) {
+                        loop.addFirst(vertex)
                         return
                     }
                 }
             }
-            loopEdges.removeFirst()
+            loop.removeFirst()
         }
-        loopEdges.clear()
+        loop.clear()
     }
 }

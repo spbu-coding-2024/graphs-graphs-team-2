@@ -279,6 +279,8 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     scope.launch {
                         place(800.0, 600.0, viewModel.graphViewModel)
                         scale = calculateScale(viewModel.graphViewModel)
+
+                        viewModel.graphViewModel.isNeedToCalculate = true
                     }
                 },
                 text = "Placement",
@@ -647,19 +649,19 @@ fun MainScreen(viewModel: MainScreenViewModel) {
 }
 
 fun calculateScale(graph: GraphViewModel): Float {
-    var minX = 0f
-    var minY = 0f
-    var maxX = 0f
-    var maxY = 0f
+    var minX = graph.vertices.first().x.value
+    var minY = graph.vertices.first().y.value
+    var maxX = graph.vertices.first().x.value
+    var maxY = graph.vertices.first().y.value
 
     for (v in graph.vertices) {
-        minX = min(v.x.value, minX)
-        minY = min(v.y.value, minY)
-        maxX = max(v.x.value, maxX)
-        maxY = max(v.y.value, maxY)
+        minX = min(v.x.value-v.radius.value, minX)
+        minY = min(v.y.value-v.radius.value, minY)
+        maxX = max(v.x.value+v.radius.value, maxX)
+        maxY = max(v.y.value+v.radius.value, maxY)
     }
     val scaleX = 800f / (maxX - minX)
-    val scaleY = 600f / (maxY - minY)
-
-    return min(scaleY, scaleX)
+    val scaleY = 800f / (maxY - minY)
+    val scale = min(scaleX, scaleY)
+    return scale
 }
