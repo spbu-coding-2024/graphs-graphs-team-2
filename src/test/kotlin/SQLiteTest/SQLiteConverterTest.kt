@@ -53,19 +53,19 @@ class SQLiteConverterTest {
             assert(false)
             return
         }
-        val graph2 = model.first
-        val placement2 = model.second
-        assertEquals(graph2.vertices.size, graph.vertices.size)
-        assertEquals(graph2.edges.size, graph.edges.size)
-        assertEquals(placement2.size, placement.size)
-        for (key in placement2.keys) {
+        val graphFromDB = model.first
+        val placementFromDB = model.second
+        assertEquals(graphFromDB.vertices.size, graph.vertices.size)
+        assertEquals(graphFromDB.edges.size, graph.edges.size)
+        assertEquals(placementFromDB.size, placement.size)
+        for (key in placementFromDB.keys) {
             assert(placement.keys.contains(key))
-            assertEquals(placement2[key], placement[key])
+            assertEquals(placementFromDB[key], placement[key])
         }
-        for (vertex in graph2.vertices) {
+        for (vertex in graphFromDB.vertices) {
             assert(graph.vertices.contains(vertex))
         }
-        for (edge in graph2.edges) {
+        for (edge in graphFromDB.edges) {
             assert(graph.edges.contains(edge))
         }
     }

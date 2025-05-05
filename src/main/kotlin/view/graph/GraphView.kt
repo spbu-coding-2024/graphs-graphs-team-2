@@ -9,14 +9,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import viewModel.graph.GraphViewModel
 
 @Composable
 fun GraphView(viewModel: GraphViewModel, scale: Float) {
-
-    var offsetX by remember { mutableStateOf(5f) }
-    var offsetY by remember { mutableStateOf(5f) }
-
+    var offsetX by remember { mutableStateOf(0f) }
+    var offsetY by remember { mutableStateOf(0f) }
+    val scope = rememberCoroutineScope { Dispatchers.Default }
+    if (viewModel.isNeedToCalculate) {
+        scope.launch {
+            val offset = viewModel.calculateOffSet()
+            offsetX = offset.first
+            offsetY = offset.second
+            viewModel.isNeedToCalculate = false
+        }
+    }
     Box(
         modifier =
             Modifier.fillMaxSize()
