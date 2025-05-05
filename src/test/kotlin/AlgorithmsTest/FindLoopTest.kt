@@ -18,7 +18,7 @@ class FindLoopTest {
         graph.addEdge(4L, 2L, "4", 4L, 1f)
         val algoLoop = FindLoop(graph, 1L)
         algoLoop.findLoopInUndirectedGraph()
-        val loop = algoLoop.loopEdges.toList()
+        val loop = algoLoop.loop.toList()
         assertEquals(4, loop.size)
         assertEquals(loop[0], 1L)
         assertEquals(loop[1], 3L)
@@ -37,7 +37,7 @@ class FindLoopTest {
         graph.addEdge(4L, 2L, "4", 4L, 1f)
         val algoLoop = FindLoop(graph, 1L)
         algoLoop.findLoopInUndirectedGraph()
-        val loop = algoLoop.loopEdges
+        val loop = algoLoop.loop
         assert(loop.isEmpty)
     }
 
@@ -53,7 +53,7 @@ class FindLoopTest {
         graph.addEdge(4L, 2L, "4", 4L, 1f)
         val algoLoop = FindLoop(graph, 1L)
         algoLoop.findLoopInUndirectedGraph()
-        val loop = algoLoop.loopEdges
+        val loop = algoLoop.loop
         assert(loop.isEmpty)
     }
 
@@ -69,7 +69,7 @@ class FindLoopTest {
         graph.addEdge(4L, 1L, "4", 4L, 1f)
         val algoLoop = FindLoop(graph, 1L)
         algoLoop.findLoopInDirectedGraph()
-        val loop = algoLoop.loopEdges
+        val loop = algoLoop.loop
         assertEquals(loop.size, 5)
         assertEquals(loop[0], 1L)
         assertEquals(loop[1], 4L)
@@ -89,7 +89,7 @@ class FindLoopTest {
         graph.addEdge(3L, 4L, "3", 3L, 1f)
         val algoLoop = FindLoop(graph, 1L)
         algoLoop.findLoopInDirectedGraph()
-        val loop = algoLoop.loopEdges
+        val loop = algoLoop.loop
         assert(loop.isEmpty)
     }
 
@@ -105,7 +105,7 @@ class FindLoopTest {
         graph.addEdge(4L, 2L, "4", 4L, 1f)
         val algoLoop = FindLoop(graph, 1L)
         algoLoop.findLoopInDirectedGraph()
-        val loop = algoLoop.loopEdges
+        val loop = algoLoop.loop
         assert(loop.isEmpty)
     }
 }

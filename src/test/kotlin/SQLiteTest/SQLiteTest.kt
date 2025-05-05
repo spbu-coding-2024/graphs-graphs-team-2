@@ -32,14 +32,14 @@ class SQLiteTest {
 
     @Test
     fun test_addGraph() {
-        val m = connection.addGraph("graph1", false, false)
-        assert(m > 0)
+        val id = connection.addGraph("graph1", false, false)
+        assert(id > 0)
     }
 
     @Test
     fun test_addGraphTwice() {
-        val c1 = connection.addGraph("graph2", false, false)
-        assert(c1 > 0)
+        val id = connection.addGraph("graph2", false, false)
+        assert(id > 0)
         val exception =
             assertThrows<ExposedSQLException> { connection.addGraph("graph2", false, false) }
 
@@ -48,11 +48,11 @@ class SQLiteTest {
 
     @Test
     fun testGraphFinding() {
-        val c1 = connection.addGraph("graph3", false, false)
-        val gi = connection.findGraph("graph3")
-        assertEquals(c1, gi?.id)
-        assertEquals(false, gi?.isWeighted)
-        assertEquals(false, gi?.isWeighted)
+        val id = connection.addGraph("graph3", false, false)
+        val graphInfo = connection.findGraph("graph3")
+        assertEquals(id, graphInfo?.id)
+        assertEquals(false, graphInfo?.isWeighted)
+        assertEquals(false, graphInfo?.isWeighted)
     }
 
     @Test
@@ -60,8 +60,8 @@ class SQLiteTest {
         val graphArray = arrayOf("graph4", "graph5", "graph6", "graph7", "graph8")
         graphArray.forEach { connection.addGraph(it, false, false) }
         connection.deleteAll()
-        val p = transaction { Graphs.selectAll().empty() }
-        assert(p)
+        val isGraphsTableEmpty = transaction { Graphs.selectAll().empty() }
+        assert(isGraphsTableEmpty)
     }
 
     @Test
@@ -69,9 +69,9 @@ class SQLiteTest {
         connection.deleteAll()
         val graphArray = arrayOf("graph9", "graph10", "graph11", "graph12", "graph13")
         graphArray.forEach { connection.addGraph(it, false, false) }
-        val grNames = connection.makeListFromNames()
-        assertEquals(graphArray.size, grNames.size)
-        graphArray.forEach { assert(grNames.contains(it)) }
+        val graphNames = connection.makeListFromNames()
+        assertEquals(graphArray.size, graphNames.size)
+        graphArray.forEach { assert(graphNames.contains(it)) }
     }
 
     @Test
@@ -79,11 +79,11 @@ class SQLiteTest {
         val id = connection.addGraph("graph17", false, false)
         val graph = Graph()
         val placement = mutableMapOf<AbstractVertex, Pair<Dp, Dp>>()
-        for (i in 1..10) {
+        for (i in 0..10) {
             placement.put(graph.addVertex(i.toLong(), i.toString()), 0.dp to 0.dp)
         }
-        for (i in 1..10) {
-            graph.addEdge((1L..10L).random(), (1L..10L).random(), i.toString(), i.toLong(), 1f)
+        for (i in 0..10) {
+            graph.addEdge(i % 11L, (i + 1) % 11L, i.toString(), i.toLong(), 1f)
         }
         val graphVM =
             GraphViewModel(
@@ -100,19 +100,23 @@ class SQLiteTest {
         val edges = connection.findEdges(id)
         assertEquals(graphVM.vertices.size, vertices.size)
         assertEquals(graphVM.edges.size, edges.size)
-        val graph2 = Graph()
+        val graphFromDB = Graph()
         val placement2 = mutableMapOf<AbstractVertex, Pair<Dp, Dp>>()
-        vertices.forEach { placement2.put(graph2.addVertex(it.vert, it.label), it.x.dp to it.y.dp) }
-        edges.forEach { graph2.addEdge(it.vertexFrom, it.vertexTo, it.label, it.id, it.weight) }
+        vertices.forEach {
+            placement2.put(graphFromDB.addVertex(it.vert, it.label), it.x.dp to it.y.dp)
+        }
+        edges.forEach {
+            graphFromDB.addEdge(it.vertexFrom, it.vertexTo, it.label, it.id, it.weight)
+        }
         assertEquals(placement2.size, placement.size)
         for (key in placement2.keys) {
             assert(placement.keys.contains(key))
             assertEquals(placement2[key], placement[key])
         }
-        for (vertex in graph2.vertices) {
+        for (vertex in graphFromDB.vertices) {
             assert(graph.vertices.contains(vertex))
         }
-        for (edge in graph2.edges) {
+        for (edge in graphFromDB.edges) {
             assert(graph.edges.contains(edge))
         }
     }

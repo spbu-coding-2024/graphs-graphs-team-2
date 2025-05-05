@@ -54,11 +54,13 @@ class SQLiteSearchScreenViewModel {
 fun main() {
     val graph = Graph()
     val placement = mutableMapOf<AbstractVertex, Pair<Dp, Dp>>()
-    for (i in 1..10000) {
+    for (i in 1..1000) {
         placement.put(graph.addVertex(i.toLong(), i.toString()), 0.dp to 0.dp)
     }
-    for (i in 1..10000) {
-        graph.addEdge((1L..10000L).random(), (1L..10000L).random(), i.toString(), i.toLong(), 1f)
+    for (i in 1..1000) {
+        try {
+            graph.addEdge((1L..1000L).random(), (1L..1000L).random(), i.toString(), i.toLong(), 1f)
+        } catch (e: IllegalStateException) {}
     }
     val gm =
         GraphViewModel(
@@ -69,5 +71,5 @@ fun main() {
             mutableStateOf(false),
             mutableStateOf(false),
         )
-    SQLiteSearchScreenViewModel().writeGraph(gm, "megalolo")
+    SQLiteSearchScreenViewModel().writeGraph(gm, "megalolololol")
 }

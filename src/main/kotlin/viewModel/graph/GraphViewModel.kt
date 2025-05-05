@@ -12,6 +12,8 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.random.Random
 import kotlin.random.nextInt
 import kotlinx.coroutines.async
@@ -199,7 +201,7 @@ class GraphViewModel(
         } else {
             algoLoops.findLoopInUndirectedGraph()
         }
-        val loop = algoLoops.loopEdges
+        val loop = algoLoops.loop
         if (loop.isEmpty()) {
             return
         }
@@ -234,5 +236,27 @@ class GraphViewModel(
             _vertices[it.id]?.x = placement[it]?.first ?: Random.nextInt(0..800).dp
             _vertices[it.id]?.y = placement[it]?.second ?: Random.nextInt(0..800).dp
         }
+    }
+
+    var isNeedToCalculate = false
+
+    fun calculateOffSet(): Pair<Float, Float> {
+        var minX = vertices.first().x.value
+        var minY = vertices.first().y.value
+        var maxX = vertices.first().x.value
+        var maxY = vertices.first().y.value
+
+        for (v in vertices) {
+            minX = min(v.x.value - v.radius.value, minX)
+            minY = min(v.y.value - v.radius.value, minY)
+            maxX = max(v.x.value + v.radius.value, maxX)
+            maxY = max(v.y.value + v.radius.value, maxY)
+        }
+        val scaleX = 800f / (maxX - minX)
+        val scaleY = 800f / (maxY - minY)
+        val scale = min(scaleX, scaleY)
+        val offsetX = -(minX * scale - (800f - scale * (maxX - minX)) / 2f) * scale
+        val offsetY = -(minY * scale - (800f - scale * (maxY - minY)) / 2f) * scale
+        return Pair(offsetX, offsetY)
     }
 }

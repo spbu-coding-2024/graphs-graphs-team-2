@@ -40,7 +40,7 @@ fun place(width: Double, height: Double, graphViewModel: GraphViewModel) {
     lay.initAlgo()
     lay.isLinLogMode = true
     lay.gravity = 1.5
-    lay.scalingRatio = 25.0
+    lay.scalingRatio = 35.0
 
     var i = 0
     while (i < 100) {
