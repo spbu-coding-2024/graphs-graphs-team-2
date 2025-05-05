@@ -1,71 +1,63 @@
 package view.io
 
-import androidx.compose.ui.unit.Dp
-import io.JsonConverter
+import GraphScreen
+import androidx.compose.runtime.Composable
+import cafe.adriel.voyager.navigator.Navigator
 import java.awt.FileDialog
 import java.awt.Frame
-import java.io.File
 import java.io.FilenameFilter
-import model.Graph
-import model.abstractGraph.AbstractVertex
+import kotlin.apply
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import viewModel.io.JSONViewModel
 import viewModel.graph.GraphViewModel
 
-class JsonView {
-    val frame = Frame()
-    val fileDialog = FileDialog(frame)
-
-    fun storeToJson(graph: GraphViewModel, onDismissRequest: () -> Unit) {
-        fileDialog.apply {
-            title = "Save your graph in JSON:"
-            mode = FileDialog.SAVE
-            filenameFilter = FilenameFilter { dir, file ->
-                return@FilenameFilter file.endsWith(".json")
+@Composable
+fun storeToJson(viewModel: JSONViewModel, graph: GraphViewModel, onDismissRequest: () -> Unit) {
+    CoroutineScope(Dispatchers.IO).launch {
+        val frame = Frame()
+        val fileDialog =
+            FileDialog(frame).apply {
+                title = "Save your graph in JSON:"
+                mode = FileDialog.SAVE
+                filenameFilter = FilenameFilter { dir, file ->
+                    return@FilenameFilter file.endsWith(".json")
+                }
+                isVisible = true
             }
-            isVisible = true
-        }
 
-        if (fileDialog.file == null) { // file wasn't selected
-            frame.dispose()
-            onDismissRequest()
-            return
-        }
-
-        val fileToSave = File(fileDialog.directory, fileDialog.file)
-        val convertor = JsonConverter()
-        try {
-            fileToSave.writeText(convertor.saveJson(graph))
-            frame.dispose()
-            onDismissRequest()
-        } catch (e: Exception) {
-            frame.dispose()
-            throw IllegalStateException("Conversation error: ${e.message}")
-        }
-    }
-
-    fun loadFromJson(): Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>? {
-        fileDialog.apply {
-            title = "Open your JSON file:"
-            mode = FileDialog.LOAD
-
-            filenameFilter = FilenameFilter { dir, file ->
-                return@FilenameFilter file.endsWith(".json")
-            }
-            isVisible = true
-        }
-
-        if (fileDialog.file == null) { // file wasn't selected
-            frame.dispose()
-            return null
-        }
-
-        val fileToOpen = File(fileDialog.directory, fileDialog.file)
-        val convertor = JsonConverter()
         frame.dispose()
         try {
-            val graphModel = convertor.loadJson(fileToOpen.readText())
-            return graphModel
+            viewModel.storeToJson(graph, fileDialog)
+            onDismissRequest()
         } catch (e: Exception) {
-            throw IllegalStateException(e.message)
+            if (e is IllegalArgumentException) onDismissRequest() else throw e
+        }
+    }
+}
+
+@Composable
+fun loadFromJson(viewModel: JSONViewModel, navigator: Navigator, onDismissRequest: () -> Unit) {
+    CoroutineScope(Dispatchers.IO).launch {
+        val frame = Frame()
+        val fileDialog =
+            FileDialog(frame).apply {
+                title = "Open your JSON file:"
+                mode = FileDialog.LOAD
+
+                filenameFilter = FilenameFilter { dir, file ->
+                    return@FilenameFilter file.endsWith(".json")
+                }
+                isVisible = true
+            }
+
+        frame.dispose()
+        try {
+            val graphModel = viewModel.loadFromJson(fileDialog)
+            navigator.push(GraphScreen(graphModel.first, graphModel.second))
+        } catch (e: Exception) {
+            if (e is IllegalArgumentException) onDismissRequest() else throw e
         }
     }
 }

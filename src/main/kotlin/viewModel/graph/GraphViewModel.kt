@@ -9,6 +9,7 @@ import algo.PrimSpanningTree
 import algo.StronglyConnectedComponents
 import algo.louvain
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -31,6 +32,41 @@ class GraphViewModel(
     showEdgesWeights: State<Boolean>,
     showEdgesLabels: State<Boolean>,
 ) {
+
+    private var _firstIdDijkstra = mutableStateOf("")
+    var firstIdDijkstra
+        get() = _firstIdDijkstra.value
+        set(value) {
+            _firstIdDijkstra.value = value
+        }
+
+    private var _secondIdDijkstra = mutableStateOf("")
+    var secondIdDijkstra
+        get() = _secondIdDijkstra.value
+        set(value) {
+            _secondIdDijkstra.value = value
+        }
+
+    private var _firstIDFB = mutableStateOf("")
+    var firstIDFB
+        get() = _firstIDFB.value
+        set(value) {
+            _firstIDFB.value = value
+        }
+
+    private var _secondIDFB = mutableStateOf("")
+    var secondIDFB
+        get() = _secondIDFB.value
+        set(value) {
+            _secondIDFB.value = value
+        }
+
+    private var _idForLoop = mutableStateOf("")
+    var idForLoop
+        get() = _idForLoop.value
+        set(value) {
+            _idForLoop.value = value
+        }
 
     private val _vertices =
         graph.vertices.associate { v ->
@@ -87,9 +123,9 @@ class GraphViewModel(
         }
     }
 
-    fun Dijkstra(firstVId: String, secondVId: String) {
-        val firstId = firstVId.toLong()
-        val secondId = secondVId.toLong()
+    fun Dijkstra() {
+        val firstId = firstIdDijkstra.toLong()
+        val secondId = secondIdDijkstra.toLong()
         if (_vertices[firstId] == null || _vertices[secondId] == null) {
             throw IllegalArgumentException("No such vertexes in graph")
         }
@@ -160,10 +196,10 @@ class GraphViewModel(
         }
     }
 
-    fun findPathByFordBellman(firstVId: String, secondVId: String) {
+    fun findPathByFordBellman() {
         resetColors()
-        val firstId = firstVId.toLong()
-        val secondId = secondVId.toLong()
+        val firstId = firstIDFB.toLong()
+        val secondId = secondIDFB.toLong()
         if (_vertices[firstId] == null || _vertices[secondId] == null) {
             throw IllegalArgumentException("No such vertexes in graph")
         }
@@ -187,9 +223,9 @@ class GraphViewModel(
         }
     }
 
-    fun findLoopForVertex(vId: String) {
+    fun findLoopForVertex() {
         resetColors()
-        val id = vId.toLong()
+        val id = idForLoop.toLong()
         if (_vertices[id] == null) {
             throw IllegalArgumentException("No such vertexes in graph")
         }
@@ -253,8 +289,8 @@ class GraphViewModel(
         val scaleX = 800f / (maxX - minX)
         val scaleY = 800f / (maxY - minY)
         val scale = min(scaleX, scaleY)
-        val offsetX = -(minX * scale - (800f - scale * (maxX - minX)) / 2f) * scale
-        val offsetY = -(minY * scale - (800f - scale * (maxY - minY)) / 2f) * scale
+        val offsetX = -(minX - (800f - scale * (maxX - minX)) / 2f) * scale
+        val offsetY = -(minY - (800f - scale * (maxY - minY)) / 2f) * scale
         return Pair(offsetX, offsetY)
     }
 }

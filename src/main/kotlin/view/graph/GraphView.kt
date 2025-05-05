@@ -36,8 +36,8 @@ fun GraphView(viewModel: GraphViewModel, scale: Float) {
                         offsetY += dragAmount.y
                     }
                 }
-                .offset(offsetX.dp, offsetY.dp)
                 .graphicsLayer(scaleX = scale, scaleY = scale)
+                .offset(offsetX.dp, offsetY.dp)
     ) {
         viewModel.vertices.forEach { v -> VertexView(v, Modifier) }
         viewModel.edges.forEach { e -> EdgeView(e, viewModel.isDirected) }

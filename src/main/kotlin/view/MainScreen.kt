@@ -29,7 +29,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,32 +59,21 @@ import view.components.ErrorDialog
 import view.components.InvertPurpleButton
 import view.components.PurpleButton
 import view.graph.GraphView
-import view.io.JsonView
 import view.io.Neo4jView
 import view.io.SQLiteNameInputView
+import view.io.storeToJson
+import viewModel.io.JSONViewModel
 import viewModel.MainScreenViewModel
-import viewModel.SearchScreenSQlite.SQLiteSearchScreenViewModel
+import viewModel.io.SQLiteSearchScreenViewModel
 import viewModel.graph.GraphViewModel
 import viewModel.placement.place
 
 @Composable
 fun MainScreen(viewModel: MainScreenViewModel) {
-    var dataSystem by remember { mutableStateOf<DataSystems?>(null) }
-    val username: MutableState<String?> = remember { mutableStateOf(null) }
-    val password: MutableState<String?> = remember { mutableStateOf(null) }
-    val graphName: MutableState<String?> = remember { mutableStateOf(null) }
-    var showErrorDialog by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
-    var showMenuState by remember { mutableStateOf(false) }
-    var saveMenuState by remember { mutableStateOf(false) }
+    val userName = remember { mutableStateOf(viewModel.username) }
+    val passWord = remember { mutableStateOf(viewModel.password) }
 
-    var firstIdDijkstra by remember { mutableStateOf("") }
-    var secondIdDijkstra by remember { mutableStateOf("") }
-    var firstIDFB by remember { mutableStateOf("") }
-    var secondIDFB by remember { mutableStateOf("") }
-    var idforLooop by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope { Dispatchers.Default }
-    var openNewGraph by remember { mutableStateOf(false) }
     val navigator = LocalNavigator.currentOrThrow
 
     Row(
@@ -93,6 +81,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
         modifier = Modifier.background(CoolColors.Gray),
     ) {
         var scale by remember { mutableStateOf(calculateScale(viewModel.graphViewModel)) }
+
         Column(
             modifier =
                 Modifier.width(370.dp)
@@ -109,7 +98,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                         .pointerHoverIcon(
                             PointerIcon(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))
                         ),
-                onClick = { showMenuState = true },
+                onClick = { viewModel.showMenuState = true },
                 colors =
                     ButtonDefaults.textButtonColors(
                         backgroundColor = CoolColors.Purple,
@@ -128,14 +117,14 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     Icon(
                         Icons.Filled.ArrowDropDown,
                         contentDescription = null,
-                        modifier = Modifier.rotate(if (showMenuState) 180f else 0f),
+                        modifier = Modifier.rotate(if (viewModel.showMenuState) 180f else 0f),
                     )
                 }
             }
             DropdownMenu(
                 modifier = Modifier.background(CoolColors.Gray),
-                expanded = showMenuState,
-                onDismissRequest = { showMenuState = false },
+                expanded = viewModel.showMenuState,
+                onDismissRequest = { viewModel.showMenuState = false },
                 offset = DpOffset(137.dp, (-1800).dp),
             ) {
                 DropdownMenuItem(
@@ -324,8 +313,10 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                             try {
                                 viewModel.graphViewModel.minimalSpanningTree()
                             } catch (e: Exception) {
-                                showErrorDialog = true
-                                errorMessage = e.message ?: ("Graph is not connected")
+                                viewModel.apply {
+                                    errorMessage = e.message ?: ("Graph is not connected")
+                                    showErrorDialog = true
+                                }
                             }
                         }
                     },
@@ -366,14 +357,14 @@ fun MainScreen(viewModel: MainScreenViewModel) {
 
             Row {
                 OutlinedTextField(
-                    firstIdDijkstra,
-                    { firstIdDijkstra = it },
+                    viewModel.graphViewModel.firstIdDijkstra,
+                    { viewModel.graphViewModel.firstIdDijkstra = it },
                     textStyle = TextStyle(fontSize = 28.sp, color = CoolColors.DarkPurple),
                     modifier = Modifier.width(90.dp).height(65.dp),
                 )
                 OutlinedTextField(
-                    secondIdDijkstra,
-                    { secondIdDijkstra = it },
+                    viewModel.graphViewModel.secondIdDijkstra,
+                    { viewModel.graphViewModel.secondIdDijkstra = it },
                     textStyle = TextStyle(fontSize = 28.sp, color = CoolColors.DarkPurple),
                     modifier = Modifier.width(90.dp).height(65.dp),
                 )
@@ -385,12 +376,14 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                             .padding(horizontal = 7.dp),
                     onClick = {
                         try {
-                            viewModel.graphViewModel.Dijkstra(firstIdDijkstra, secondIdDijkstra)
+                            viewModel.graphViewModel.Dijkstra()
                         } catch (e: Exception) {
-                            errorMessage = e.message ?: "Graph is built incorrectly"
-                            showErrorDialog = true
-                            firstIdDijkstra = ""
-                            secondIdDijkstra = ""
+                            viewModel.apply {
+                                errorMessage = e.message ?: "Graph is built incorrectly"
+                                showErrorDialog = true
+                                graphViewModel.firstIdDijkstra = ""
+                                graphViewModel.secondIdDijkstra = ""
+                            }
                         }
                     },
                     text = "Dijkstra",
@@ -401,14 +394,14 @@ fun MainScreen(viewModel: MainScreenViewModel) {
             }
             Row {
                 OutlinedTextField(
-                    firstIDFB,
-                    { firstIDFB = it },
+                    viewModel.graphViewModel.firstIDFB,
+                    { viewModel.graphViewModel.firstIDFB = it },
                     textStyle = TextStyle(fontSize = 28.sp, color = CoolColors.DarkPurple),
                     modifier = Modifier.width(90.dp).height(65.dp),
                 )
                 OutlinedTextField(
-                    secondIDFB,
-                    { secondIDFB = it },
+                    viewModel.graphViewModel.secondIDFB,
+                    { viewModel.graphViewModel.secondIDFB = it },
                     textStyle = TextStyle(fontSize = 28.sp, color = CoolColors.DarkPurple),
                     modifier = Modifier.width(90.dp).height(65.dp),
                 )
@@ -420,17 +413,16 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                             .padding(horizontal = 7.dp),
                     onClick = {
                         try {
-                            scope.launch {
-                                viewModel.graphViewModel.findPathByFordBellman(
-                                    firstIDFB,
-                                    secondIDFB,
-                                )
-                            }
+                            scope.launch { viewModel.graphViewModel.findPathByFordBellman() }
                         } catch (e: Exception) {
-                            errorMessage = e.message ?: "Graph is built incorrectly"
-                            showErrorDialog = true
-                            firstIDFB = ""
-                            secondIDFB = ""
+                            viewModel.apply {
+                                viewModel.apply {
+                                    errorMessage = e.message ?: "Graph is built incorrectly"
+                                    showErrorDialog = true
+                                    graphViewModel.firstIDFB = ""
+                                    graphViewModel.secondIDFB = ""
+                                }
+                            }
                         }
                     },
                     text = "Ford Bellman",
@@ -441,8 +433,8 @@ fun MainScreen(viewModel: MainScreenViewModel) {
             }
             Row {
                 OutlinedTextField(
-                    idforLooop,
-                    { idforLooop = it },
+                    viewModel.graphViewModel.idForLoop,
+                    { viewModel.graphViewModel.idForLoop = it },
                     textStyle = TextStyle(fontSize = 28.sp, color = CoolColors.DarkPurple),
                     modifier = Modifier.width(90.dp).height(65.dp),
                 )
@@ -454,12 +446,14 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                             .padding(horizontal = 7.dp),
                     onClick = {
                         try {
-                            scope.launch { viewModel.graphViewModel.findLoopForVertex(idforLooop) }
+                            scope.launch { viewModel.graphViewModel.findLoopForVertex() }
                         } catch (e: Exception) {
-                            errorMessage = e.message ?: "Graph is built incorrectly"
-                            showErrorDialog = true
-                            firstIDFB = ""
-                            secondIDFB = ""
+                            viewModel.apply {
+                                errorMessage = e.message ?: "Graph is built incorrectly"
+                                showErrorDialog = true
+                                graphViewModel.firstIDFB = ""
+                                graphViewModel.secondIDFB = ""
+                            }
                         }
                     },
                     text = "Find Loop",
@@ -490,7 +484,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                         .pointerHoverIcon(
                             PointerIcon(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))
                         ),
-                onClick = { saveMenuState = true },
+                onClick = { viewModel.saveMenuState = true },
                 colors =
                     ButtonDefaults.textButtonColors(
                         backgroundColor = CoolColors.Purple,
@@ -509,18 +503,18 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     Icon(
                         Icons.Filled.ArrowDropDown,
                         contentDescription = null,
-                        modifier = Modifier.rotate(if (!saveMenuState) -90f else 0f),
+                        modifier = Modifier.rotate(if (!viewModel.saveMenuState) -90f else 0f),
                     )
                 }
             }
             DropdownMenu(
                 modifier = Modifier.background(CoolColors.Gray),
-                expanded = saveMenuState,
-                onDismissRequest = { saveMenuState = false },
+                expanded = viewModel.saveMenuState,
+                onDismissRequest = { viewModel.saveMenuState = false },
                 offset = DpOffset(375.dp, (-150).dp),
             ) {
                 DropdownMenuItem(
-                    onClick = { dataSystem = DataSystems.Neo4j },
+                    onClick = { viewModel.dataSystem = DataSystems.Neo4j },
                     Modifier.height(60.dp)
                         .fillMaxWidth()
                         .padding(horizontal = 7.dp)
@@ -537,7 +531,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     },
                 )
                 DropdownMenuItem(
-                    onClick = { dataSystem = DataSystems.JSON },
+                    onClick = { viewModel.dataSystem = DataSystems.JSON },
                     Modifier.height(60.dp)
                         .fillMaxWidth()
                         .padding(horizontal = 7.dp)
@@ -554,7 +548,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     },
                 )
                 DropdownMenuItem(
-                    onClick = { dataSystem = DataSystems.SQLite },
+                    onClick = { viewModel.dataSystem = DataSystems.SQLite },
                     Modifier.height(60.dp)
                         .fillMaxWidth()
                         .padding(horizontal = 7.dp)
@@ -577,7 +571,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                         .height(65.dp)
                         .fillMaxWidth()
                         .padding(horizontal = 7.dp),
-                onClick = { openNewGraph = true },
+                onClick = { viewModel.openNewGraph = true },
                 text = "Open new graph",
                 fontSize = 28.sp,
                 fontFamily = FontFamily.Monospace,
@@ -602,57 +596,56 @@ fun MainScreen(viewModel: MainScreenViewModel) {
             GraphView(viewModel.graphViewModel, scale)
         }
 
-        if (dataSystem == DataSystems.JSON) {
-            scope.launch {
-                val fileChooser = JsonView()
-                try {
-                    fileChooser.storeToJson(viewModel.graphViewModel) { dataSystem = null }
-                } catch (e: Exception) {
-                    errorMessage = e.message ?: "Unknown error"
-                    showErrorDialog = true
-                    dataSystem = null
-                }
-            }
+        if (viewModel.dataSystem == DataSystems.JSON) {
+            storeToJson(JSONViewModel(), viewModel.graphViewModel) { viewModel.dataSystem = null }
         }
 
-        if (dataSystem == DataSystems.Neo4j) {
-            Neo4jView(username, password) { dataSystem = null }
-            if (username.value != null && password.value != null) {
+        if (viewModel.dataSystem == DataSystems.Neo4j) {
+            Neo4jView(userName, passWord) { viewModel.dataSystem = null }
+            if (userName.value != null && passWord.value != null) {
                 try {
-                    WriteNeo4j(username.value ?: "", password.value ?: "", viewModel.graphViewModel)
-                    dataSystem = null
-                    username.value = null
-                    password.value = null
+                    WriteNeo4j(userName.value ?: "", passWord.value ?: "", viewModel.graphViewModel)
+                    viewModel.apply {
+                        dataSystem = null
+                        username = null
+                        password = null
+                    }
                 } catch (e: Exception) {
-                    errorMessage = e.message ?: "Unknown error"
-                    showErrorDialog = true
-                    username.value = null
-                    password.value = null
-                    dataSystem = null
+                    viewModel.apply {
+                        errorMessage = e.message ?: "Unknown error"
+                        showErrorDialog = true
+                        username = null
+                        password = null
+                        dataSystem = null
+                    }
                 }
             }
         }
-        if (dataSystem == DataSystems.SQLite) {
-            SQLiteNameInputView(graphName) { dataSystem = null }
-            if (graphName.value != null) {
+        if (viewModel.dataSystem == DataSystems.SQLite) {
+            SQLiteNameInputView(mutableStateOf(viewModel.graphName)) { viewModel.dataSystem = null }
+            if (viewModel.graphName != null) {
                 try {
                     SQLiteSearchScreenViewModel()
-                        .writeGraph(viewModel.graphViewModel, graphName.value ?: "")
-                    dataSystem = null
-                    graphName.value = null
+                        .writeGraph(viewModel.graphViewModel, viewModel.graphName ?: "")
+                    viewModel.apply {
+                        dataSystem = null
+                        graphName = null
+                    }
                 } catch (e: Exception) {
-                    errorMessage = e.message ?: "Unknown error"
-                    showErrorDialog = true
-                    graphName.value = null
-                    dataSystem = null
+                    viewModel.apply {
+                        errorMessage = e.message ?: "Unknown error"
+                        showErrorDialog = true
+                        graphName = null
+                        dataSystem = null
+                    }
                 }
             }
         }
-        if (openNewGraph) {
+        if (viewModel.openNewGraph) {
             navigator.push(WelcomeScreen)
         }
-        if (showErrorDialog) {
-            ErrorDialog(errorMessage) { showErrorDialog = false }
+        if (viewModel.showErrorDialog) {
+            ErrorDialog(viewModel.errorMessage) { viewModel.showErrorDialog = false }
         }
     }
 }

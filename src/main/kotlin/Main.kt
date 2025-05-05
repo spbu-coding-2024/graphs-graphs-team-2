@@ -13,10 +13,11 @@ import model.Graph
 import model.abstractGraph.AbstractVertex
 import view.GreetingView
 import view.MainScreen
+import viewModel.GreetingScreenViewModel
 import viewModel.MainScreenViewModel
 
 object WelcomeScreen : Screen {
-    @Composable override fun Content() = GreetingView()
+    @Composable override fun Content() = GreetingView(GreetingScreenViewModel())
 }
 
 data class GraphScreen(val graph: Graph, val placement: Map<AbstractVertex, Pair<Dp?, Dp?>?>) :
