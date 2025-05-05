@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,18 +23,17 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import io.ioNeo4j.ReadNeo4j
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import model.Graph
 import model.abstractGraph.AbstractVertex
 import view.components.CoolColors
 import view.components.ErrorDialog
 import view.components.PurpleButton
-import view.io.JsonView
 import view.io.Neo4jView
 import view.io.SQLiteSearchView
-import viewModel.SearchScreenSQlite.SQLiteSearchScreenViewModel
+import view.io.loadFromJson
+import viewModel.GreetingScreenViewModel
+import viewModel.io.JSONViewModel
+import viewModel.io.SQLiteSearchScreenViewModel
 
 enum class DataSystems {
     JSON,
@@ -44,17 +42,13 @@ enum class DataSystems {
 }
 
 @Composable
-fun GreetingView() {
-
-    var dataSystem by remember { mutableStateOf<DataSystems?>(null) }
+fun GreetingView(viewModel: GreetingScreenViewModel) {
     var model by remember {
         mutableStateOf<Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>?>(null)
     }
-    var showErrorDialog by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
+    val username = remember { mutableStateOf(viewModel.username) }
+    val password = remember { mutableStateOf(viewModel.password) }
     val navigator = LocalNavigator.currentOrThrow
-    val username: MutableState<String?> = remember { mutableStateOf(null) }
-    val password: MutableState<String?> = remember { mutableStateOf(null) }
 
     Column(
         modifier = Modifier.fillMaxSize().background(color = CoolColors.Gray),
@@ -75,7 +69,7 @@ fun GreetingView() {
         ) {
             PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.24f),
-                onClick = { dataSystem = DataSystems.JSON },
+                onClick = { viewModel.dataSystem = DataSystems.JSON },
                 text = "JSON",
                 fontSize = 75.sp,
                 fontFamily = FontFamily.Monospace,
@@ -83,7 +77,7 @@ fun GreetingView() {
             )
             PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.36f),
-                onClick = { dataSystem = DataSystems.SQLite },
+                onClick = { viewModel.dataSystem = DataSystems.SQLite },
                 text = "SQLite",
                 fontSize = 75.sp,
                 fontFamily = FontFamily.Monospace,
@@ -91,7 +85,7 @@ fun GreetingView() {
             )
             PurpleButton(
                 modifier = Modifier.clip(shape = RoundedCornerShape(35.dp)).weight(0.3f),
-                onClick = { dataSystem = DataSystems.Neo4j },
+                onClick = { viewModel.dataSystem = DataSystems.Neo4j },
                 text = "Neo4j",
                 fontSize = 75.sp,
                 fontFamily = FontFamily.Monospace,
@@ -99,17 +93,19 @@ fun GreetingView() {
             )
         }
 
-        if (dataSystem == DataSystems.Neo4j) {
-            Neo4jView(username, password) { dataSystem = null }
+        if (viewModel.dataSystem == DataSystems.Neo4j) {
+            Neo4jView(username, password) { viewModel.dataSystem = null }
             if (username.value != null && password.value != null) {
                 try {
                     model = ReadNeo4j(username.value ?: "", password.value ?: "")
                 } catch (e: Exception) {
-                    errorMessage = e.message ?: "Error"
-                    showErrorDialog = true
+                    viewModel.apply {
+                        errorMessage = e.message ?: "Error"
+                        showErrorDialog = true
+                        dataSystem = null
+                    }
                     username.value = null
                     password.value = null
-                    dataSystem = null
                 }
                 if (model != null) {
                     navigator.push(GraphScreen(model!!.first, model!!.second))
@@ -117,30 +113,19 @@ fun GreetingView() {
             }
         }
 
-        if (dataSystem == DataSystems.JSON) {
-            CoroutineScope(Dispatchers.IO).launch {
-                val fileChooser = JsonView()
-                try {
-                    model = fileChooser.loadFromJson()
-                    if (model == null) dataSystem = null
-                    else navigator.push(GraphScreen(model!!.first, model!!.second))
-                } catch (e: Exception) {
-                    errorMessage = e.message ?: ""
-                    showErrorDialog = true
-                    dataSystem = null
-                }
-            }
+        if (viewModel.dataSystem == DataSystems.JSON) {
+            loadFromJson(JSONViewModel(), navigator) { viewModel.dataSystem = null }
         }
-        if (dataSystem == DataSystems.SQLite) {
+        if (viewModel.dataSystem == DataSystems.SQLite) {
             SQLiteSearchView(
                 SQLiteSearchScreenViewModel(),
-                onDismissRequest = { dataSystem = null },
+                onDismissRequest = { viewModel.dataSystem = null },
                 navigator,
             )
         }
 
-        if (showErrorDialog) {
-            ErrorDialog(errorMessage) { showErrorDialog = false }
+        if (viewModel.showErrorDialog) {
+            ErrorDialog(viewModel.errorMessage) { viewModel.showErrorDialog = false }
         }
     }
 }

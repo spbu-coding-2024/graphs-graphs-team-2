@@ -48,7 +48,7 @@ import kotlin.text.isBlank
 import kotlinx.coroutines.launch
 import view.components.CoolColors
 import view.components.PurpleButton
-import viewModel.SearchScreenSQlite.SQLiteSearchScreenViewModel
+import viewModel.io.SQLiteSearchScreenViewModel
 
 @Composable
 fun SQLiteSearchView(

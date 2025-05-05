@@ -5,7 +5,10 @@ import model.Graph
 class PrimSpanningTree(graph: Graph) {
     private val weightedMap = graph.weightedMap.toMutableMap()
 
-    val minimalTree = mutableListOf<Pair<Long, Long>>()
+    private var _minimalTree: MutableList<Pair<Long, Long>>? = null
+
+    val minimalTree
+        get() = _minimalTree?.toList()
 
     private val minEdge = graph.vertices.associate { it.id to Float.MAX_VALUE }.toMutableMap()
     private val endEdge: MutableMap<Long, Long?> =
@@ -14,20 +17,19 @@ class PrimSpanningTree(graph: Graph) {
 
     init {
 
-        graph.edges.onEach {
-            weightedMap[it.vertices.second.id]?.add(it.vertices.first.id to it.weight)
-                ?: throw IllegalStateException("Edge ${it.id} contains non-existing vertex")
+        val queue = ArrayDeque<Pair<Float, Long>>()
+        if (graph.vertices.isNotEmpty()) {
+            queue.add(Float.MIN_VALUE to graph.vertices.first().id)
+            _minimalTree = mutableListOf()
         }
 
-        val queue = ArrayDeque<Pair<Float, Long>>()
-        queue.add(-Float.MIN_VALUE to graph.vertices.first().id)
         while (queue.isNotEmpty()) {
             val u = queue.removeFirst().second
             used[u] = true
 
-            if (endEdge[u] != null) {
-                val v = endEdge[u] ?: u
-                minimalTree.add(u to v)
+            val v = endEdge[u]
+            if (v != null) {
+                _minimalTree?.add(u to v)
             }
 
             weightedMap[u]?.onEach { edge ->
@@ -41,5 +43,7 @@ class PrimSpanningTree(graph: Graph) {
                 }
             }
         }
+
+        if (!used.values.all { it }) _minimalTree = null
     }
 }
