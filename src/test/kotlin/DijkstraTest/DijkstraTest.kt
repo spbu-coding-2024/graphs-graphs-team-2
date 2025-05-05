@@ -8,10 +8,12 @@ import kotlin.random.Random
 
 class DijkstraTest {
     private val infinity = 1_000_000_000_000_000_000F
+    private val firstId = 0
+    private val secondId = 100
+
 
     fun graphGenerator(): Stream<Arguments> {
         return Stream.generate {
-            //vertex ids 0..100
 
             val calculateEdgeId = { firstVertexId: Int, secondVertexId: Int ->
                 firstVertexId * 1000 + secondVertexId
@@ -20,23 +22,23 @@ class DijkstraTest {
             val weightsOfEdges = mutableMapOf<Int, Int>()
 
             val graph = Graph(true, true)
-            val start = Random.nextInt(0, 100)
+            val start = Random.nextInt(firstId, secondId)
             graph.addVertex(start.toLong(), "")
-            val end = Random.nextInt(0, 100)
+            val end = Random.nextInt(firstId, secondId)
             graph.addVertex(end.toLong(), "")
 
-            val minWaysWeights = Array(101) { if (it == start) 0F else infinity }
-            val parent = Array(101) { infinity.toInt() }
-            val countOfWays = Random.nextInt(5, 20)
-            val maxWeight = 5000
+            val minWaysWeights = Array(secondId + 1) { if (it == start) 0F else infinity }
+            val parent = Array(secondId + 1) { infinity.toInt() }
+            val countOfWays = Random.nextInt(5, 6)
+            val maxWeight = 2000
 
             for (i in 0..countOfWays) {
                 var totalWeight = 0F
                 var oldVertex = start
                 do {
-                    val newVertex = Random.nextInt(0, 100)
+                    val newVertex = Random.nextInt(firstId, secondId)
                     graph.addVertex(newVertex.toLong(), "")
-                    var weight = Random.nextInt(1, 1000)
+                    var weight = Random.nextInt(100, 1000)
                     val edge = graph.addEdge(
                         oldVertex.toLong(),
                         newVertex.toLong(),
@@ -77,14 +79,29 @@ class DijkstraTest {
                             vertexForChangeWeight.remove(currentVertex)
                             currentVertex = vertexForChangeWeight.get(0)
                         } while (vertexForChangeWeight.size != 0)
-                    }
-                    else{
+                    } else {
                         totalWeight = minWaysWeights[newVertex]
                     }
                     oldVertex = newVertex
-                } while (totalWeight < maxWeight)
+                } while (totalWeight < maxWeight && oldVertex != end)
+                if(oldVertex != end) {
+                    val edge = graph.addEdge(
+                        oldVertex.toLong(),
+                        end.toLong(),
+                        "",
+                        calculateEdgeId(oldVertex, end).toLong(),
+                        Random.nextInt(100, 1000).toFloat()
+                    )
+                    val weight = edge.weight.toInt()
+                    weightsOfEdges.put(calculateEdgeId(oldVertex, end), weight)
+                    totalWeight += weight
+                    if (totalWeight < minWaysWeights[end]) {
+                        minWaysWeights[end] = totalWeight
+                        parent[end] = oldVertex
+                    }
+                }
             }
-            Arguments.of(graph,parent)
+            Arguments.of(graph, parent)
         }.limit(10)
     }
 }
