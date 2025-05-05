@@ -11,20 +11,20 @@ import model.abstractGraph.AbstractVertex
 import viewModel.graph.GraphViewModel
 
 class JsonView {
-    fun storeToJson(graph: GraphViewModel, onDismissRequest: () -> Unit) {
-        val frame = Frame()
-        val fileDialog =
-            FileDialog(frame, "Save your graph in JSON:", FileDialog.SAVE).apply {
-                this.setFilenameFilter(
-                    FilenameFilter { dir, file ->
-                        return@FilenameFilter file.endsWith(".json")
-                    }
-                )
-                this.setFile("*.json")
-                this.isVisible = true
-            }
+    val frame = Frame()
+    val fileDialog = FileDialog(frame)
 
-        if (fileDialog.file == null) { // file isn't selected
+    fun storeToJson(graph: GraphViewModel, onDismissRequest: () -> Unit) {
+        fileDialog.apply {
+            title = "Save your graph in JSON:"
+            mode = FileDialog.SAVE
+            filenameFilter = FilenameFilter { dir, file ->
+                return@FilenameFilter file.endsWith(".json")
+            }
+            isVisible = true
+        }
+
+        if (fileDialog.file == null) { // file wasn't selected
             frame.dispose()
             onDismissRequest()
             return
@@ -43,19 +43,17 @@ class JsonView {
     }
 
     fun loadFromJson(): Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>? {
-        val frame = Frame()
-        val fileDialog =
-            FileDialog(frame, "Open your JSON file:", FileDialog.LOAD).apply {
-                this.setFilenameFilter(
-                    FilenameFilter { dir, file ->
-                        return@FilenameFilter file.endsWith(".json")
-                    }
-                )
-                this.setFile("*.json")
-                this.isVisible = true
-            }
+        fileDialog.apply {
+            title = "Open your JSON file:"
+            mode = FileDialog.LOAD
 
-        if (fileDialog.file == null) { // file isn't selected
+            filenameFilter = FilenameFilter { dir, file ->
+                return@FilenameFilter file.endsWith(".json")
+            }
+            isVisible = true
+        }
+
+        if (fileDialog.file == null) { // file wasn't selected
             frame.dispose()
             return null
         }
