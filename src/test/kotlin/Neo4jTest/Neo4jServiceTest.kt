@@ -90,8 +90,6 @@ class Neo4jServiceTest {
 
 
         readPlacement.forEach { (readV, readCoords) ->
-            println(mapOfPlacement[readV.label])
-            println(readCoords)
             assertEquals(mapOfPlacement[readV.label],readCoords)
         }
 
