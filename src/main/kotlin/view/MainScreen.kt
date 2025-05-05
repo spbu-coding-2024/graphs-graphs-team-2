@@ -655,10 +655,10 @@ fun calculateScale(graph: GraphViewModel): Float {
     var maxY = graph.vertices.first().y.value
 
     for (v in graph.vertices) {
-        minX = min(v.x.value-v.radius.value, minX)
-        minY = min(v.y.value-v.radius.value, minY)
-        maxX = max(v.x.value+v.radius.value, maxX)
-        maxY = max(v.y.value+v.radius.value, maxY)
+        minX = min(v.x.value - v.radius.value, minX)
+        minY = min(v.y.value - v.radius.value, minY)
+        maxX = max(v.x.value + v.radius.value, maxX)
+        maxY = max(v.y.value + v.radius.value, maxY)
     }
     val scaleX = 800f / (maxX - minX)
     val scaleY = 800f / (maxY - minY)

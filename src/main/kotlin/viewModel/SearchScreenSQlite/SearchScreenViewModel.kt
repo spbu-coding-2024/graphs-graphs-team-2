@@ -59,13 +59,7 @@ fun main() {
     }
     for (i in 1..1000) {
         try {
-            graph.addEdge(
-                (1L..1000L).random(),
-                (1L..1000L).random(),
-                i.toString(),
-                i.toLong(),
-                1f,
-            )
+            graph.addEdge((1L..1000L).random(), (1L..1000L).random(), i.toString(), i.toLong(), 1f)
         } catch (e: IllegalStateException) {}
     }
     val gm =
