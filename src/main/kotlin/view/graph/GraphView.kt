@@ -9,31 +9,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import viewModel.graph.GraphViewModel
 
 @Composable
 fun GraphView(viewModel: GraphViewModel, scale: Float) {
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
-    val scope = rememberCoroutineScope { Dispatchers.Default }
-    if (viewModel.isNeedToCalculate) {
-        scope.launch {
-            val offset = viewModel.calculateOffSet()
-            offsetX = offset.first
-            offsetY = offset.second
-            viewModel.isNeedToCalculate = false
-        }
+    if (viewModel.isOffsetCalculated) {
+        offsetX = viewModel.calculatedOffsetX.value
+        offsetY = viewModel.calculatedOffsetY.value
+        viewModel.isOffsetCalculated = false
     }
     Box(
         modifier =
             Modifier.fillMaxSize()
-                .pointerInput(Unit) {
+                .pointerInput(scale) {
                     detectDragGestures { change, dragAmount ->
                         change.consume()
-                        offsetX += dragAmount.x
-                        offsetY += dragAmount.y
+                        offsetX += dragAmount.x / scale
+                        offsetY += dragAmount.y / scale
                     }
                 }
                 .graphicsLayer(scaleX = scale, scaleY = scale)
