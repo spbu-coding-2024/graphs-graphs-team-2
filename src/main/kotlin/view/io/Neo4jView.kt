@@ -45,7 +45,7 @@ import viewModel.graph.GraphViewModel
 fun Neo4jView(
     flagOfWrite: Boolean, navigator: Navigator,
     graphViewModel: GraphViewModel?,
-    onDismissRequest: () -> Unit,
+    dismissRequest: () -> Unit,
 ) {
     Dialog(onDismissRequest = {}) {
         Card(
@@ -109,7 +109,7 @@ fun Neo4jView(
                 ) {
                     Row(modifier = Modifier, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         PurpleButton(
-                            onClick = onDismissRequest,
+                            onClick = dismissRequest,
                             modifier = Modifier.clip(shape = RoundedCornerShape(10.dp)),
                             text = "Back",
                             fontSize = 32.sp,
@@ -127,6 +127,7 @@ fun Neo4jView(
                                             password.value,
                                             graphViewModel ?: throw IllegalArgumentException("no graph for write")
                                         )
+                                        dismissRequest.invoke()
                                     }
                                 } catch (e: Exception) {
                                     throw e
