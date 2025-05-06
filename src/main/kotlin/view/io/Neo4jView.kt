@@ -1,5 +1,6 @@
 package view.io
 
+import GraphScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,13 +34,17 @@ import androidx.compose.ui.text.style.TextGeometricTransform
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import cafe.adriel.voyager.navigator.Navigator
+import io.ioNeo4j.ReadNeo4j
+import io.ioNeo4j.WriteNeo4j
 import view.components.CoolColors
 import view.components.PurpleButton
+import viewModel.graph.GraphViewModel
 
 @Composable
 fun Neo4jView(
-    Username: MutableState<String?>,
-    Password: MutableState<String?>,
+    flagOfWrite: Boolean, navigator: Navigator,
+    graphViewModel: GraphViewModel?,
     onDismissRequest: () -> Unit,
 ) {
     Dialog(onDismissRequest = {}) {
@@ -112,8 +117,20 @@ fun Neo4jView(
                         )
                         PurpleButton(
                             onClick = {
-                                Username.value = username.value
-                                Password.value = password.value
+                                try {
+                                    if (!flagOfWrite) {
+                                        val model = ReadNeo4j(username.value, password.value)
+                                        navigator.push(GraphScreen(model.first, model.second))
+                                    } else {
+                                        WriteNeo4j(
+                                            username.value,
+                                            password.value,
+                                            graphViewModel ?: throw IllegalArgumentException("no graph for write")
+                                        )
+                                    }
+                                } catch (e: Exception) {
+                                    throw e
+                                }
                             },
                             modifier = Modifier.clip(shape = RoundedCornerShape(10.dp)),
                             text = "Confirm",

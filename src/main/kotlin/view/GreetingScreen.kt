@@ -43,11 +43,6 @@ enum class DataSystems {
 
 @Composable
 fun GreetingView(viewModel: GreetingScreenViewModel) {
-    var model by remember {
-        mutableStateOf<Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>?>(null)
-    }
-    val username = remember { mutableStateOf(viewModel.username) }
-    val password = remember { mutableStateOf(viewModel.password) }
     val navigator = LocalNavigator.currentOrThrow
 
     Column(
@@ -94,23 +89,7 @@ fun GreetingView(viewModel: GreetingScreenViewModel) {
         }
 
         if (viewModel.dataSystem == DataSystems.Neo4j) {
-            Neo4jView(username, password) { viewModel.dataSystem = null }
-            if (username.value != null && password.value != null) {
-                try {
-                    model = ReadNeo4j(username.value ?: "", password.value ?: "")
-                } catch (e: Exception) {
-                    viewModel.apply {
-                        errorMessage = e.message ?: "Error"
-                        showErrorDialog = true
-                        dataSystem = null
-                    }
-                    username.value = null
-                    password.value = null
-                }
-                if (model != null) {
-                    navigator.push(GraphScreen(model!!.first, model!!.second))
-                }
-            }
+            Neo4jView(false, navigator, null) { viewModel.dataSystem = null }
         }
 
         if (viewModel.dataSystem == DataSystems.JSON) {

@@ -25,18 +25,4 @@ class GreetingScreenViewModel() {
         set(value) {
             _errorMessage.value = value
         }
-
-    private var _username: MutableState<String?> = mutableStateOf(null)
-    var username: String?
-        get() = _username.value
-        set(value) {
-            _username.value = value
-        }
-
-    private var _password: MutableState<String?> = mutableStateOf(null)
-    var password: String?
-        get() = _password.value
-        set(value) {
-            _password.value = value
-        }
 }

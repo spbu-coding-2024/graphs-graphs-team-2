@@ -48,7 +48,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import io.ioNeo4j.WriteNeo4j
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.skiko.Cursor
@@ -66,9 +65,6 @@ import viewModel.io.SQLiteSearchScreenViewModel
 
 @Composable
 fun MainScreen(viewModel: MainScreenViewModel) {
-    val userName = remember { mutableStateOf(viewModel.username) }
-    val passWord = remember { mutableStateOf(viewModel.password) }
-
     val scope = rememberCoroutineScope { Dispatchers.Default }
     val navigator = LocalNavigator.currentOrThrow
 
@@ -595,26 +591,9 @@ fun MainScreen(viewModel: MainScreenViewModel) {
         }
 
         if (viewModel.dataSystem == DataSystems.Neo4j) {
-            Neo4jView(userName, passWord) { viewModel.dataSystem = null }
-            if (userName.value != null && passWord.value != null) {
-                try {
-                    WriteNeo4j(userName.value ?: "", passWord.value ?: "", viewModel.graphViewModel)
-                    viewModel.apply {
-                        dataSystem = null
-                        username = null
-                        password = null
-                    }
-                } catch (e: Exception) {
-                    viewModel.apply {
-                        errorMessage = e.message ?: "Unknown error"
-                        showErrorDialog = true
-                        username = null
-                        password = null
-                        dataSystem = null
-                    }
-                }
-            }
+            Neo4jView(true, navigator, viewModel.graphViewModel) { viewModel.dataSystem = null }
         }
+
         if (viewModel.dataSystem == DataSystems.SQLite) {
             SQLiteNameInputView(mutableStateOf(viewModel.graphName)) { viewModel.dataSystem = null }
             if (viewModel.graphName != null) {
