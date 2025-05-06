@@ -49,8 +49,6 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import io.ioNeo4j.WriteNeo4j
-import kotlin.math.max
-import kotlin.math.min
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.skiko.Cursor
@@ -63,10 +61,8 @@ import view.io.Neo4jView
 import view.io.SQLiteNameInputView
 import view.io.storeToJson
 import viewModel.MainScreenViewModel
-import viewModel.graph.GraphViewModel
 import viewModel.io.JSONViewModel
 import viewModel.io.SQLiteSearchScreenViewModel
-import viewModel.placement.place
 
 @Composable
 fun MainScreen(viewModel: MainScreenViewModel) {

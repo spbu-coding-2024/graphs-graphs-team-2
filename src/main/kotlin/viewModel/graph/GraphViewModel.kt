@@ -272,16 +272,18 @@ class GraphViewModel(
             _vertices[it.id]?.y = placement[it]?.second ?: Random.nextInt(0..800).dp
         }
     }
+
     private var _isOffsetCalculated = mutableStateOf(false)
     var isOffsetCalculated
         get() = _isOffsetCalculated.value
         set(value) {
             _isOffsetCalculated.value = value
         }
-    var  calculatedOffsetX=mutableStateOf(0f)
-    var calculatedOffsetY=mutableStateOf(0f)
 
-    fun calculateScaleAndOffset(): Float{
+    var calculatedOffsetX = mutableStateOf(0f)
+    var calculatedOffsetY = mutableStateOf(0f)
+
+    fun calculateScaleAndOffset(): Float {
         var minX = vertices.first().x.value
         var minY = vertices.first().y.value
         var maxX = vertices.first().x.value
@@ -304,11 +306,9 @@ class GraphViewModel(
         return scale
     }
 
-    fun placementAlgorithm(){
+    fun placementAlgorithm() {
         place(vertices, edges)
     }
-
-
 
     private fun find() {}
 }

@@ -12,10 +12,9 @@ import org.gephi.project.api.ProjectController
 import org.gephi.project.api.Workspace
 import org.openide.util.Lookup
 import viewModel.graph.EdgeViewModel
-import viewModel.graph.GraphViewModel
 import viewModel.graph.VertexViewModel
 
-fun place( vertices: Collection<VertexViewModel>,edges: Collection<EdgeViewModel>) {
+fun place(vertices: Collection<VertexViewModel>, edges: Collection<EdgeViewModel>) {
     val pc: ProjectController = Lookup.getDefault().lookup(ProjectController::class.java)
     pc.newProject()
     val ws: Workspace = pc.currentWorkspace
