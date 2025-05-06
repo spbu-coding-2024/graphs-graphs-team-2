@@ -119,5 +119,17 @@ class DijkstraTest {
         algoDijkstra.dijkstra(start.toLong())
 
         assertEquals(correctWeight, algoDijkstra.weightMinWay)
+
+        var weightWayDijkstra = 0F
+        val way = algoDijkstra.way
+
+        for (i in 0..way.size - 2) {
+            graph.edges.forEach { edge ->
+                if(edge.vertices.first.id == way[i] && edge.vertices.second.id == way[i+1]){
+                    weightWayDijkstra += edge.weight
+                }
+            }
+        }
+        assertEquals(correctWeight, weightWayDijkstra)
     }
 }
