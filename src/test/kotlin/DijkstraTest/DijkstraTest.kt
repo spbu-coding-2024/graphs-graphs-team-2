@@ -11,14 +11,13 @@ import kotlin.test.assertEquals
 
 class DijkstraTest {
 
-
     companion object {
-        val infinity = 1_000_000_000_000_000_000F
-        val firstId = 0
-        val secondId = 100
 
         @JvmStatic
         fun graphGenerator(): Stream<Arguments> {
+            val infinity = 1_000_000_000_000_000_000F
+            val firstId = 0
+            val lastId = 100
             return Stream.generate {
 
                 val calculateEdgeId = { firstVertexId: Int, secondVertexId: Int ->
@@ -28,18 +27,18 @@ class DijkstraTest {
                 val weightsOfEdges = mutableMapOf<Int, Int>()
 
                 val graph = Graph(true, true)
-                val start = Random.nextInt(firstId, secondId)
+                val start = Random.nextInt(firstId, lastId)
                 graph.addVertex(start.toLong(), "")
 
-                var end = Random.nextInt(firstId, secondId)
+                var end = Random.nextInt(firstId, lastId)
                 while (end == start) {
-                    end = Random.nextInt(firstId, secondId)
+                    end = Random.nextInt(firstId, lastId)
                 }
 
                 graph.addVertex(end.toLong(), "")
 
-                val minWaysWeights = Array(secondId + 1) { if (it == start) 0F else infinity }
-                val parent = Array(secondId + 1) { infinity.toInt() }
+                val minWaysWeights = Array(lastId + 1) { if (it == start) 0F else infinity }
+                val parent = Array(lastId + 1) { infinity.toInt() }
                 val countOfWays = Random.nextInt(5, 20)
                 val maxWeight = 5000
 
@@ -47,9 +46,9 @@ class DijkstraTest {
                     var totalWeight = 0F
                     var oldVertex = start
                     do {
-                        var newVertex = Random.nextInt(firstId, secondId)
+                        var newVertex = Random.nextInt(firstId, lastId)
                         while (newVertex == oldVertex) {
-                            newVertex = Random.nextInt(firstId, secondId)
+                            newVertex = Random.nextInt(firstId, lastId)
                         }
                         graph.addVertex(newVertex.toLong(), "")
 
