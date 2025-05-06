@@ -80,7 +80,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
         horizontalArrangement = Arrangement.spacedBy(5.dp),
         modifier = Modifier.background(CoolColors.Gray),
     ) {
-        var scale by remember { mutableStateOf(calculateScale(viewModel.graphViewModel)) }
+        var scale by remember { mutableStateOf(viewModel.graphViewModel.calculateScaleAndOffset()) }
 
         Column(
             modifier =
@@ -266,10 +266,8 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                         .padding(horizontal = 7.dp),
                 onClick = {
                     scope.launch {
-                        place(800.0, 600.0, viewModel.graphViewModel)
-                        scale = calculateScale(viewModel.graphViewModel)
-
-                        viewModel.graphViewModel.isNeedToCalculate = true
+                        viewModel.graphViewModel.placementAlgorithm()
+                        scale = viewModel.graphViewModel.calculateScaleAndOffset()
                     }
                 },
                 text = "Placement",
@@ -648,22 +646,4 @@ fun MainScreen(viewModel: MainScreenViewModel) {
             ErrorDialog(viewModel.errorMessage) { viewModel.showErrorDialog = false }
         }
     }
-}
-
-fun calculateScale(graph: GraphViewModel): Float {
-    var minX = graph.vertices.first().x.value
-    var minY = graph.vertices.first().y.value
-    var maxX = graph.vertices.first().x.value
-    var maxY = graph.vertices.first().y.value
-
-    for (v in graph.vertices) {
-        minX = min(v.x.value - v.radius.value, minX)
-        minY = min(v.y.value - v.radius.value, minY)
-        maxX = max(v.x.value + v.radius.value, maxX)
-        maxY = max(v.y.value + v.radius.value, maxY)
-    }
-    val scaleX = 800f / (maxX - minX)
-    val scaleY = 800f / (maxY - minY)
-    val scale = min(scaleX, scaleY)
-    return scale
 }
