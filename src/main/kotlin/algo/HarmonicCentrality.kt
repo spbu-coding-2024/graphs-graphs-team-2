@@ -9,8 +9,8 @@ class HarmonicCentrality(private val graph: Graph) {
             if (it.id != u) {
                 val path = AlgoDijkstra(graph, u, it.id)
                 path.dijkstra(u)
-                val pathWeight = path.weightMinWay
-                if (pathWeight != null) sum += 1 / pathWeight
+                val pathLength = path.way.size
+                if (pathLength != 0) sum += 1 / (pathLength - 1)
             }
         }
         return sum

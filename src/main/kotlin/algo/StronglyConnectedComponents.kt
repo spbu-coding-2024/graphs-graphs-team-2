@@ -4,25 +4,25 @@ import model.Graph
 
 class StronglyConnectedComponents(private val graph: Graph) {
 
-    private val _components = mutableListOf<MutableList<Long>>()
-    val components: List<MutableList<Long>>
+    private var _components = setOf<Set<Long>>()
+    val components: Set<Set<Long>>
         get() {
-            return _components.toList()
+            return _components
         }
 
     private val size = graph.vertices.size
     private var used = graph.vertices.associate { it.id to false }.toMutableMap()
     private val order = mutableListOf<Long>()
-    private var currComponent = mutableListOf<Long>()
+    private var currComponent = setOf<Long>()
 
-    val graphMap = graph.map
+    private val graphMap = graph.map
 
-    val transGraphMap: Map<Long, ArrayDeque<Long>> =
-        graph.vertices.associate { it.id to ArrayDeque() }
+    private val transGraphMap: Map<Long, MutableList<Long>> =
+        graph.vertices.associate { it.id to mutableListOf() }
 
     private fun prepare() {
         graph.edges.forEach {
-            transGraphMap[it.vertices.first.id]?.add(it.vertices.second.id)
+            transGraphMap[it.vertices.second.id]?.add(it.vertices.first.id)
                 ?: throw IllegalStateException("Edge ${it.id} contains non-existing vertices")
         }
     }
@@ -41,7 +41,7 @@ class StronglyConnectedComponents(private val graph: Graph) {
 
     private fun dfsBack(v: Long) {
         used[v] = true
-        currComponent.add(v)
+        currComponent = currComponent.plusElement(v)
         transGraphMap[v]?.forEach { used[it]?.let { isUsed -> if (!isUsed) dfsBack(it) } }
     }
 
@@ -54,8 +54,9 @@ class StronglyConnectedComponents(private val graph: Graph) {
             used[v]?.let { isUsed ->
                 if (!isUsed) {
                     dfsBack(v)
-                    _components.add(currComponent)
-                    currComponent = mutableListOf()
+                    _components = _components.plusElement(currComponent)
+                    println(currComponent.joinToString(" "))
+                    currComponent = setOf()
                 }
             }
         }
