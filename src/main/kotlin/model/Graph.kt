@@ -87,20 +87,6 @@ class Graph(private val direction: Boolean = false, private val weight: Boolean 
         }
     }
 
-    private var _graphWeightedMap = mapOf<Long, ArrayDeque<Pair<Long,Float>>>()
-    val graphWeightedMap: Map<Long, ArrayDeque<Pair<Long,Float>>>
-        get() {
-            if(_graphWeightedMap.isEmpty()) computeWeightedMap()
-            return _graphWeightedMap
-        }
-    private fun computeWeightedMap() {
-        _graphWeightedMap = _vertices.keys.associateWith{ ArrayDeque() }
-        edges.forEach {
-            _graphWeightedMap[it.vertices.first.id]?.add(it.vertices.second.id to it.weight)
-                ?: throw IllegalStateException("Edge ${it.id} contains non-existing vertex")
-        }
-    }
-
     private data class Vertex(override var label: String, override var id: Long) : AbstractVertex
 
     private data class Edge(

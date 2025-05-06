@@ -334,19 +334,6 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     textPadding = 3.dp,
                 )
             }
-            if(viewModel.graphViewModel.isWeighted) {
-                Row {
-                    Checkbox(
-                        checked = viewModel.showEdgesWeights.value,
-                        onCheckedChange = { viewModel.showEdgesWeights.value = it })
-                    Text(
-                        "Show edges weights",
-                        fontSize = 28.sp,
-                        modifier = Modifier.padding(4.dp),
-                        color = CoolColors.Purple
-                    )
-                }
-            }
             if (!viewModel.graphViewModel.isDirected) {
                 PurpleButton(
                     modifier =
