@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import model.Graph
 import model.abstractGraph.AbstractVertex
 import view.components.CoolColors
+import viewModel.placement.place
 
 class GraphViewModel(
     private val graph: Graph,
@@ -272,9 +273,17 @@ class GraphViewModel(
         }
     }
 
-    var isNeedToCalculate = false
+    private var _isOffsetCalculated = mutableStateOf(false)
+    var isOffsetCalculated
+        get() = _isOffsetCalculated.value
+        set(value) {
+            _isOffsetCalculated.value = value
+        }
 
-    fun calculateOffSet(): Pair<Float, Float> {
+    var calculatedOffsetX = mutableStateOf(0f)
+    var calculatedOffsetY = mutableStateOf(0f)
+
+    fun calculateScaleAndOffset(): Float {
         var minX = vertices.first().x.value
         var minY = vertices.first().y.value
         var maxX = vertices.first().x.value
@@ -291,6 +300,15 @@ class GraphViewModel(
         val scale = min(scaleX, scaleY)
         val offsetX = -(minX - (800f - scale * (maxX - minX)) / 2f) * scale
         val offsetY = -(minY - (800f - scale * (maxY - minY)) / 2f) * scale
-        return Pair(offsetX, offsetY)
+        calculatedOffsetX.value = offsetX
+        calculatedOffsetY.value = offsetY
+        isOffsetCalculated = true
+        return scale
     }
+
+    fun placementAlgorithm() {
+        place(vertices, edges)
+    }
+
+    private fun find() {}
 }

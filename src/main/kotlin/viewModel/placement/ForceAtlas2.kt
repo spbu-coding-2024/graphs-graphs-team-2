@@ -11,17 +11,16 @@ import org.gephi.layout.plugin.forceAtlas2.ForceAtlas2
 import org.gephi.project.api.ProjectController
 import org.gephi.project.api.Workspace
 import org.openide.util.Lookup
-import viewModel.graph.GraphViewModel
+import viewModel.graph.EdgeViewModel
+import viewModel.graph.VertexViewModel
 
-fun place(width: Double, height: Double, graphViewModel: GraphViewModel) {
+fun place(vertices: Collection<VertexViewModel>, edges: Collection<EdgeViewModel>) {
     val pc: ProjectController = Lookup.getDefault().lookup(ProjectController::class.java)
     pc.newProject()
     val ws: Workspace = pc.currentWorkspace
     val gm: GraphModel = Lookup.getDefault().lookup(GraphController::class.java).getGraphModel(ws)
     val gr: Graph = gm.getGraph()
     val con = mutableMapOf<String, Node>()
-    val vertices = graphViewModel.vertices
-    val edges = graphViewModel.edges
     for (vert in vertices) {
         val p = vert.ID.toString()
         val n: Node = gm.factory().newNode(p)
