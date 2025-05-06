@@ -62,7 +62,7 @@ class FindBridgesTest {
                     bridges.add(Pair(firstVertex.toLong(), secondVertex.toLong()))
                 }
                 Arguments.of(graph, bridges)
-            }.limit(100)
+            }.limit(500)
         }
     }
 

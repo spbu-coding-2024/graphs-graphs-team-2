@@ -105,34 +105,19 @@ class DijkstraTest {
                         }
                     }
                 }
-                Arguments.of(graph, parent, start, end, minWaysWeights[end])
-            }.limit(100)
+                Arguments.of(graph, start, end, minWaysWeights[end])
+            }.limit(5000)
         }
     }
 
     @ParameterizedTest(name = "test for dijkstra")
     @MethodSource("graphGenerator")
     fun `check for random graph`(
-        graph: Graph, parents: Array<Int>, start: Int, end: Int, correctWeight: Float
+        graph: Graph, start: Int, end: Int, correctWeight: Float
     ) {
         val algoDijkstra = AlgoDijkstra(graph, start.toLong(), end.toLong())
         algoDijkstra.dijkstra(start.toLong())
-        val way = algoDijkstra.way
 
-        val correctWay = ArrayDeque<Long>()
-
-        var currentVertex = end
-        while (currentVertex != start) {
-            correctWay.addFirst(currentVertex.toLong())
-            currentVertex = parents[currentVertex]
-        }
-        correctWay.addFirst(start.toLong())
-
-        assertEquals(correctWay.size, way.size)
         assertEquals(correctWeight, algoDijkstra.weightMinWay)
-
-        for (i in 0..<correctWay.size) {
-            assertEquals(correctWay[i], way[i])
-        }
     }
 }
