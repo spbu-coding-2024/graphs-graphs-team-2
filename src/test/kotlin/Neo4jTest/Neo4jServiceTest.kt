@@ -5,7 +5,6 @@ import androidx.compose.ui.unit.Dp
 import model.Graph
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
 import org.neo4j.harness.Neo4j
 import org.neo4j.harness.Neo4jBuilders
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,8 +14,15 @@ import org.springframework.test.context.DynamicPropertySource
 import viewModel.graph.GraphViewModel
 import androidx.compose.ui.unit.dp
 import io.ioNeo4j.Neo4jService
+import model.abstractGraph.AbstractVertex
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.ComponentScan
+import java.util.stream.Stream
+import kotlin.random.Random
 
 
 @SpringBootApplication
@@ -37,6 +43,13 @@ class Neo4jServiceTest {
                 .build()
         }
 
+        @AfterAll
+        @JvmStatic
+        fun tearDown() {
+            neo4j.close()
+        }
+
+
         @DynamicPropertySource
         @JvmStatic
         fun neo4jProperties(registry: DynamicPropertyRegistry) {
@@ -44,34 +57,65 @@ class Neo4jServiceTest {
             registry.add("spring.neo4j.authentication.username") { "neo4j" }
             registry.add("spring.neo4j.authentication.password") { null }
         }
+
+        @JvmStatic
+        fun graphGenerator(): Stream<Arguments> {
+            return Stream.generate {
+                val calculateEdgeId = { firstVertexId: Int, secondVertexId: Int ->
+                    firstVertexId * 1000 + secondVertexId
+                }
+                val countOfNodes = Random.nextInt(10, 100)
+                val firstId = 0
+                val lastId = countOfNodes
+                val graph = Graph(true, true)
+                val nodes = mutableSetOf<Int>()
+
+                for (i in 0..countOfNodes) {
+                    val vertex = Random.nextInt(firstId, lastId)
+                    graph.addVertex(vertex.toLong(), "$vertex")
+                    nodes.add(vertex)
+                }
+
+                nodes.forEach { firstId ->
+                    val countOfEdges = Random.nextInt(0, 10)
+                    for (i in 0..countOfEdges) {
+                        val secondId = nodes.random()
+                        if (firstId != secondId) {
+                            graph.addEdge(
+                                firstId.toLong(),
+                                secondId.toLong(),
+                                "${calculateEdgeId(firstId, secondId)}",
+                                calculateEdgeId(firstId, secondId).toLong(),
+                                Random.nextFloat()
+                            )
+                        }
+                    }
+                }
+                Arguments.of(graph)
+            }.limit(1)
+        }
     }
 
     @Autowired
     private lateinit var neo4jService: Neo4jService
 
-    @Test
-    fun `test write and read graph`() {
-        val mapOfPlacement = mutableMapOf<String,Pair<Dp,Dp>>()
+    @ParameterizedTest(name = "test for Neo4j")
+    @MethodSource("graphGenerator")
+    fun `test write and read random graph`(
+        correctGraph: Graph
+    ) {
 
-        val graph = Graph(true, true)
-        val v1 = graph.addVertex(1, "Dima")
-        val v2 = graph.addVertex(2, "Egorr")
-        graph.addEdge(1, 2, "Friend", 3, 10.0F)
-        graph.addEdge(2, 1, "Friendd", 4, 12.0F)
-
-
-        val placement = mapOf(
-            v1 to Pair(10.dp, 10.dp),
-            v2 to Pair(20.dp, 20.dp)
-        )
-
-        placement.forEach { v ->
-            mapOfPlacement.put(v.key.label,v.value)
+        val placement = mutableMapOf<AbstractVertex, Pair<Dp, Dp>>()
+        val mapOfPlacement = mutableMapOf<String, Pair<Dp, Dp>>()
+        correctGraph.vertices.forEach { vertex ->
+            val cord = Pair(Random.nextInt(1, 100).dp, Random.nextInt(1, 100).dp)
+            placement.put(vertex, cord)
+            mapOfPlacement.put(vertex.label,cord)
         }
 
 
         val viewModel = GraphViewModel(
-            graph,
+            correctGraph,
             placement,
             mutableStateOf(false),
             mutableStateOf(false),
@@ -83,33 +127,33 @@ class Neo4jServiceTest {
 
         val (readGraph, readPlacement) = neo4jService.readData()
 
-        assertEquals(readGraph.isDirected, graph.isDirected)
-        assertEquals(readGraph.isWeighted, graph.isWeighted)
-        assertEquals(readGraph.vertices.size, graph.vertices.size)
-        assertEquals(readGraph.edges.size, graph.edges.size)
+        assertEquals(readGraph.isDirected, correctGraph.isDirected)
+        assertEquals(readGraph.isWeighted, correctGraph.isWeighted)
+        assertEquals(readGraph.vertices.size, correctGraph.vertices.size)
+        assertEquals(readGraph.edges.size, correctGraph.edges.size)
 
 
         readPlacement.forEach { (readV, readCoords) ->
-            assertEquals(mapOfPlacement[readV.label],readCoords)
+            assertEquals(mapOfPlacement[readV.label], readCoords)
         }
 
 
-        val sortedReadGraphVertex = readGraph.vertices.sortedBy { it.label.length }
-        val sortedGraphVertex = graph.vertices.sortedBy { it.label.length }
+        val sortedReadGraphVertex = readGraph.vertices.sortedBy { it.label.toInt() }
+        val sortedGraphVertex = correctGraph.vertices.sortedBy { it.label.toInt() }
 
-        for( i in 0..<sortedGraphVertex.size) {
-            assertEquals(sortedGraphVertex[i].label,sortedReadGraphVertex[i].label)
+        for (i in 0..<sortedGraphVertex.size) {
+            assertEquals(sortedGraphVertex[i].label, sortedReadGraphVertex[i].label)
         }
 
 
-        val sortedReadGraphEdge = readGraph.edges.sortedBy { it.label.length }
-        val sortedGraphEdge = graph.edges.sortedBy { it.label.length }
+        val sortedReadGraphEdge = readGraph.edges.sortedBy { it.label.toInt() }
+        val sortedGraphEdge = correctGraph.edges.sortedBy { it.label.toInt() }
 
-        for( i in 0..<sortedGraphEdge.size) {
-            assertEquals(sortedGraphEdge[i].label,sortedReadGraphEdge[i].label)
-            assertEquals(sortedGraphEdge[i].vertices.first.label,sortedReadGraphEdge[i].vertices.first.label)
-            assertEquals(sortedGraphEdge[i].vertices.second.label,sortedReadGraphEdge[i].vertices.second.label)
-            assertEquals(sortedGraphEdge[i].weight,sortedReadGraphEdge[i].weight)
+        for (i in 0..<sortedGraphEdge.size) {
+            assertEquals(sortedGraphEdge[i].label, sortedReadGraphEdge[i].label)
+            assertEquals(sortedGraphEdge[i].vertices.first.label, sortedReadGraphEdge[i].vertices.first.label)
+            assertEquals(sortedGraphEdge[i].vertices.second.label, sortedReadGraphEdge[i].vertices.second.label)
+            assertEquals(sortedGraphEdge[i].weight, sortedReadGraphEdge[i].weight)
         }
     }
 }
