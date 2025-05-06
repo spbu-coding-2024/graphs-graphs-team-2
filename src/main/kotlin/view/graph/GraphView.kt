@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
@@ -25,11 +26,11 @@ fun GraphView(viewModel: GraphViewModel, scale: Float) {
     Box(
         modifier =
             Modifier.fillMaxSize()
-                .pointerInput(Unit) {
+                .pointerInput(scale) {
                     detectDragGestures { change, dragAmount ->
                         change.consume()
-                        offsetX += dragAmount.x*scale
-                        offsetY += dragAmount.y*scale
+                        offsetX += dragAmount.x/scale
+                        offsetY += dragAmount.y/scale
                     }
                 }
                 .graphicsLayer(scaleX = scale, scaleY = scale)
