@@ -3,6 +3,7 @@ package view.io
 import GraphScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.OutlinedTextField
@@ -37,6 +39,9 @@ import androidx.compose.ui.window.Dialog
 import cafe.adriel.voyager.navigator.Navigator
 import io.ioNeo4j.ReadNeo4j
 import io.ioNeo4j.WriteNeo4j
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import view.components.CoolColors
 import view.components.ErrorDialog
 import view.components.PurpleButton
@@ -52,97 +57,110 @@ fun Neo4jView(
     navigator: Navigator,
     dismissRequest: () -> Unit,
 ) {
-    Dialog(onDismissRequest = {}) {
-        Card(
-            modifier = Modifier.fillMaxWidth().height(500.dp).padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize().background(CoolColors.DarkGray),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
+    if (!viewModel.isLoading.value) {
+        Dialog(onDismissRequest = {}) {
+            Card(
+                modifier = Modifier.fillMaxWidth().height(500.dp).padding(16.dp),
+                shape = RoundedCornerShape(16.dp),
             ) {
-                Text(
-                    text = "Connect to Neo4j",
-                    modifier = Modifier.padding(top = 20.dp, bottom = 10.dp),
-                    fontSize = 40.sp,
-                    style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
-                    color = CoolColors.DarkPurple,
-                )
+                Column(
+                    modifier = Modifier.fillMaxSize().background(CoolColors.DarkGray),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        text = "Connect to Neo4j",
+                        modifier = Modifier.padding(top = 20.dp, bottom = 10.dp),
+                        fontSize = 40.sp,
+                        style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
+                        color = CoolColors.DarkPurple,
+                    )
 
-                OutlinedTextField(
-                    viewModel.username.value,
-                    { viewModel.username.value = it },
-                    textStyle = TextStyle(fontSize = 32.sp, color = CoolColors.DarkPurple),
-                    modifier = Modifier.width(400.dp),
-                    label = { Text("username", fontSize = 28.sp, color = CoolColors.DarkPurple) },
-                )
-                OutlinedTextField(
-                    viewModel.password.value,
-                    { viewModel.password.value = it },
-                    textStyle = TextStyle(fontSize = 32.sp, color = CoolColors.DarkPurple),
-                    modifier = Modifier.width(400.dp),
-                    label = { Text("password", fontSize = 28.sp, color = CoolColors.DarkPurple) },
-                    visualTransformation =
-                        if (viewModel.passwordVisible.value) VisualTransformation.None
-                        else PasswordVisualTransformation(),
-                    trailingIcon = {
-                        val image =
-                            if (viewModel.passwordVisible.value) Icons.Filled.Visibility
-                            else Icons.Filled.VisibilityOff
+                    OutlinedTextField(
+                        viewModel.username.value,
+                        { viewModel.username.value = it },
+                        textStyle = TextStyle(fontSize = 32.sp, color = CoolColors.DarkPurple),
+                        modifier = Modifier.width(400.dp),
+                        label = { Text("username", fontSize = 28.sp, color = CoolColors.DarkPurple) },
+                    )
+                    OutlinedTextField(
+                        viewModel.password.value,
+                        { viewModel.password.value = it },
+                        textStyle = TextStyle(fontSize = 32.sp, color = CoolColors.DarkPurple),
+                        modifier = Modifier.width(400.dp),
+                        label = { Text("password", fontSize = 28.sp, color = CoolColors.DarkPurple) },
+                        visualTransformation =
+                            if (viewModel.passwordVisible.value) VisualTransformation.None
+                            else PasswordVisualTransformation(),
+                        trailingIcon = {
+                            val image =
+                                if (viewModel.passwordVisible.value) Icons.Filled.Visibility
+                                else Icons.Filled.VisibilityOff
 
-                        val description =
-                            if (viewModel.passwordVisible.value) "Hide password" else "Show password"
+                            val description =
+                                if (viewModel.passwordVisible.value) "Hide password" else "Show password"
 
-                        IconButton(onClick = { viewModel.passwordVisible.value =
-                            !viewModel.passwordVisible.value }) {
-                            Icon(
-                                imageVector = image,
-                                contentDescription = description,
-                                tint = CoolColors.DarkPurple,
-                                modifier = Modifier.size(32.dp),
+                            IconButton(onClick = {
+                                viewModel.passwordVisible.value =
+                                    !viewModel.passwordVisible.value
+                            }) {
+                                Icon(
+                                    imageVector = image,
+                                    contentDescription = description,
+                                    tint = CoolColors.DarkPurple,
+                                    modifier = Modifier.size(32.dp),
+                                )
+                            }
+                        },
+                    )
+                    Column(
+                        modifier = Modifier.padding(top = 52.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        Row(modifier = Modifier, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            PurpleButton(
+                                onClick = dismissRequest,
+                                modifier = Modifier.clip(shape = RoundedCornerShape(10.dp)),
+                                text = "Back",
+                                fontSize = 32.sp,
+                                textPadding = 10.dp,
+                            )
+                            PurpleButton(
+                                onClick = {
+                                    viewModel.isLoading.value = true
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        if (!flagOfWrite) {
+                                            val model = viewModel.read()
+                                            if (model != null) {
+                                                navigator.push(GraphScreen(model.first, model.second))
+                                            }
+                                        } else {
+                                            if (viewModel.write(graphViewModel)) {
+                                                dismissRequest.invoke()
+                                            }
+                                        }
+                                        viewModel.isLoading.value = false
+                                    }
+                                },
+                                modifier = Modifier.clip(shape = RoundedCornerShape(10.dp)),
+                                text = "Confirm",
+                                fontSize = 32.sp,
+                                textPadding = 10.dp,
                             )
                         }
-                    },
-                )
-                Column(
-                    modifier = Modifier.padding(top = 52.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                ) {
-                    Row(modifier = Modifier, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        PurpleButton(
-                            onClick = dismissRequest,
-                            modifier = Modifier.clip(shape = RoundedCornerShape(10.dp)),
-                            text = "Back",
-                            fontSize = 32.sp,
-                            textPadding = 10.dp,
-                        )
-                        PurpleButton(
-                            onClick = {
-                                if(!flagOfWrite){
-                                    val model = viewModel.read()
-                                    if(model != null) {
-                                        navigator.push(GraphScreen(model.first, model.second))
-                                    }
-                                }
-                                else{
-                                    if(viewModel.write(graphViewModel)) {
-                                        dismissRequest.invoke()
-                                    }
-                                }
-                            },
-                            modifier = Modifier.clip(shape = RoundedCornerShape(10.dp)),
-                            text = "Confirm",
-                            fontSize = 32.sp,
-                            textPadding = 10.dp,
-                        )
                     }
                 }
             }
         }
     }
-    if(viewModel.showErrorDialog.value){
+    if (viewModel.showErrorDialog.value) {
         ErrorDialog(viewModel.errorMessage.value) { viewModel.showErrorDialog.value = false }
+    }
+
+    if (viewModel.isLoading.value) {
+        Box(Modifier.fillMaxSize()) {
+            CircularProgressIndicator(Modifier.align(Alignment.Center))
+        }
     }
 }

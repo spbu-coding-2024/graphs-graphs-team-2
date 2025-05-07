@@ -14,9 +14,11 @@ class Neo4jViewModel {
     val passwordVisible = mutableStateOf(false)
     val errorMessage = mutableStateOf("")
     val showErrorDialog = mutableStateOf(false)
+    val isLoading = mutableStateOf(false)
 
     fun read(): Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>? {
         try {
+            isLoading.value = true
             return ReadNeo4j(username.value, password.value)
         } catch (e: Exception) {
             errorMessage.value = e.message ?: "Error"
@@ -27,6 +29,7 @@ class Neo4jViewModel {
 
     fun write(graphViewModel: GraphViewModel?) : Boolean {
         try{
+            isLoading.value = true
             WriteNeo4j(
                 username.value,
                 password.value,
