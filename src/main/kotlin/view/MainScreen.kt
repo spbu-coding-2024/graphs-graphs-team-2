@@ -61,7 +61,6 @@ import view.io.Neo4jView
 import view.io.SQLiteNameInputView
 import view.io.storeToJson
 import viewModel.MainScreenViewModel
-import viewModel.io.JSONViewModel
 import viewModel.io.SQLiteSearchScreenViewModel
 
 @Composable
@@ -591,7 +590,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
         }
 
         if (viewModel.dataSystem == DataSystems.JSON) {
-            storeToJson(JSONViewModel(), viewModel.graphViewModel) { viewModel.dataSystem = null }
+            storeToJson(viewModel, viewModel.graphViewModel) { viewModel.dataSystem = null }
         }
 
         if (viewModel.dataSystem == DataSystems.Neo4j) {
