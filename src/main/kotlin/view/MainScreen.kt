@@ -591,7 +591,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
         }
 
         if (viewModel.dataSystem == DataSystems.JSON) {
-            storeToJson(JSONViewModel(), viewModel.graphViewModel) { viewModel.dataSystem = null }
+            storeToJson(viewModel, viewModel.graphViewModel) { viewModel.dataSystem = null }
         }
 
         if (viewModel.dataSystem == DataSystems.Neo4j) {
