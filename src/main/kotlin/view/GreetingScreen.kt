@@ -33,6 +33,7 @@ import view.io.SQLiteSearchView
 import view.io.loadFromJson
 import viewModel.GreetingScreenViewModel
 import viewModel.io.JSONViewModel
+import viewModel.io.Neo4jViewModel
 import viewModel.io.SQLiteSearchScreenViewModel
 
 enum class DataSystems {
@@ -89,7 +90,7 @@ fun GreetingView(viewModel: GreetingScreenViewModel) {
         }
 
         if (viewModel.dataSystem == DataSystems.Neo4j) {
-            Neo4jView(false, navigator, null) { viewModel.dataSystem = null }
+            Neo4jView(false, null, Neo4jViewModel(), navigator) { viewModel.dataSystem = null }
         }
 
         if (viewModel.dataSystem == DataSystems.JSON) {

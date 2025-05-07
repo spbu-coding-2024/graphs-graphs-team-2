@@ -38,13 +38,18 @@ import cafe.adriel.voyager.navigator.Navigator
 import io.ioNeo4j.ReadNeo4j
 import io.ioNeo4j.WriteNeo4j
 import view.components.CoolColors
+import view.components.ErrorDialog
 import view.components.PurpleButton
 import viewModel.graph.GraphViewModel
+import viewModel.io.Neo4jViewModel
+import kotlin.invoke
 
 @Composable
 fun Neo4jView(
-    flagOfWrite: Boolean, navigator: Navigator,
+    flagOfWrite: Boolean,
     graphViewModel: GraphViewModel?,
+    viewModel: Neo4jViewModel,
+    navigator: Navigator,
     dismissRequest: () -> Unit,
 ) {
     Dialog(onDismissRequest = {}) {
@@ -64,35 +69,33 @@ fun Neo4jView(
                     style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
                     color = CoolColors.DarkPurple,
                 )
-                val username = remember { mutableStateOf("") }
-                val password = remember { mutableStateOf("") }
-                val passwordVisible = remember { mutableStateOf(false) }
 
                 OutlinedTextField(
-                    username.value,
-                    { username.value = it },
+                    viewModel.username.value,
+                    { viewModel.username.value = it },
                     textStyle = TextStyle(fontSize = 32.sp, color = CoolColors.DarkPurple),
                     modifier = Modifier.width(400.dp),
                     label = { Text("username", fontSize = 28.sp, color = CoolColors.DarkPurple) },
                 )
                 OutlinedTextField(
-                    password.value,
-                    { password.value = it },
+                    viewModel.password.value,
+                    { viewModel.password.value = it },
                     textStyle = TextStyle(fontSize = 32.sp, color = CoolColors.DarkPurple),
                     modifier = Modifier.width(400.dp),
                     label = { Text("password", fontSize = 28.sp, color = CoolColors.DarkPurple) },
                     visualTransformation =
-                        if (passwordVisible.value) VisualTransformation.None
+                        if (viewModel.passwordVisible.value) VisualTransformation.None
                         else PasswordVisualTransformation(),
                     trailingIcon = {
                         val image =
-                            if (passwordVisible.value) Icons.Filled.Visibility
+                            if (viewModel.passwordVisible.value) Icons.Filled.Visibility
                             else Icons.Filled.VisibilityOff
 
                         val description =
-                            if (passwordVisible.value) "Hide password" else "Show password"
+                            if (viewModel.passwordVisible.value) "Hide password" else "Show password"
 
-                        IconButton(onClick = { passwordVisible.value = !passwordVisible.value }) {
+                        IconButton(onClick = { viewModel.passwordVisible.value =
+                            !viewModel.passwordVisible.value }) {
                             Icon(
                                 imageVector = image,
                                 contentDescription = description,
@@ -117,20 +120,16 @@ fun Neo4jView(
                         )
                         PurpleButton(
                             onClick = {
-                                try {
-                                    if (!flagOfWrite) {
-                                        val model = ReadNeo4j(username.value, password.value)
+                                if(!flagOfWrite){
+                                    val model = viewModel.read()
+                                    if(model != null) {
                                         navigator.push(GraphScreen(model.first, model.second))
-                                    } else {
-                                        WriteNeo4j(
-                                            username.value,
-                                            password.value,
-                                            graphViewModel ?: throw IllegalArgumentException("no graph for write")
-                                        )
+                                    }
+                                }
+                                else{
+                                    if(viewModel.write(graphViewModel)) {
                                         dismissRequest.invoke()
                                     }
-                                } catch (e: Exception) {
-                                    throw e
                                 }
                             },
                             modifier = Modifier.clip(shape = RoundedCornerShape(10.dp)),
@@ -142,5 +141,8 @@ fun Neo4jView(
                 }
             }
         }
+    }
+    if(viewModel.showErrorDialog.value){
+        ErrorDialog(viewModel.errorMessage.value) { viewModel.showErrorDialog.value = false }
     }
 }

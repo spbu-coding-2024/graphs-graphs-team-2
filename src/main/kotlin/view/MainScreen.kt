@@ -61,6 +61,7 @@ import view.io.SQLiteNameInputView
 import view.io.storeToJson
 import viewModel.MainScreenViewModel
 import viewModel.io.JSONViewModel
+import viewModel.io.Neo4jViewModel
 import viewModel.io.SQLiteSearchScreenViewModel
 
 @Composable
@@ -591,7 +592,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
         }
 
         if (viewModel.dataSystem == DataSystems.Neo4j) {
-            Neo4jView(true, navigator, viewModel.graphViewModel) { viewModel.dataSystem = null }
+            Neo4jView(true, viewModel.graphViewModel, Neo4jViewModel(), navigator) { viewModel.dataSystem = null }
         }
 
         if (viewModel.dataSystem == DataSystems.SQLite) {
