@@ -61,7 +61,6 @@ import view.io.Neo4jView
 import view.io.SQLiteNameInputView
 import view.io.storeToJson
 import viewModel.MainScreenViewModel
-import viewModel.io.JSONViewModel
 import viewModel.io.SQLiteSearchScreenViewModel
 
 @Composable

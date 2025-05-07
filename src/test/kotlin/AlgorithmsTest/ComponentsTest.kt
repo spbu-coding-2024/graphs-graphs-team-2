@@ -1,12 +1,12 @@
 package AlgorithmsTest
 
 import algo.StronglyConnectedComponents
+import kotlin.random.Random
 import kotlin.test.assertEquals
 import model.Graph
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.Test
-import kotlin.random.Random
 
 class ComponentsTest {
     private lateinit var graph: Graph
@@ -79,10 +79,10 @@ class ComponentsTest {
     }
 
     fun componentsGenerator(): Pair<Graph, Set<Set<Long>>> {
-        val componentsCount = Random.nextInt(1,200)
+        val componentsCount = Random.nextInt(1, 200)
         val components = ArrayDeque<ArrayDeque<Long>>()
         var graphSize = 0L
-        for (i in 0..< componentsCount) {
+        for (i in 0..<componentsCount) {
             components.add(ArrayDeque())
             val currCount = Random.nextInt(1, 10)
             for (j in 0..<currCount) {
@@ -91,40 +91,41 @@ class ComponentsTest {
                 graphSize++
 
                 if (components[i].size > 1) {
-                    graph.addEdge(components[i][j - 1],
+                    graph.addEdge(
+                        components[i][j - 1],
                         components[i][j],
                         graph.edges.size.toString(),
-                        graph.edges.size.toLong()
+                        graph.edges.size.toLong(),
                     )
                 }
             }
-            graph.addEdge(components[i].last(),
+            graph.addEdge(
+                components[i].last(),
                 components[i].first(),
                 graph.edges.size.toString(),
-                graph.edges.size.toLong()
+                graph.edges.size.toLong(),
             )
         }
 
-        for (i in 0..< componentsCount step 2) {
-            for (u in 1..< componentsCount step 2) {
-                val betweenComponentsPaths = Random.nextInt(0, minOf(components[i].size, components[u].size))
+        for (i in 0..<componentsCount step 2) {
+            for (u in 1..<componentsCount step 2) {
+                val betweenComponentsPaths =
+                    Random.nextInt(0, minOf(components[i].size, components[u].size))
                 repeat(betweenComponentsPaths) {
                     try {
                         graph.addEdge(
                             components[i].random(),
                             components[u].random(),
                             graph.edges.size.toString(),
-                            graph.edges.size.toLong()
+                            graph.edges.size.toLong(),
                         )
-                    } catch(_: Exception) {}
+                    } catch (_: Exception) {}
                 }
             }
         }
 
         val componentsSet = mutableSetOf<Set<Long>>()
-        components.forEach {
-            componentsSet.add(it.toSet())
-        }
+        components.forEach { componentsSet.add(it.toSet()) }
 
         return graph to componentsSet.toSet()
     }
