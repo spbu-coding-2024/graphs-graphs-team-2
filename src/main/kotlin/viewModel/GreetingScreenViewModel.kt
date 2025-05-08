@@ -25,4 +25,11 @@ class GreetingScreenViewModel() {
         set(value) {
             _errorMessage.value = value
         }
+
+    private var _isLoading = mutableStateOf(false)
+    var isLoading: Boolean
+        get() = _isLoading.value
+        set(value) {
+            _isLoading.value = value
+        }
 }

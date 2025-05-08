@@ -1,5 +1,6 @@
 package viewModel.io
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.Dp
 import io.ioNeo4j.ReadNeo4j
@@ -8,17 +9,15 @@ import model.Graph
 import model.abstractGraph.AbstractVertex
 import viewModel.graph.GraphViewModel
 
-class Neo4jViewModel {
+class Neo4jViewModel() {
     val username = mutableStateOf("")
     val password = mutableStateOf("")
     val passwordVisible = mutableStateOf(false)
     val errorMessage = mutableStateOf("")
     val showErrorDialog = mutableStateOf(false)
-    val isLoading = mutableStateOf(false)
 
     fun read(): Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>? {
         try {
-            isLoading.value = true
             return ReadNeo4j(username.value, password.value)
         } catch (e: Exception) {
             errorMessage.value = e.message ?: "Error"
@@ -29,7 +28,6 @@ class Neo4jViewModel {
 
     fun write(graphViewModel: GraphViewModel?) : Boolean {
         try{
-            isLoading.value = true
             WriteNeo4j(
                 username.value,
                 password.value,
