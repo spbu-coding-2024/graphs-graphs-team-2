@@ -1,6 +1,5 @@
 package viewModel.io
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.Dp
 import io.ioNeo4j.ReadNeo4j
@@ -26,19 +25,18 @@ class Neo4jViewModel() {
         }
     }
 
-    fun write(graphViewModel: GraphViewModel?) : Boolean {
-        try{
+    fun write(graphViewModel: GraphViewModel?): Boolean {
+        try {
             WriteNeo4j(
                 username.value,
                 password.value,
-                graphViewModel ?: throw IllegalArgumentException("no graph for write")
+                graphViewModel ?: throw IllegalArgumentException("no graph for write"),
             )
             return true
-        }catch (e : Exception){
+        } catch (e: Exception) {
             errorMessage.value = e.message ?: "Error"
             showErrorDialog.value = true
             return false
         }
-
     }
 }

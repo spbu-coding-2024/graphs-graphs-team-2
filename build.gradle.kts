@@ -24,17 +24,13 @@ repositories {
 }
 
 dependencies {
-
-
     implementation(kotlin("stdlib"))
 
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
 
-
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
-
 
     implementation(compose.material)
     implementation(compose.materialIconsExtended)
@@ -63,7 +59,6 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-core:2.20.0")
     implementation("org.apache.logging.log4j:log4j-api:2.20.0")
     implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.20.0")
-
 
     configurations.all {
         exclude(group = "org.apache.logging.log4j", module = "log4j-to-slf4j")

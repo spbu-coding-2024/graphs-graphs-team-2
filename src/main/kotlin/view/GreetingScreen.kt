@@ -1,6 +1,5 @@
 package view
 
-import GraphScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Row
@@ -8,8 +7,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,14 +14,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextGeometricTransform
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import io.ioNeo4j.ReadNeo4j
-import model.Graph
-import model.abstractGraph.AbstractVertex
 import view.components.CoolColors
 import view.components.ErrorDialog
 import view.components.PurpleButton
@@ -32,7 +25,6 @@ import view.io.Neo4jView
 import view.io.SQLiteSearchView
 import view.io.loadFromJson
 import viewModel.GreetingScreenViewModel
-import viewModel.io.JSONViewModel
 import viewModel.io.Neo4jViewModel
 import viewModel.io.SQLiteSearchScreenViewModel
 
@@ -92,15 +84,18 @@ fun GreetingView(viewModel: GreetingScreenViewModel) {
                 )
             }
 
-
             if (viewModel.dataSystem == DataSystems.Neo4j) {
                 val neo4jViewModel = Neo4jViewModel()
                 Neo4jView(
-                    false, null, neo4jViewModel, navigator, { viewModel.dataSystem = null },
+                    false,
+                    null,
+                    neo4jViewModel,
+                    navigator,
+                    { viewModel.dataSystem = null },
                     { viewModel.showErrorDialog = neo4jViewModel.showErrorDialog.value },
                     { viewModel.errorMessage = neo4jViewModel.errorMessage.value },
-                    {viewModel.isLoading = true},
-                    {viewModel.isLoading = false}
+                    { viewModel.isLoading = true },
+                    { viewModel.isLoading = false },
                 )
             }
             if (viewModel.dataSystem == DataSystems.JSON) {
@@ -111,13 +106,12 @@ fun GreetingView(viewModel: GreetingScreenViewModel) {
                     SQLiteSearchScreenViewModel(),
                     onDismissRequest = { viewModel.dataSystem = null },
                     navigator,
-                ) 
+                )
             }
         }
     } else {
         Box(Modifier.fillMaxSize().background(color = CoolColors.Gray)) {
             CircularProgressIndicator(Modifier.align(Alignment.Center))
-
         }
     }
     if (viewModel.showErrorDialog) {

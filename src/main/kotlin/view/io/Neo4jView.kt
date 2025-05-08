@@ -3,7 +3,6 @@ package view.io
 import GraphScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.OutlinedTextField
@@ -23,9 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,17 +32,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import cafe.adriel.voyager.navigator.Navigator
-import io.ioNeo4j.ReadNeo4j
-import io.ioNeo4j.WriteNeo4j
+import kotlin.invoke
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import view.components.CoolColors
-import view.components.ErrorDialog
 import view.components.PurpleButton
 import viewModel.graph.GraphViewModel
 import viewModel.io.Neo4jViewModel
-import kotlin.invoke
 
 @Composable
 fun Neo4jView(
@@ -59,7 +51,7 @@ fun Neo4jView(
     isError: () -> Unit,
     errorMessage: () -> Unit,
     onLoading: () -> Unit,
-    offLoading: () -> Unit
+    offLoading: () -> Unit,
 ) {
     Dialog(onDismissRequest = {}) {
         Card(
@@ -101,12 +93,14 @@ fun Neo4jView(
                             else Icons.Filled.VisibilityOff
 
                         val description =
-                            if (viewModel.passwordVisible.value) "Hide password" else "Show password"
+                            if (viewModel.passwordVisible.value) "Hide password"
+                            else "Show password"
 
-                        IconButton(onClick = {
-                            viewModel.passwordVisible.value =
-                                !viewModel.passwordVisible.value
-                        }) {
+                        IconButton(
+                            onClick = {
+                                viewModel.passwordVisible.value = !viewModel.passwordVisible.value
+                            }
+                        ) {
                             Icon(
                                 imageVector = image,
                                 contentDescription = description,
@@ -137,16 +131,14 @@ fun Neo4jView(
                                         val model = viewModel.read()
                                         if (model != null) {
                                             navigator.push(GraphScreen(model.first, model.second))
-                                        }
-                                        else{
+                                        } else {
                                             isError.invoke()
                                             errorMessage.invoke()
                                         }
                                     } else {
                                         if (viewModel.write(graphViewModel)) {
                                             dismissRequest.invoke()
-                                        }
-                                        else{
+                                        } else {
                                             isError.invoke()
                                             errorMessage.invoke()
                                         }

@@ -50,7 +50,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import io.ioNeo4j.WriteNeo4j
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.skiko.Cursor
@@ -76,7 +75,9 @@ fun MainScreen(viewModel: MainScreenViewModel) {
             horizontalArrangement = Arrangement.spacedBy(5.dp),
             modifier = Modifier.background(CoolColors.Gray),
         ) {
-            var scale by remember { mutableStateOf(viewModel.graphViewModel.calculateScaleAndOffset()) }
+            var scale by remember {
+                mutableStateOf(viewModel.graphViewModel.calculateScaleAndOffset())
+            }
 
             Column(
                 modifier =
@@ -107,9 +108,13 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                         fontSize = 24.sp,
                         fontFamily = FontFamily.Monospace,
                         color = CoolColors.DarkGray,
-                        style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
+                        style =
+                            TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
                     )
-                    Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth()) {
+                    Column(
+                        horizontalAlignment = Alignment.End,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
                         Icon(
                             Icons.Filled.ArrowDropDown,
                             contentDescription = null,
@@ -327,7 +332,9 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                                 .height(65.dp)
                                 .fillMaxWidth()
                                 .padding(horizontal = 7.dp),
-                        onClick = { scope.launch { viewModel.graphViewModel.highlightComponents() } },
+                        onClick = {
+                            scope.launch { viewModel.graphViewModel.highlightComponents() }
+                        },
                         text = "Find components",
                         fontSize = 28.sp,
                         fontFamily = FontFamily.Monospace,
@@ -491,9 +498,13 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                         fontSize = 28.sp,
                         fontFamily = FontFamily.Monospace,
                         color = CoolColors.DarkGray,
-                        style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
+                        style =
+                            TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
                     )
-                    Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth()) {
+                    Column(
+                        horizontalAlignment = Alignment.End,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
                         Icon(
                             Icons.Filled.ArrowDropDown,
                             contentDescription = null,
@@ -597,15 +608,21 @@ fun MainScreen(viewModel: MainScreenViewModel) {
             if (viewModel.dataSystem == DataSystems.Neo4j) {
                 val neo4jViewModel = Neo4jViewModel()
                 Neo4jView(
-                    true, viewModel.graphViewModel, neo4jViewModel, navigator, { viewModel.dataSystem = null },
+                    true,
+                    viewModel.graphViewModel,
+                    neo4jViewModel,
+                    navigator,
+                    { viewModel.dataSystem = null },
                     { viewModel.showErrorDialog = neo4jViewModel.showErrorDialog.value },
                     { viewModel.errorMessage = neo4jViewModel.errorMessage.value },
                     { viewModel.isLoading = true },
-                    { viewModel.isLoading = false }
+                    { viewModel.isLoading = false },
                 )
             }
             if (viewModel.dataSystem == DataSystems.SQLite) {
-                SQLiteNameInputView(mutableStateOf(viewModel.graphName)) { viewModel.dataSystem = null }
+                SQLiteNameInputView(mutableStateOf(viewModel.graphName)) {
+                    viewModel.dataSystem = null
+                }
                 if (viewModel.graphName != null) {
                     try {
                         SQLiteSearchScreenViewModel()
