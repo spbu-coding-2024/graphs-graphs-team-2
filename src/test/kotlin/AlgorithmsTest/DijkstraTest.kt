@@ -1,11 +1,11 @@
-package DijkstraTest
+package AlgorithmsTest
 
 import algo.AlgoDijkstra
 import model.Graph
 import org.junit.jupiter.params.ParameterizedTest
-import java.util.stream.Stream
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import java.util.stream.Stream
 import kotlin.random.Random
 import kotlin.test.assertEquals
 
@@ -27,28 +27,28 @@ class DijkstraTest {
                 val weightsOfEdges = mutableMapOf<Int, Int>()
 
                 val graph = Graph(true, true)
-                val start = Random.nextInt(firstId, lastId)
+                val start = Random.Default.nextInt(firstId, lastId)
                 graph.addVertex(start.toLong(), "")
 
-                var end = Random.nextInt(firstId, lastId)
+                var end = Random.Default.nextInt(firstId, lastId)
                 while (end == start) {
-                    end = Random.nextInt(firstId, lastId)
+                    end = Random.Default.nextInt(firstId, lastId)
                 }
 
                 graph.addVertex(end.toLong(), "")
 
                 val minWaysWeights = Array(lastId + 1) { if (it == start) 0F else infinity }
                 val parent = Array(lastId + 1) { infinity.toInt() }
-                val countOfWays = Random.nextInt(5, 20)
+                val countOfWays = Random.Default.nextInt(5, 20)
                 val maxWeight = 5000
 
                 for (i in 0..countOfWays) {
                     var totalWeight = 0F
                     var oldVertex = start
                     do {
-                        var newVertex = Random.nextInt(firstId, lastId)
+                        var newVertex = Random.Default.nextInt(firstId, lastId)
                         while (newVertex == oldVertex) {
-                            newVertex = Random.nextInt(firstId, lastId)
+                            newVertex = Random.Default.nextInt(firstId, lastId)
                         }
                         graph.addVertex(newVertex.toLong(), "")
 
@@ -57,7 +57,7 @@ class DijkstraTest {
                             newVertex.toLong(),
                             "",
                             calculateEdgeId(oldVertex, newVertex).toLong(),
-                            Random.nextInt(100, 1000).toFloat()
+                            Random.Default.nextInt(100, 1000).toFloat()
                         )
                         val weight = edge.weight.toInt()
                         weightsOfEdges.put(calculateEdgeId(oldVertex, newVertex), weight)
@@ -94,7 +94,7 @@ class DijkstraTest {
                             end.toLong(),
                             "",
                             calculateEdgeId(oldVertex, end).toLong(),
-                            Random.nextInt(100, 1000).toFloat()
+                            Random.Default.nextInt(100, 1000).toFloat()
                         )
                         val weight = edge.weight.toInt()
                         weightsOfEdges.put(calculateEdgeId(oldVertex, end), weight)

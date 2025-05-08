@@ -1,4 +1,4 @@
-package FindBridgesTest
+package AlgorithmsTest
 
 import algo.AlgoBridges
 import model.Graph
@@ -25,14 +25,14 @@ class FindBridgesTest {
                 }
 
                 val graph = Graph()
-                val countOfComponents = Random.nextInt(2, 100)
+                val countOfComponents = Random.Default.nextInt(2, 100)
                 for (i in 0..<countOfComponents) {
-                    val countNodesInComponent = Random.nextInt(1, 100)
+                    val countNodesInComponent = Random.Default.nextInt(1, 100)
                     val firstId = i * 100
                     val lastId = i * 100 + countNodesInComponent
                     val component = mutableSetOf<Int>()
                     for (j in 0..<countNodesInComponent) {
-                        val id = Random.nextInt(firstId, lastId)
+                        val id = Random.Default.nextInt(firstId, lastId)
                         graph.addVertex(id.toLong(), "")
                         component.add(id)
                     }
