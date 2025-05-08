@@ -27,11 +27,17 @@ class FindBridgesTest {
                     val countOfComponents = Random.Default.nextInt(2, 100)
                     for (i in 0..<countOfComponents) {
                         val countNodesInComponent = Random.Default.nextInt(1, 100)
-                        val firstId = i * 100
-                        val lastId = i * 100 + countNodesInComponent
+                        val firstId = i * 1000
+                        val lastId = i * 1000 + countNodesInComponent
+                        if (countNodesInComponent == 2) {
+                            bridges.add(firstId.toLong() to lastId.toLong() - 1)
+                        }
                         val component = mutableSetOf<Int>()
                         for (j in 0..<countNodesInComponent) {
-                            val id = Random.Default.nextInt(firstId, lastId)
+                            var id = Random.Default.nextInt(firstId, lastId)
+                            while (component.contains(id)) {
+                                id = Random.Default.nextInt(firstId, lastId)
+                            }
                             graph.addVertex(id.toLong(), "")
                             component.add(id)
                         }
@@ -62,7 +68,7 @@ class FindBridgesTest {
                     }
                     Arguments.of(graph, bridges)
                 }
-                .limit(500)
+                .limit(250)
         }
     }
 

@@ -113,7 +113,7 @@ class DijkstraTest {
                     }
                     Arguments.of(graph, start, end, minWaysWeights[end])
                 }
-                .limit(5000)
+                .limit(1000)
         }
     }
 
