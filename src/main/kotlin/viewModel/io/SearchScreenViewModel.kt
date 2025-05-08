@@ -52,7 +52,7 @@ class SQLiteSearchScreenViewModel {
 }
 
 fun main() {
-    val graph = Graph()
+    /*val graph = Graph()
     val placement = mutableMapOf<AbstractVertex, Pair<Dp, Dp>>()
     for (i in 1..1000) {
         placement.put(graph.addVertex(i.toLong(), i.toString()), 0.dp to 0.dp)
@@ -72,4 +72,10 @@ fun main() {
             mutableStateOf(false),
         )
     SQLiteSearchScreenViewModel().writeGraph(gm, "megalolololol")
+
+     */
+    val c = SQLiteEXP("app.db")
+    for (i in 1..10000){
+        c.addGraph(i.toString(),false,false)
+    }
 }

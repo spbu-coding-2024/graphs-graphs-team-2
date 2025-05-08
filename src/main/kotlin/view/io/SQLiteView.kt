@@ -55,6 +55,7 @@ fun SQLiteSearchView(
     viewmodel: SQLiteSearchScreenViewModel,
     onDismissRequest: () -> Unit,
     navigator: Navigator,
+    onErrorRequest: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     var isLoading by remember { mutableStateOf(true) }
@@ -104,8 +105,11 @@ fun SQLiteSearchView(
                                     onClick = {
                                         onDismissRequest()
                                         val model = viewmodel.loadGraph(name)
-                                        if (model == null) return@Button
-                                        navigator.push(GraphScreen(model.first, model.second))
+                                        if (model == null || model.first.vertices.isEmpty()) {
+                                            onErrorRequest()
+                                        }else {
+                                            navigator.push(GraphScreen(model.first, model.second))
+                                        }
                                     },
                                     modifier = Modifier.fillMaxWidth(),
                                 ) {
