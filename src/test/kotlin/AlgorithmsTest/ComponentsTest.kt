@@ -1,9 +1,11 @@
 package AlgorithmsTest
 
 import algo.StronglyConnectedComponents
+import kotlin.random.Random
 import kotlin.test.assertEquals
 import model.Graph
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.Test
 
 class ComponentsTest {
@@ -74,5 +76,64 @@ class ComponentsTest {
         val components = StronglyConnectedComponents(graph).components
         val expectedResult = setOf(setOf(0L, 1L, 2L), setOf(3L, 4L, 5L))
         assertEquals(expectedResult, components)
+    }
+
+    fun componentsGenerator(): Pair<Graph, Set<Set<Long>>> {
+        val componentsCount = Random.nextInt(1, 200)
+        val components = ArrayDeque<ArrayDeque<Long>>()
+        var graphSize = 0L
+        for (i in 0..<componentsCount) {
+            components.add(ArrayDeque())
+            val currCount = Random.nextInt(1, 10)
+            for (j in 0..<currCount) {
+                components[i].add(graphSize)
+                graph.addVertex(graphSize, graphSize.toString())
+                graphSize++
+
+                if (components[i].size > 1) {
+                    graph.addEdge(
+                        components[i][j - 1],
+                        components[i][j],
+                        graph.edges.size.toString(),
+                        graph.edges.size.toLong(),
+                    )
+                }
+            }
+            graph.addEdge(
+                components[i].last(),
+                components[i].first(),
+                graph.edges.size.toString(),
+                graph.edges.size.toLong(),
+            )
+        }
+
+        for (i in 0..<componentsCount step 2) {
+            for (u in 1..<componentsCount step 2) {
+                val betweenComponentsPaths =
+                    Random.nextInt(0, minOf(components[i].size, components[u].size))
+                repeat(betweenComponentsPaths) {
+                    try {
+                        graph.addEdge(
+                            components[i].random(),
+                            components[u].random(),
+                            graph.edges.size.toString(),
+                            graph.edges.size.toLong(),
+                        )
+                    } catch (_: Exception) {}
+                }
+            }
+        }
+
+        val componentsSet = mutableSetOf<Set<Long>>()
+        components.forEach { componentsSet.add(it.toSet()) }
+
+        return graph to componentsSet.toSet()
+    }
+
+    @RepeatedTest(15)
+    fun reverseTest() {
+        val (graph, expectedComponents) = componentsGenerator()
+        val actualComponents = StronglyConnectedComponents(graph).components
+        assertEquals(expectedComponents, actualComponents)
     }
 }

@@ -4,16 +4,19 @@ import model.Graph
 
 class StronglyConnectedComponents(private val graph: Graph) {
 
-    private var _components = setOf<Set<Long>>()
+
+    private var _components = mutableSetOf<Set<Long>>()
     val components: Set<Set<Long>>
         get() {
-            return _components
+            return _components.toSet()
         }
 
     private val size = graph.vertices.size
     private var used = graph.vertices.associate { it.id to false }.toMutableMap()
     private val order = mutableListOf<Long>()
-    private var currComponent = setOf<Long>()
+
+    private var currComponent = mutableSetOf<Long>()
+
 
     private val graphMap = graph.map
 
@@ -54,9 +57,10 @@ class StronglyConnectedComponents(private val graph: Graph) {
             used[v]?.let { isUsed ->
                 if (!isUsed) {
                     dfsBack(v)
-                    _components = _components.plusElement(currComponent)
-                    println(currComponent.joinToString(" "))
-                    currComponent = setOf()
+
+                    _components.add(currComponent)
+                    currComponent = mutableSetOf()
+
                 }
             }
         }

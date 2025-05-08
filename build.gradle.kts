@@ -3,6 +3,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     kotlin("jvm") version "2.1.10"
     kotlin("plugin.spring") version "2.1.10"
+
     jacoco
     id("org.jetbrains.kotlin.plugin.compose") version "2.1.20"
     id("org.jetbrains.compose") version "1.7.1"

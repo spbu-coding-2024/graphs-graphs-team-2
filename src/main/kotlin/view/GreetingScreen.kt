@@ -44,6 +44,7 @@ enum class DataSystems {
 
 @Composable
 fun GreetingView(viewModel: GreetingScreenViewModel) {
+
     val navigator = LocalNavigator.currentOrThrow
 
     if (!viewModel.isLoading) {
@@ -91,6 +92,7 @@ fun GreetingView(viewModel: GreetingScreenViewModel) {
                 )
             }
 
+
             if (viewModel.dataSystem == DataSystems.Neo4j) {
                 val neo4jViewModel = Neo4jViewModel()
                 Neo4jView(
@@ -101,21 +103,21 @@ fun GreetingView(viewModel: GreetingScreenViewModel) {
                     {viewModel.isLoading = false}
                 )
             }
-
             if (viewModel.dataSystem == DataSystems.JSON) {
-                loadFromJson(JSONViewModel(), navigator) { viewModel.dataSystem = null }
+                loadFromJson(viewModel, navigator) { viewModel.dataSystem = null }
             }
             if (viewModel.dataSystem == DataSystems.SQLite) {
                 SQLiteSearchView(
                     SQLiteSearchScreenViewModel(),
                     onDismissRequest = { viewModel.dataSystem = null },
                     navigator,
-                )
+                ) 
             }
         }
     } else {
         Box(Modifier.fillMaxSize().background(color = CoolColors.Gray)) {
             CircularProgressIndicator(Modifier.align(Alignment.Center))
+
         }
     }
     if (viewModel.showErrorDialog) {
