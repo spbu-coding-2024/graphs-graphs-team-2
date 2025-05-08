@@ -294,7 +294,13 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                             .height(65.dp)
                             .fillMaxWidth()
                             .padding(horizontal = 7.dp),
-                    onClick = { viewModel.graphViewModel.Louvain() },
+                    onClick = {
+                        scope.launch {
+                            viewModel.isLoading = true
+                            viewModel.graphViewModel.Louvain()
+                            viewModel.isLoading = false
+                        }
+                    },
                     text = "Find Communities",
                     fontSize = 28.sp,
                     fontFamily = FontFamily.Monospace,
@@ -348,7 +354,13 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                                 .height(65.dp)
                                 .fillMaxWidth()
                                 .padding(horizontal = 7.dp),
-                        onClick = { viewModel.graphViewModel.DrawBridges() },
+                        onClick = {
+                            scope.launch {
+                                viewModel.isLoading = true
+                                viewModel.graphViewModel.DrawBridges()
+                                viewModel.isLoading = false
+                            }
+                        },
                         text = "Find Bridges",
                         fontSize = 28.sp,
                         fontFamily = FontFamily.Monospace,
@@ -377,7 +389,11 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                                 .padding(horizontal = 7.dp),
                         onClick = {
                             try {
-                                viewModel.graphViewModel.Dijkstra()
+                                scope.launch {
+                                    viewModel.isLoading = true
+                                    viewModel.graphViewModel.Dijkstra()
+                                    viewModel.isLoading = false
+                                }
                             } catch (e: Exception) {
                                 viewModel.apply {
                                     errorMessage = e.message ?: "Graph is built incorrectly"
