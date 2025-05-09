@@ -30,18 +30,11 @@ class MainScreenViewModel(graph: Graph, placement: Map<AbstractVertex, Pair<Dp?,
             _errorMessage.value = value
         }
 
-    private var _username: MutableState<String?> = mutableStateOf(null)
-    var username
-        get() = _username.value
+    private var _isLoading = mutableStateOf(false)
+    var isLoading: Boolean
+        get() = _isLoading.value
         set(value) {
-            _username.value = value
-        }
-
-    private var _password: MutableState<String?> = mutableStateOf(null)
-    var password
-        get() = _password.value
-        set(value) {
-            _password.value = value
+            _isLoading.value = value
         }
 
     private var _graphName: MutableState<String?> = mutableStateOf(null)
