@@ -9,7 +9,9 @@ import kotlin.test.assertEquals
 import model.Graph
 import model.abstractGraph.AbstractVertex
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import viewModel.graph.GraphViewModel
+import kotlin.test.assertFailsWith
 
 class JSONConverterTest {
     private lateinit var graph: Graph
@@ -128,6 +130,15 @@ class JSONConverterTest {
 
         assertEquals(expectedPlacement.size, actualPlacement.size)
         expectedPlacement.forEach { assertEquals(it.value, actualPlacement[it.key]) }
+    }
+
+    @Test
+    fun `incorrect input`() {
+        val jsonFormat =
+            "json is top format"
+        assertFailsWith<IllegalStateException> {
+            converter.loadJson(jsonFormat)
+        }
     }
 
     @Test
