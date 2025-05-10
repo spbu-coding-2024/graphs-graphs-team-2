@@ -73,4 +73,41 @@ class JSONConverterTest {
         assertEquals(expectedPlacement.size, actualPlacement.size)
         expectedPlacement.forEach { assertEquals(it.value, actualPlacement[it.key]) }
     }
+
+    @Test
+    fun `integration converter test`() {
+        graph = Graph(direction = true, weight = true)
+        val firstVertex = graph.addVertex(0, "A")
+        val secondVertex = graph.addVertex(1, "B")
+        graph.addEdge(0, 1, "a", 0, 2f)
+        val expectedPlacement =
+            mapOf(firstVertex to Pair(1.dp, 2.dp), secondVertex to Pair(343.dp, 500.dp))
+
+        val showVerticesLabels = mutableStateOf(false)
+        val showVerticesIds = mutableStateOf(false)
+        val showEdgesWeights = mutableStateOf(false)
+        val showEdgesLabels = mutableStateOf(false)
+        graphViewModel =
+            GraphViewModel(
+                graph,
+                expectedPlacement,
+                showVerticesLabels,
+                showVerticesIds,
+                showEdgesWeights,
+                showEdgesLabels,
+            )
+
+        val jsonFormat = converter.saveJson(graphViewModel)
+        val (actualGraph, actualPlacement) = converter.loadJson(jsonFormat)
+
+        assertEquals(graph.isDirected, actualGraph.isDirected)
+        assertEquals(graph.isWeighted, actualGraph.isWeighted)
+
+        assertContentEquals(graph.edges, actualGraph.edges)
+
+        assertContentEquals(graph.vertices, actualGraph.vertices)
+
+        assertEquals(expectedPlacement.size, actualPlacement.size)
+        expectedPlacement.forEach { assertEquals(it.value, actualPlacement[it.key]) }
+    }
 }
