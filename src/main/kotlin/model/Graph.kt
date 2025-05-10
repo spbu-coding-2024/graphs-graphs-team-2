@@ -39,10 +39,16 @@ class Graph(private val direction: Boolean = false, private val weight: Boolean 
         val second =
             _vertices[secondID]
                 ?: throw IllegalStateException("Error: Graph has no vertex with ID $secondID")
-        if (_edges.containsKey(firstID to secondID))
-            throw IllegalStateException(
-                "Error: Graph already contains edge from $firstID to $secondID"
-            )
+        if (_edges.containsKey(firstID to secondID)) {
+            return _edges.get(firstID to secondID)
+                ?: throw IllegalStateException("Error: Graph has no edge $firstID -> $secondID")
+        }
+        if (!isDirected && _edges.containsKey(secondID to firstID)) {
+            return _edges.get(secondID to firstID)
+                ?: throw IllegalStateException(
+                    "Error: Graph has no edge with ID $secondID -> $firstID"
+                )
+        }
 
         return _edges.getOrPut(firstID to secondID) {
             Edge(edgeLabel, edgeID, first, second, weight)

@@ -9,7 +9,7 @@ import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories
 import org.springframework.stereotype.Service
 import viewModel.graph.GraphViewModel
 
-@SpringBootApplication @EnableNeo4jRepositories class Neo4jApplication
+@SpringBootApplication @EnableNeo4jRepositories open class Neo4jApplication
 
 @Service
 class Neo4jService(

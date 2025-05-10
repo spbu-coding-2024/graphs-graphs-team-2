@@ -1,6 +1,5 @@
 package viewModel
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import view.DataSystems
 
@@ -26,17 +25,10 @@ class GreetingScreenViewModel() {
             _errorMessage.value = value
         }
 
-    private var _username: MutableState<String?> = mutableStateOf(null)
-    var username: String?
-        get() = _username.value
+    private var _isLoading = mutableStateOf(false)
+    var isLoading: Boolean
+        get() = _isLoading.value
         set(value) {
-            _username.value = value
-        }
-
-    private var _password: MutableState<String?> = mutableStateOf(null)
-    var password: String?
-        get() = _password.value
-        set(value) {
-            _password.value = value
+            _isLoading.value = value
         }
 }

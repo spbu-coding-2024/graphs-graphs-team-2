@@ -1,5 +1,6 @@
 package view.io
 
+import GraphScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,9 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,14 +31,27 @@ import androidx.compose.ui.text.style.TextGeometricTransform
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import cafe.adriel.voyager.navigator.Navigator
+import kotlin.invoke
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import view.components.CoolColors
 import view.components.PurpleButton
+import viewModel.graph.GraphViewModel
+import viewModel.io.Neo4jViewModel
 
 @Composable
 fun Neo4jView(
-    Username: MutableState<String?>,
-    Password: MutableState<String?>,
-    onDismissRequest: () -> Unit,
+    flagOfWrite: Boolean,
+    graphViewModel: GraphViewModel?,
+    viewModel: Neo4jViewModel,
+    navigator: Navigator,
+    dismissRequest: () -> Unit,
+    isError: () -> Unit,
+    errorMessage: () -> Unit,
+    onLoading: () -> Unit,
+    offLoading: () -> Unit,
 ) {
     Dialog(onDismissRequest = {}) {
         Card(
@@ -59,35 +70,37 @@ fun Neo4jView(
                     style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
                     color = CoolColors.DarkPurple,
                 )
-                val username = remember { mutableStateOf("") }
-                val password = remember { mutableStateOf("") }
-                val passwordVisible = remember { mutableStateOf(false) }
 
                 OutlinedTextField(
-                    username.value,
-                    { username.value = it },
+                    viewModel.username.value,
+                    { viewModel.username.value = it },
                     textStyle = TextStyle(fontSize = 32.sp, color = CoolColors.DarkPurple),
                     modifier = Modifier.width(400.dp),
                     label = { Text("username", fontSize = 28.sp, color = CoolColors.DarkPurple) },
                 )
                 OutlinedTextField(
-                    password.value,
-                    { password.value = it },
+                    viewModel.password.value,
+                    { viewModel.password.value = it },
                     textStyle = TextStyle(fontSize = 32.sp, color = CoolColors.DarkPurple),
                     modifier = Modifier.width(400.dp),
                     label = { Text("password", fontSize = 28.sp, color = CoolColors.DarkPurple) },
                     visualTransformation =
-                        if (passwordVisible.value) VisualTransformation.None
+                        if (viewModel.passwordVisible.value) VisualTransformation.None
                         else PasswordVisualTransformation(),
                     trailingIcon = {
                         val image =
-                            if (passwordVisible.value) Icons.Filled.Visibility
+                            if (viewModel.passwordVisible.value) Icons.Filled.Visibility
                             else Icons.Filled.VisibilityOff
 
                         val description =
-                            if (passwordVisible.value) "Hide password" else "Show password"
+                            if (viewModel.passwordVisible.value) "Hide password"
+                            else "Show password"
 
-                        IconButton(onClick = { passwordVisible.value = !passwordVisible.value }) {
+                        IconButton(
+                            onClick = {
+                                viewModel.passwordVisible.value = !viewModel.passwordVisible.value
+                            }
+                        ) {
                             Icon(
                                 imageVector = image,
                                 contentDescription = description,
@@ -104,7 +117,7 @@ fun Neo4jView(
                 ) {
                     Row(modifier = Modifier, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         PurpleButton(
-                            onClick = onDismissRequest,
+                            onClick = dismissRequest,
                             modifier = Modifier.clip(shape = RoundedCornerShape(10.dp)),
                             text = "Back",
                             fontSize = 32.sp,
@@ -112,8 +125,26 @@ fun Neo4jView(
                         )
                         PurpleButton(
                             onClick = {
-                                Username.value = username.value
-                                Password.value = password.value
+                                onLoading.invoke()
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    if (!flagOfWrite) {
+                                        val model = viewModel.read()
+                                        if (model != null) {
+                                            navigator.push(GraphScreen(model.first, model.second))
+                                        } else {
+                                            isError.invoke()
+                                            errorMessage.invoke()
+                                        }
+                                    } else {
+                                        if (viewModel.write(graphViewModel)) {
+                                            dismissRequest.invoke()
+                                        } else {
+                                            isError.invoke()
+                                            errorMessage.invoke()
+                                        }
+                                    }
+                                    offLoading.invoke()
+                                }
                             },
                             modifier = Modifier.clip(shape = RoundedCornerShape(10.dp)),
                             text = "Confirm",

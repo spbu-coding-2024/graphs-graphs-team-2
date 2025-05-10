@@ -2,6 +2,8 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
     kotlin("jvm") version "2.1.10"
+    kotlin("plugin.spring") version "2.1.10"
+
     jacoco
     id("org.jetbrains.kotlin.plugin.compose") version "2.1.20"
     id("org.jetbrains.compose") version "1.7.1"
@@ -22,6 +24,14 @@ repositories {
 }
 
 dependencies {
+    implementation(kotlin("stdlib"))
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
+    }
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+
     implementation(compose.material)
     implementation(compose.materialIconsExtended)
     implementation(compose.desktop.currentOs)
@@ -41,6 +51,19 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-core:0.44.0")
     implementation("org.jetbrains.exposed:exposed-dao:0.44.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.44.0")
+    testImplementation("org.neo4j.test:neo4j-harness:5.13.0") {
+        exclude(group = "org.apache.logging.log4j")
+    }
+    testImplementation("org.assertj:assertj-core")
+
+    implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+    implementation("org.apache.logging.log4j:log4j-api:2.20.0")
+    implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.20.0")
+
+    configurations.all {
+        exclude(group = "org.apache.logging.log4j", module = "log4j-to-slf4j")
+        exclude(group = "org.slf4j", module = "slf4j-simple")
+    }
 }
 
 tasks.jacocoTestReport {

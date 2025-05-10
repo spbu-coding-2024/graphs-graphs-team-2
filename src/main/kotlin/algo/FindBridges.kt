@@ -29,7 +29,7 @@ class AlgoBridges(val graph: Graph) {
                 fup[v] = min(fup[v] ?: 0, fup[to] ?: 0)
                 fup[to]?.let {
                     if (it > (tin[v] ?: 0)) {
-                        if (graphMap[v]?.count { u -> u == to } == 1) bridges.add(Pair(v, to))
+                        bridges.add(Pair(v, to))
                     }
                 }
             }
