@@ -16,7 +16,7 @@ import viewModel.graph.GraphViewModel
 import viewModel.io.JSONViewModel
 
 @Composable
-fun storeToJson(
+fun storeToFile(
     screenViewModel: MainScreenViewModel,
     graph: GraphViewModel,
     onDismissRequest: () -> Unit,
@@ -36,7 +36,7 @@ fun storeToJson(
 
         frame.dispose()
         try {
-            viewModel.storeJson(graph, fileDialog)
+            viewModel.storeJSON(graph, fileDialog)
             onDismissRequest()
         } catch (e: Exception) {
             if (e is IllegalArgumentException) onDismissRequest()
@@ -51,7 +51,7 @@ fun storeToJson(
 }
 
 @Composable
-fun loadFromJson(
+fun loadFromFile(
     screenViewModel: GreetingScreenViewModel,
     navigator: Navigator,
     onDismissRequest: () -> Unit,
@@ -72,7 +72,7 @@ fun loadFromJson(
 
         frame.dispose()
         try {
-            val graphModel = viewModel.loadJson(fileDialog)
+            val graphModel = viewModel.loadJSON(fileDialog)
             navigator.push(GraphScreen(graphModel.first, graphModel.second))
         } catch (e: Exception) {
             if (e is IllegalArgumentException) onDismissRequest()

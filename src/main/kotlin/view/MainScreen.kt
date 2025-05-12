@@ -61,7 +61,7 @@ import view.components.PurpleButton
 import view.graph.GraphView
 import view.io.Neo4jView
 import view.io.SQLiteNameInputView
-import view.io.storeToJson
+import view.io.storeToFile
 import viewModel.MainScreenViewModel
 import viewModel.io.Neo4jViewModel
 import viewModel.io.SQLiteSearchScreenViewModel
@@ -626,7 +626,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
             }
 
             if (viewModel.dataSystem == DataSystems.JSON) {
-                storeToJson(viewModel, viewModel.graphViewModel) { viewModel.dataSystem = null }
+                storeToFile(viewModel, viewModel.graphViewModel) { viewModel.dataSystem = null }
             }
 
             if (viewModel.dataSystem == DataSystems.Neo4j) {

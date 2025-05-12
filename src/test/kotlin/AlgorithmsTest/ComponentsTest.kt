@@ -78,6 +78,13 @@ class ComponentsTest {
         assertEquals(expectedResult, components)
     }
 
+    @RepeatedTest(15)
+    fun reverseTest() {
+        val (graph, expectedComponents) = componentsGenerator()
+        val actualComponents = StronglyConnectedComponents(graph).components
+        assertEquals(expectedComponents, actualComponents)
+    }
+
     fun componentsGenerator(): Pair<Graph, Set<Set<Long>>> {
         val componentsCount = Random.nextInt(1, 200)
         val components = ArrayDeque<ArrayDeque<Long>>()
@@ -128,12 +135,5 @@ class ComponentsTest {
         components.forEach { componentsSet.add(it.toSet()) }
 
         return graph to componentsSet.toSet()
-    }
-
-    @RepeatedTest(15)
-    fun reverseTest() {
-        val (graph, expectedComponents) = componentsGenerator()
-        val actualComponents = StronglyConnectedComponents(graph).components
-        assertEquals(expectedComponents, actualComponents)
     }
 }
