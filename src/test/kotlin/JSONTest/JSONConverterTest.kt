@@ -3,23 +3,22 @@ package JSONTest
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import io.JsonConverter
+import io.JSONConverter
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import model.Graph
 import model.abstractGraph.AbstractVertex
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import viewModel.graph.GraphViewModel
-import kotlin.test.assertFailsWith
 
 class JSONConverterTest {
     private lateinit var graph: Graph
     private lateinit var graphViewModel: GraphViewModel
-    private val converter = JsonConverter()
+    private val converter = JSONConverter()
 
     @Test
-    fun `simple weighted directed save`() {
+    fun `simple weighted directed convert to JSON`() {
         graph = Graph(direction = true, weight = true)
         val firstVertex = graph.addVertex(0, "A")
         val secondVertex = graph.addVertex(1, "B")
@@ -40,7 +39,7 @@ class JSONConverterTest {
                 showEdgesLabels,
             )
 
-        val actualResult = converter.saveJson(graphViewModel)
+        val actualResult = converter.toJSON(graphViewModel)
         val expectedResult =
             "{\"direction\":true,\"weight\":true," +
                 "\"vertices\":{\"0\":{\"label\":\"A\",\"x\":{\"value\":1.0},\"y\":{\"value\":2.0}}," +
@@ -51,7 +50,7 @@ class JSONConverterTest {
     }
 
     @Test
-    fun `simple weighted directed load`() {
+    fun `simple weighted directed convert from JSON`() {
         val jsonFormat =
             "{\"direction\":true,\"weight\":true," +
                 "\"vertices\":{\"0\":{\"label\":\"A\",\"x\":{\"value\":1.0},\"y\":{\"value\":2.0}}," +
@@ -65,7 +64,7 @@ class JSONConverterTest {
         val expectedPlacement =
             mapOf(firstVertex to Pair(1.dp, 2.dp), secondVertex to Pair(343.dp, 500.dp))
 
-        val (actualGraph, actualPlacement) = converter.loadJson(jsonFormat)
+        val (actualGraph, actualPlacement) = converter.fromJSON(jsonFormat)
 
         assert(actualGraph.isDirected)
         assert(actualGraph.isWeighted)
@@ -79,7 +78,7 @@ class JSONConverterTest {
     }
 
     @Test
-    fun `load without weight and direction tags`() {
+    fun `convert from JSON without weight and direction tags`() {
         val jsonFormat =
             "{\"vertices\":{\"0\":{\"label\":\"A\",\"x\":{\"value\":1.0},\"y\":{\"value\":2.0}}," +
                 "\"1\":{\"label\":\"B\",\"x\":{\"value\":343.0},\"y\":{\"value\":500.0}}}," +
@@ -92,7 +91,7 @@ class JSONConverterTest {
         val expectedPlacement =
             mapOf(firstVertex to Pair(1.dp, 2.dp), secondVertex to Pair(343.dp, 500.dp))
 
-        val (actualGraph, actualPlacement) = converter.loadJson(jsonFormat)
+        val (actualGraph, actualPlacement) = converter.fromJSON(jsonFormat)
 
         assert(!actualGraph.isDirected)
         assert(!actualGraph.isWeighted)
@@ -106,7 +105,7 @@ class JSONConverterTest {
     }
 
     @Test
-    fun `load without weight and direction tags and cords`() {
+    fun `convert from JSON without weight and direction tags and cords`() {
         val jsonFormat =
             "{\"vertices\":{\"0\":{\"label\":\"A\"}," +
                 "\"1\":{\"label\":\"B\"}}," +
@@ -119,7 +118,7 @@ class JSONConverterTest {
         val expectedPlacement: Map<AbstractVertex, Pair<Dp?, Dp?>?> =
             mapOf(firstVertex to Pair(null, null), secondVertex to Pair(null, null))
 
-        val (actualGraph, actualPlacement) = converter.loadJson(jsonFormat)
+        val (actualGraph, actualPlacement) = converter.fromJSON(jsonFormat)
 
         assert(!actualGraph.isDirected)
         assert(!actualGraph.isWeighted)
@@ -134,11 +133,8 @@ class JSONConverterTest {
 
     @Test
     fun `incorrect input`() {
-        val jsonFormat =
-            "json is top format"
-        assertFailsWith<IllegalStateException> {
-            converter.loadJson(jsonFormat)
-        }
+        val jsonFormat = "json is top format"
+        assertFailsWith<IllegalStateException> { converter.fromJSON(jsonFormat) }
     }
 
     @Test
@@ -164,8 +160,8 @@ class JSONConverterTest {
                 showEdgesLabels,
             )
 
-        val jsonFormat = converter.saveJson(graphViewModel)
-        val (actualGraph, actualPlacement) = converter.loadJson(jsonFormat)
+        val jsonFormat = converter.toJSON(graphViewModel)
+        val (actualGraph, actualPlacement) = converter.fromJSON(jsonFormat)
 
         assertEquals(graph.isDirected, actualGraph.isDirected)
         assertEquals(graph.isWeighted, actualGraph.isWeighted)
