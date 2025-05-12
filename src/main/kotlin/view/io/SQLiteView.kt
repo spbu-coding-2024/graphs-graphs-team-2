@@ -45,6 +45,8 @@ import cafe.adriel.voyager.navigator.Navigator
 import kotlin.collections.filter
 import kotlin.text.contains
 import kotlin.text.isBlank
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import view.components.CoolColors
 import view.components.PurpleButton
@@ -56,6 +58,8 @@ fun SQLiteSearchView(
     onDismissRequest: () -> Unit,
     navigator: Navigator,
     onErrorRequest: () -> Unit,
+    onLoading: () -> Unit,
+    offLoading: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     var isLoading by remember { mutableStateOf(true) }
@@ -103,12 +107,18 @@ fun SQLiteSearchView(
                             Box(contentAlignment = Alignment.Center) {
                                 Button(
                                     onClick = {
-                                        onDismissRequest()
-                                        val model = viewmodel.loadGraph(name)
-                                        if (model == null || model.first.vertices.isEmpty()) {
-                                            onErrorRequest()
-                                        }else {
-                                            navigator.push(GraphScreen(model.first, model.second))
+                                        onLoading.invoke()
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            onDismissRequest()
+                                            val model = viewmodel.loadGraph(name)
+                                            if (model == null || model.first.vertices.isEmpty()) {
+                                                onErrorRequest()
+                                            } else {
+                                                navigator.push(
+                                                    GraphScreen(model.first, model.second)
+                                                )
+                                            }
+                                            offLoading.invoke()
                                         }
                                     },
                                     modifier = Modifier.fillMaxWidth(),
