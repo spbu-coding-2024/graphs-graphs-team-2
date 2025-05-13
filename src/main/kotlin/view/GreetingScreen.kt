@@ -106,6 +106,13 @@ fun GreetingView(viewModel: GreetingScreenViewModel) {
                     SQLiteSearchScreenViewModel(),
                     onDismissRequest = { viewModel.dataSystem = null },
                     navigator,
+                    onErrorRequest = {
+                        viewModel.dataSystem = null
+                        viewModel.errorMessage = "Graph not found"
+                        viewModel.showErrorDialog = true
+                    },
+                    { viewModel.isLoading = true },
+                    { viewModel.isLoading = false },
                 )
             }
         }
