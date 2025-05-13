@@ -72,4 +72,9 @@ fun main() {
             mutableStateOf(false),
         )
     SQLiteSearchScreenViewModel().writeGraph(gm, "megalolololol")
+
+    /*val c = SQLiteEXP("app.db")
+    for (i in 1..10000) {
+        c.addGraph(i.toString(), false, false)
+    }*/
 }
