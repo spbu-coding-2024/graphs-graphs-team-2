@@ -184,6 +184,7 @@ class GraphViewModel(
 
     suspend fun highlightComponents() {
         resetColors()
+        resetSizes()
         coroutineScope {
             launch {
                 val strongComponents = async { StronglyConnectedComponents(graph).components }
@@ -199,6 +200,7 @@ class GraphViewModel(
 
     fun findPathByFordBellman() {
         resetColors()
+        resetSizes()
         val firstId = firstIDFB.toLong()
         val secondId = secondIDFB.toLong()
         if (_vertices[firstId] == null || _vertices[secondId] == null) {
@@ -207,7 +209,7 @@ class GraphViewModel(
         val algoFB = FordBellman(graph, firstId, secondId)
         val flag = algoFB.FordBellman()
         if (!flag) {
-            return
+            throw IllegalStateException("Path does not exist")
         }
         val way =
             try {
@@ -216,19 +218,22 @@ class GraphViewModel(
                 throw e
             }
         for (el in way) {
-            val revEdge = Pair(el.second, el.first)
             _edges[el]?.color = CoolColors.Bardo
-            _edges[el]?.width = 5f
-            _edges[revEdge]?.color = CoolColors.Bardo
-            _edges[revEdge]?.width = 20f
+            _edges[el]?.width = 20f
+            if (!isDirected) {
+                val reversedEdge = Pair(el.second, el.first)
+                _edges[reversedEdge]?.color = CoolColors.Bardo
+                _edges[reversedEdge]?.width = 20f
+            }
         }
     }
 
     fun findLoopForVertex() {
         resetColors()
+        resetSizes()
         val id = idForLoop.toLong()
         if (_vertices[id] == null) {
-            throw IllegalArgumentException("No such vertexes in graph")
+            throw IllegalArgumentException("Graph does not contain vertex with id $idForLoop")
         }
         val algoLoops = FindLoop(graph, id)
         if (graph.isDirected) {
@@ -238,14 +243,16 @@ class GraphViewModel(
         }
         val loop = algoLoops.loop
         if (loop.isEmpty()) {
-            return
+            throw IllegalStateException("Graph does not contain any loop with this vertex")
         }
         for (i in 0..loop.size - 2) {
             val edges = Pair(loop[i], loop[i + 1]) to Pair(loop[i + 1], loop[i])
             _edges[edges.first]?.color = CoolColors.Bardo
-            _edges[edges.first]?.width = 5f
-            _edges[edges.second]?.color = CoolColors.Bardo
-            _edges[edges.second]?.width = 5f
+            _edges[edges.first]?.width = 20f
+            if (!isDirected) {
+                _edges[edges.second]?.color = CoolColors.Bardo
+                _edges[edges.second]?.width = 20f
+            }
         }
     }
 
@@ -307,8 +314,6 @@ class GraphViewModel(
     }
 
     fun placementAlgorithm() {
-        place(vertices, edges)
+        place(vertices, edges, isDirected)
     }
-
-    private fun find() {}
 }

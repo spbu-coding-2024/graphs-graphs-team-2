@@ -14,47 +14,52 @@ import org.openide.util.Lookup
 import viewModel.graph.EdgeViewModel
 import viewModel.graph.VertexViewModel
 
-fun place(vertices: Collection<VertexViewModel>, edges: Collection<EdgeViewModel>) {
+fun place(
+    vertices: Collection<VertexViewModel>,
+    edges: Collection<EdgeViewModel>,
+    isDirected: Boolean,
+) {
     val pc: ProjectController = Lookup.getDefault().lookup(ProjectController::class.java)
     pc.newProject()
     val ws: Workspace = pc.currentWorkspace
-    val gm: GraphModel = Lookup.getDefault().lookup(GraphController::class.java).getGraphModel(ws)
-    val gr: Graph = gm.getGraph()
-    val con = mutableMapOf<String, Node>()
+    val graphModel: GraphModel =
+        Lookup.getDefault().lookup(GraphController::class.java).getGraphModel(ws)
+    val graph: Graph = graphModel.getGraph()
+    val con = mutableMapOf<Long, Node>()
     for (vert in vertices) {
-        val p = vert.ID.toString()
-        val n: Node = gm.factory().newNode(p)
-        n.label = p
+        val strID = vert.ID.toString()
+        val n: Node = graphModel.factory().newNode(strID)
+        n.label = strID
         n.setX(abs(Random.nextFloat() * 1000))
         n.setY(abs(Random.nextFloat() * 1000))
         n.setSize(vert.radius.value)
-        gr.addNode(n)
-        con[p] = n
+        graph.addNode(n)
+        con[vert.ID] = n
     }
-    for (edg in edges) {
-        gr.addEdge(gm.factory().newEdge(con[edg.u.ID.toString()], con[edg.v.ID.toString()], false))
+    for (edge in edges) {
+        graph.addEdge(graphModel.factory().newEdge(con[edge.u.ID], con[edge.v.ID], isDirected))
     }
-    val lay = ForceAtlas2(null)
-    lay.setGraphModel(gm)
-    lay.initAlgo()
-    lay.isLinLogMode = true
-    lay.gravity = 1.5
-    lay.scalingRatio = 35.0
+    val layout = ForceAtlas2(null)
+    layout.setGraphModel(graphModel)
+    layout.initAlgo()
+    layout.isLinLogMode = true
+    layout.gravity = 1.5
+    layout.scalingRatio = 35.0
 
     var i = 0
     while (i < 100) {
-        if (lay.canAlgo()) {
-            lay.goAlgo()
+        if (layout.canAlgo()) {
+            layout.goAlgo()
         } else {
             break
         }
         for (nod in vertices) {
-            val m = con[nod.ID.toString()]
+            val m = con[nod.ID]
             nod.x = m?.x()?.dp ?: nod.x
             nod.y = m?.y()?.dp ?: nod.y
         }
 
         i++
     }
-    lay.endAlgo()
+    layout.endAlgo()
 }
