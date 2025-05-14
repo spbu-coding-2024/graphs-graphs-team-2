@@ -246,7 +246,7 @@ class GraphViewModel(
             throw IllegalStateException("Graph does not contain any loop with this vertex")
         }
         for (i in 0..loop.size - 2) {
-            val edges = Pair(loop[i], loop[i + 1]) to Pair(loop[i + 1], loop[i])
+            val edges = Pair(loop[i + 1], loop[i]) to Pair(loop[i], loop[i + 1])
             _edges[edges.first]?.color = CoolColors.Bardo
             _edges[edges.first]?.width = 20f
             if (!isDirected) {

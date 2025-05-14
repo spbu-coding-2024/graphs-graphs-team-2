@@ -36,7 +36,7 @@ class FindLoopIntegrationTest {
         viewModel.edges.forEach {
             when {
                 it.u.ID == 1L && it.v.ID == 2L -> {
-                    assert(it.width == 20F)
+                    assert(it.width == 20f)
                     assert(it.color == CoolColors.Bardo)
                 }
                 it.u.ID == 2L && it.v.ID == 3L -> {
