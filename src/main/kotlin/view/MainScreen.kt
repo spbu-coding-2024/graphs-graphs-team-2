@@ -434,6 +434,8 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                             scope.launch {
                                 try {
                                     viewModel.graphViewModel.findPathByFordBellman()
+                                    viewModel.graphViewModel.firstIDFB = ""
+                                    viewModel.graphViewModel.secondIDFB = ""
                                 } catch (e: Exception) {
                                     viewModel.apply {
                                         viewModel.apply {
@@ -469,6 +471,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                             scope.launch {
                                 try {
                                     viewModel.graphViewModel.findLoopForVertex()
+                                    viewModel.graphViewModel.idForLoop = ""
                                 } catch (e: Exception) {
                                     viewModel.apply {
                                         errorMessage = e.message ?: "Graph is built incorrectly"
