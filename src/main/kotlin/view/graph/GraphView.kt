@@ -16,8 +16,8 @@ fun GraphView(viewModel: GraphViewModel, scale: Float) {
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
     if (viewModel.isOffsetCalculated) {
-        offsetX = viewModel.calculatedOffsetX.value
-        offsetY = viewModel.calculatedOffsetY.value
+        offsetX = viewModel.calculatedOffsetX
+        offsetY = viewModel.calculatedOffsetY
         viewModel.isOffsetCalculated = false
     }
     Box(

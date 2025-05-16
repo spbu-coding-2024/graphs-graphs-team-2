@@ -201,8 +201,11 @@ class GraphViewModel(
     fun findPathByFordBellman() {
         resetColors()
         resetSizes()
-        val firstId = firstIDFB.toLong()
-        val secondId = secondIDFB.toLong()
+        val firstId = firstIDFB.toLongOrNull()
+        val secondId = secondIDFB.toLongOrNull()
+        if (firstId == null || secondId == null) {
+            throw IllegalArgumentException("Incorrect input")
+        }
         if (_vertices[firstId] == null || _vertices[secondId] == null) {
             throw IllegalArgumentException("No such vertexes in graph")
         }
@@ -231,7 +234,10 @@ class GraphViewModel(
     fun findLoopForVertex() {
         resetColors()
         resetSizes()
-        val id = idForLoop.toLong()
+        val id = idForLoop.toLongOrNull()
+        if (id == null) {
+            throw IllegalArgumentException("Incorrect input")
+        }
         if (_vertices[id] == null) {
             throw IllegalArgumentException("Graph does not contain vertex with id $idForLoop")
         }
@@ -287,8 +293,19 @@ class GraphViewModel(
             _isOffsetCalculated.value = value
         }
 
-    var calculatedOffsetX = mutableStateOf(0f)
-    var calculatedOffsetY = mutableStateOf(0f)
+    private var _calculatedOffsetX = mutableStateOf(0f)
+    var calculatedOffsetX
+        get() = _calculatedOffsetX.value
+        set(value) {
+            _calculatedOffsetX.value = value
+        }
+
+    private var _calculatedOffsetY = mutableStateOf(0f)
+    var calculatedOffsetY
+        get() = _calculatedOffsetY.value
+        set(value) {
+            _calculatedOffsetY.value = value
+        }
 
     fun calculateScaleAndOffset(): Float {
         var minX = vertices.first().x.value
@@ -307,8 +324,8 @@ class GraphViewModel(
         val scale = min(scaleX, scaleY)
         val offsetX = -(minX - (800f - scale * (maxX - minX)) / 2f) * scale
         val offsetY = -(minY - (800f - scale * (maxY - minY)) / 2f) * scale
-        calculatedOffsetX.value = offsetX
-        calculatedOffsetY.value = offsetY
+        _calculatedOffsetX.value = offsetX
+        _calculatedOffsetY.value = offsetY
         isOffsetCalculated = true
         return scale
     }
