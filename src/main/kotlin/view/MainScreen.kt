@@ -55,6 +55,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.skiko.Cursor
 import view.components.CoolColors
 import view.components.ErrorDialog
+import view.components.InformationDialog
 import view.components.InvertPurpleButton
 import view.components.PurpleButton
 import view.graph.GraphView
@@ -388,18 +389,19 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                                 .fillMaxSize()
                                 .padding(horizontal = 7.dp),
                         onClick = {
-                            try {
-                                scope.launch {
+                            scope.launch {
+                                try {
                                     viewModel.isLoading = true
                                     viewModel.graphViewModel.Dijkstra()
                                     viewModel.isLoading = false
-                                }
-                            } catch (e: Exception) {
-                                viewModel.apply {
-                                    errorMessage = e.message ?: "Graph is built incorrectly"
-                                    showErrorDialog = true
-                                    graphViewModel.firstIdDijkstra = ""
-                                    graphViewModel.secondIdDijkstra = ""
+                                } catch (e: Exception) {
+                                    viewModel.apply {
+                                        errorMessage = e.message ?: "Graph is built incorrectly"
+                                        showErrorDialog = true
+                                        graphViewModel.firstIdDijkstra = ""
+                                        graphViewModel.secondIdDijkstra = ""
+                                        viewModel.isLoading = false
+                                    }
                                 }
                             }
                         },
@@ -429,15 +431,17 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                                 .fillMaxSize()
                                 .padding(horizontal = 7.dp),
                         onClick = {
-                            try {
-                                scope.launch { viewModel.graphViewModel.findPathByFordBellman() }
-                            } catch (e: Exception) {
-                                viewModel.apply {
+                            scope.launch {
+                                try {
+                                    viewModel.graphViewModel.findPathByFordBellman()
+                                } catch (e: Exception) {
                                     viewModel.apply {
-                                        errorMessage = e.message ?: "Graph is built incorrectly"
-                                        showErrorDialog = true
-                                        graphViewModel.firstIDFB = ""
-                                        graphViewModel.secondIDFB = ""
+                                        viewModel.apply {
+                                            errorMessage = e.message ?: "Graph is built incorrectly"
+                                            showInformationDialog = true
+                                            graphViewModel.firstIDFB = ""
+                                            graphViewModel.secondIDFB = ""
+                                        }
                                     }
                                 }
                             }
@@ -462,14 +466,15 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                                 .fillMaxSize()
                                 .padding(horizontal = 7.dp),
                         onClick = {
-                            try {
-                                scope.launch { viewModel.graphViewModel.findLoopForVertex() }
-                            } catch (e: Exception) {
-                                viewModel.apply {
-                                    errorMessage = e.message ?: "Graph is built incorrectly"
-                                    showErrorDialog = true
-                                    graphViewModel.firstIDFB = ""
-                                    graphViewModel.secondIDFB = ""
+                            scope.launch {
+                                try {
+                                    viewModel.graphViewModel.findLoopForVertex()
+                                } catch (e: Exception) {
+                                    viewModel.apply {
+                                        errorMessage = e.message ?: "Graph is built incorrectly"
+                                        showInformationDialog = true
+                                        graphViewModel.idForLoop = ""
+                                    }
                                 }
                             }
                         },
@@ -668,5 +673,8 @@ fun MainScreen(viewModel: MainScreenViewModel) {
     }
     if (viewModel.showErrorDialog) {
         ErrorDialog(viewModel.errorMessage) { viewModel.showErrorDialog = false }
+    }
+    if (viewModel.showInformationDialog) {
+        InformationDialog(viewModel.errorMessage) { viewModel.showInformationDialog = false }
     }
 }

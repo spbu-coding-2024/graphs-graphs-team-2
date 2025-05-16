@@ -15,7 +15,7 @@ import viewModel.graph.GraphViewModel
 class SQLiteSearchScreenViewModel {
     private val _isLoading = mutableStateOf(false)
     val isLoading = _isLoading
-    private val connection = SQLiteEXP("app.db")
+    private val connection = SQLiteEXP(findPathForDB())
     private val converter = SQLiteConverter(connection)
     lateinit var graphList: MutableList<String>
 

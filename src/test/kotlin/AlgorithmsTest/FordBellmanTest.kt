@@ -86,4 +86,17 @@ class FordBellmanTest {
         val exception = assertThrows<IllegalStateException> { algoFB.FordBellman() }
         assert(exception.message?.contains("Graph contains negative loop") ?: false) {}
     }
+
+    @Test
+    fun testUnreachableEnd() {
+        val graph = Graph(true, true)
+        for (i in 1L..3L) {
+            graph.addVertex(i, i.toString())
+        }
+        graph.addEdge(1L, 2L, "1", 1, -1F)
+        graph.addEdge(2L, 1L, "2", 2, -1F)
+        val algoFB = FordBellman(graph, 1L, 3L)
+        val result = algoFB.FordBellman()
+        assert(result == false)
+    }
 }

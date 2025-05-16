@@ -1,5 +1,6 @@
 package algo
 
+import kotlin.IllegalStateException
 import model.Graph
 
 class FordBellman(val graph: Graph, val firstVertexId: Long, val secondVertexId: Long) {
@@ -13,6 +14,10 @@ class FordBellman(val graph: Graph, val firstVertexId: Long, val secondVertexId:
     val pathFromStartToEnd = LinkedHashSet<Pair<Long, Long>>()
 
     fun FordBellman(): Boolean {
+        val isReachable = checkReachability()
+        if (!isReachable) {
+            return false
+        }
         for (i in 1..graph.vertices.size - 1) {
             for (e in graphMap) {
                 val d1 = distance[e.key]
@@ -35,7 +40,7 @@ class FordBellman(val graph: Graph, val firstVertexId: Long, val secondVertexId:
         while (prevId != firstVertexId) {
             prevId = path[currentId] ?: return false
             if (visited[prevId] == true) {
-                error("Path contains negative loop")
+                throw IllegalStateException("Path contains negative loop")
             }
             visited[prevId] = true
             pathFromStartToEnd.addFirst(prevId to currentId)
@@ -49,12 +54,33 @@ class FordBellman(val graph: Graph, val firstVertexId: Long, val secondVertexId:
                 if (d1 != null && d2 != null) {
                     if (d1 + edge.second < d2) {
                         if (pathFromStartToEnd.contains(e.key to edge.first)) {
-                            error("Graph contains negative loop")
+                            throw IllegalStateException("Graph contains negative loop")
                         }
                     }
                 }
             }
         }
         return true
+    }
+
+    fun checkReachability(): Boolean {
+        val queue = ArrayDeque<Long>()
+        val visitedVertices = HashSet<Long>()
+        queue.add(firstVertexId)
+        visitedVertices.add(firstVertexId)
+        while (queue.isNotEmpty()) {
+            val vertex = queue.removeFirst()
+            for (neighbour in graphMap[vertex] ?: return false) {
+                if (!visitedVertices.contains(neighbour.first)) {
+                    if (neighbour.first == secondVertexId) {
+                        return true
+                    } else {
+                        queue.addLast(neighbour.first)
+                        visitedVertices.add(neighbour.first)
+                    }
+                }
+            }
+        }
+        return false
     }
 }
