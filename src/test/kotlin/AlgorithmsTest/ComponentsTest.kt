@@ -16,6 +16,10 @@ class ComponentsTest {
         graph = Graph(direction = true, weight = false)
     }
 
+    /**
+     * The case when the graph consists of only one vertex.
+     * This one vertex is the only one strongly connected component.
+     */
     @Test
     fun `isolated vertex`() {
         graph.addVertex(0, "a")
@@ -24,6 +28,10 @@ class ComponentsTest {
         assertEquals(setOf(setOf(0L)), components)
     }
 
+    /**
+     * The case when the graph consists of only one triangle (cycle).
+     * This triangle is the only one strongly connected component.
+     */
     @Test
     fun `one cycle`() {
         graph.addVertex(0, "b")
@@ -37,6 +45,10 @@ class ComponentsTest {
         assertEquals(setOf(setOf(0L, 1L, 2L)), components)
     }
 
+    /**
+     * The case when the graph contains two triangles (cycles) without any path between them.
+     * This two triangles is the two strongly connected components.
+     */
     @Test
     fun `two components without path`() {
         graph.addVertex(0, "b")
@@ -57,6 +69,10 @@ class ComponentsTest {
         assertEquals(expectedResult, components)
     }
 
+    /**
+     * The case when the graph contains two triangles (cycles) with only one path between them.
+     * This two triangles is the two strongly connected components.
+     */
     @Test
     fun `two components with path between them`() {
         graph.addVertex(0, "b")
@@ -78,8 +94,11 @@ class ComponentsTest {
         assertEquals(expectedResult, components)
     }
 
+    /**
+     * Randomized test with graph generation.
+     */
     @RepeatedTest(15)
-    fun reverseTest() {
+    fun `randomized test`() {
         val (graph, expectedComponents) = componentsGenerator()
         val actualComponents = StronglyConnectedComponents(graph).components
         assertEquals(expectedComponents, actualComponents)
