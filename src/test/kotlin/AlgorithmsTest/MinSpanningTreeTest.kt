@@ -16,18 +16,14 @@ class MinSpanningTreeTest {
         graph = Graph(direction = false, weight = true)
     }
 
-    /**
-     * The empty graph case. The algorithm must return null.
-      */
+    /** The empty graph case. The algorithm must return null. */
     @Test
     fun `empty graph`() {
         val minTree = PrimSpanningTree(graph).minimalTree
         assertNull(minTree)
     }
 
-    /**
-     * The case of a disconnected graph. The algorithm must return null.
-     */
+    /** The case of a disconnected graph. The algorithm must return null. */
     @Test
     fun `not connected graph`() {
         graph.addVertex(0, "A")
@@ -43,8 +39,8 @@ class MinSpanningTreeTest {
     }
 
     /**
-     * The case with a single edge between two adjacent vertices.
-     * The entire graph must be a minimum spanning tree.
+     * The case with a single edge between two adjacent vertices. The entire graph must be a minimum
+     * spanning tree.
      */
     @Test
     fun `one way graph`() {
@@ -67,9 +63,7 @@ class MinSpanningTreeTest {
         }
     }
 
-    /**
-     * The case with a triangle where one edge has negative weight
-     */
+    /** The case with a triangle where one edge has negative weight */
     @Test
     fun `with negative weight`() {
         graph.addVertex(0, "A")

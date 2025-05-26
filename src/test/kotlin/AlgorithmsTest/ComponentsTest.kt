@@ -17,8 +17,8 @@ class ComponentsTest {
     }
 
     /**
-     * The case when the graph consists of only one vertex.
-     * This one vertex is the only one strongly connected component.
+     * The case when the graph consists of only one vertex. This one vertex is the only one strongly
+     * connected component.
      */
     @Test
     fun `isolated vertex`() {
@@ -29,8 +29,8 @@ class ComponentsTest {
     }
 
     /**
-     * The case when the graph consists of only one triangle (cycle).
-     * This triangle is the only one strongly connected component.
+     * The case when the graph consists of only one triangle (cycle). This triangle is the only one
+     * strongly connected component.
      */
     @Test
     fun `one cycle`() {
@@ -46,8 +46,8 @@ class ComponentsTest {
     }
 
     /**
-     * The case when the graph contains two triangles (cycles) without any path between them.
-     * This two triangles is the two strongly connected components.
+     * The case when the graph contains two triangles (cycles) without any path between them. This
+     * two triangles is the two strongly connected components.
      */
     @Test
     fun `two components without path`() {
@@ -70,8 +70,8 @@ class ComponentsTest {
     }
 
     /**
-     * The case when the graph contains two triangles (cycles) with only one path between them.
-     * This two triangles is the two strongly connected components.
+     * The case when the graph contains two triangles (cycles) with only one path between them. This
+     * two triangles is the two strongly connected components.
      */
     @Test
     fun `two components with path between them`() {
@@ -94,9 +94,7 @@ class ComponentsTest {
         assertEquals(expectedResult, components)
     }
 
-    /**
-     * Randomized test with graph generation.
-     */
+    /** Randomized test with graph generation. */
     @RepeatedTest(15)
     fun `randomized test`() {
         val (graph, expectedComponents) = componentsGenerator()
