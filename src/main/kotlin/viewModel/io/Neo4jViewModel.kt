@@ -9,6 +9,7 @@ import model.abstractGraph.AbstractVertex
 import viewModel.graph.GraphViewModel
 
 class Neo4jViewModel() {
+    val uri = mutableStateOf("")
     val username = mutableStateOf("")
     val password = mutableStateOf("")
     val passwordVisible = mutableStateOf(false)
@@ -17,7 +18,7 @@ class Neo4jViewModel() {
 
     fun read(): Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>>? {
         try {
-            return ReadNeo4j(username.value, password.value)
+            return ReadNeo4j(uri.value, username.value, password.value)
         } catch (e: Exception) {
             errorMessage.value = e.message ?: "Error"
             showErrorDialog.value = true
@@ -28,6 +29,7 @@ class Neo4jViewModel() {
     fun write(graphViewModel: GraphViewModel?): Boolean {
         try {
             WriteNeo4j(
+                uri.value,
                 username.value,
                 password.value,
                 graphViewModel ?: throw IllegalArgumentException("no graph for write"),

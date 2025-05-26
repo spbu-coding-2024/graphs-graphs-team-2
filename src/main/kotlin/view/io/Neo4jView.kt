@@ -55,7 +55,7 @@ fun Neo4jView(
 ) {
     Dialog(onDismissRequest = {}) {
         Card(
-            modifier = Modifier.fillMaxWidth().height(500.dp).padding(16.dp),
+            modifier = Modifier.fillMaxWidth().height(600.dp).padding(16.dp),
             shape = RoundedCornerShape(16.dp),
         ) {
             Column(
@@ -69,6 +69,13 @@ fun Neo4jView(
                     fontSize = 40.sp,
                     style = TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
                     color = CoolColors.DarkPurple,
+                )
+                OutlinedTextField(
+                    viewModel.uri.value,
+                    { viewModel.uri.value = it },
+                    textStyle = TextStyle(fontSize = 32.sp, color = CoolColors.DarkPurple),
+                    modifier = Modifier.width(400.dp),
+                    label = { Text("uri", fontSize = 28.sp, color = CoolColors.DarkPurple) },
                 )
 
                 OutlinedTextField(
