@@ -17,6 +17,10 @@ class JSONConverterTest {
     private lateinit var graphViewModel: GraphViewModel
     private val converter = JSONConverter()
 
+    /**
+     * Translation into the JSON format of a weighted directed graph with two vertices and an edge
+     * between them.
+     */
     @Test
     fun `simple weighted directed convert to JSON`() {
         graph = Graph(direction = true, weight = true)
@@ -49,6 +53,10 @@ class JSONConverterTest {
         assertEquals(expectedResult, actualResult)
     }
 
+    /**
+     * Translation from the JSON format of a weighted directed graph with two vertices, an edge
+     * between them and the specified coordinates.
+     */
     @Test
     fun `simple weighted directed convert from JSON`() {
         val jsonFormat =
@@ -77,6 +85,11 @@ class JSONConverterTest {
         expectedPlacement.forEach { assertEquals(it.value, actualPlacement[it.key]) }
     }
 
+    /**
+     * Translation from the JSON format of a graph without specifying direction and weighting with
+     * two vertices, an edge between them and the specified coordinates. The resulting graph must be
+     * unweighted and undirected.
+     */
     @Test
     fun `convert from JSON without weight and direction tags`() {
         val jsonFormat =
@@ -104,6 +117,11 @@ class JSONConverterTest {
         expectedPlacement.forEach { assertEquals(it.value, actualPlacement[it.key]) }
     }
 
+    /**
+     * Translation from the JSON format of a graph without specifying direction, weighting and
+     * coordinates with two vertices and edge between them. The resulting graph must be unweighted,
+     * undirected and null-value coordinates.
+     */
     @Test
     fun `convert from JSON without weight and direction tags and cords`() {
         val jsonFormat =
@@ -131,12 +149,20 @@ class JSONConverterTest {
         expectedPlacement.forEach { assertEquals(it.value, actualPlacement[it.key]) }
     }
 
+    /**
+     * Converting from JSON format string with incorrect data must fall with Illegal State
+     * Exception.
+     */
     @Test
     fun `incorrect input`() {
         val jsonFormat = "json is top format"
         assertFailsWith<IllegalStateException> { converter.fromJSON(jsonFormat) }
     }
 
+    /**
+     * An integration test in which the user first stores his graph from the JSON format and then
+     * loads it back. The graph should not change.
+     */
     @Test
     fun `integration converter test`() {
         graph = Graph(direction = true, weight = true)
