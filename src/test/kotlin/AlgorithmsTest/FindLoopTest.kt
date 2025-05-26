@@ -5,7 +5,12 @@ import kotlin.test.Test
 import model.Graph
 import org.junit.jupiter.api.Assertions.assertEquals
 
+/**
+ * * FindLoopInUndirectedGraph class contains unit tests for find loop for vertex in directed and
+ *   undirected graphs
+ */
 class FindLoopTest {
+    /** Test finds loop for vertex with ID 1. The correct loop is 1-2-3-1 */
     @Test
     fun testFindLoopInUndirectedGraph() {
         val graph = Graph()
@@ -26,6 +31,7 @@ class FindLoopTest {
         assertEquals(loop[3], 1L)
     }
 
+    /** In this test graph doesn't contain loop with vertex 1 */
     @Test
     fun testFindLoopInUnDirectedGraphWithoutLoops() {
         val graph = Graph()

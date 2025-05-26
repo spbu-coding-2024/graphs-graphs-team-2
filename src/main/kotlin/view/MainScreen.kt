@@ -644,9 +644,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 )
             }
             if (viewModel.dataSystem == DataSystems.SQLite) {
-                SQLiteNameInputView(mutableStateOf(viewModel.graphName)) {
-                    viewModel.dataSystem = null
-                }
+                SQLiteNameInputView(viewModel) { viewModel.dataSystem = null }
                 if (viewModel.graphName != null) {
                     try {
                         SQLiteSearchScreenViewModel()
