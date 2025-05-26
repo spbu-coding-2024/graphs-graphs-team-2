@@ -8,6 +8,10 @@ import org.junit.jupiter.api.Test
 class HarmonicCentralityTest {
     private lateinit var graph: Graph
 
+    /**
+     * The case when the graph consists of one vertex.
+     * Its centrality, obviously, must be 0
+     */
     @Test
     fun `isolated vertex`() {
         graph = Graph()
@@ -16,8 +20,12 @@ class HarmonicCentralityTest {
         assertEquals(0f, centrality.getVertexCentrality(0))
     }
 
+    /**
+     * The case of a triangle without weights and directions.
+     * The centralities of all vertices must be equal
+     */
     @Test
-    fun `unweighted undirected isosceles triangle`() {
+    fun `unweighted undirected triangle`() {
         graph = Graph()
         graph.addVertex(0, "a")
         graph.addVertex(1, "b")
@@ -33,6 +41,11 @@ class HarmonicCentralityTest {
         assertEquals(centrality.getVertexCentrality(2), centrality.getVertexCentrality(1))
     }
 
+    /**
+     * The case of a weighted directed triangle
+     * The vertex from which no edge emerges has a centrality of 0.
+     * The remaining two have a centrality proportional to the weight of the edges
+     */
     @Test
     fun `weighted directed triangle`() {
         graph = Graph(direction = true, weight = true)
