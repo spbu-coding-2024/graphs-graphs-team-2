@@ -26,7 +26,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,6 +49,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import view.components.CoolColors
 import view.components.PurpleButton
+import viewModel.MainScreenViewModel
 import viewModel.io.SQLiteSearchScreenViewModel
 
 @Composable
@@ -200,7 +200,7 @@ fun confirmationDialog(onDismiss: () -> Unit, onYesClick: () -> Unit, name: Stri
 }
 
 @Composable
-fun SQLiteNameInputView(name: MutableState<String?>, onDismiss: () -> Unit) {
+fun SQLiteNameInputView(viewModel: MainScreenViewModel, onDismiss: () -> Unit) {
     Dialog(onDismissRequest = {}) {
         Card(
             modifier = Modifier.fillMaxWidth().height(400.dp).padding(20.dp),
@@ -232,14 +232,14 @@ fun SQLiteNameInputView(name: MutableState<String?>, onDismiss: () -> Unit) {
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     PurpleButton(
-                        onClick = onDismiss,
+                        onClick = { onDismiss() },
                         modifier = Modifier.clip(shape = RoundedCornerShape(10.dp)).weight(1f),
                         text = "Cancel",
                         fontSize = 32.sp,
                         textPadding = 10.dp,
                     )
                     PurpleButton(
-                        onClick = { name.value = input.value },
+                        onClick = { viewModel.graphName = input.value },
                         modifier = Modifier.clip(shape = RoundedCornerShape(10.dp)).weight(1f),
                         text = "OK",
                         fontSize = 32.sp,
