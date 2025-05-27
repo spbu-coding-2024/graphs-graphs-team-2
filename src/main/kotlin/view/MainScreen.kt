@@ -330,9 +330,17 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                                 .padding(horizontal = 7.dp),
                         onClick = {
                             scope.launch {
-                                viewModel.isLoading = true
-                                viewModel.graphViewModel.Louvain()
-                                viewModel.isLoading = false
+                                try {
+                                    viewModel.isLoading = true
+                                    viewModel.graphViewModel.Louvain()
+                                    viewModel.isLoading = false
+                                } catch (e: Throwable) {
+                                    viewModel.apply {
+                                        errorMessage = e.message ?: "Graph is built incorrectly"
+                                        showErrorDialog = true
+                                        viewModel.isLoading = false
+                                    }
+                                }
                             }
                         },
                         text = "Find Communities",
@@ -392,9 +400,17 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                                     .padding(horizontal = 7.dp),
                             onClick = {
                                 scope.launch {
-                                    viewModel.isLoading = true
-                                    viewModel.graphViewModel.DrawBridges()
-                                    viewModel.isLoading = false
+                                    try {
+                                        viewModel.isLoading = true
+                                        viewModel.graphViewModel.DrawBridges()
+                                        viewModel.isLoading = false
+                                    } catch (e: Throwable) {
+                                        viewModel.apply {
+                                            errorMessage = e.message ?: "Graph is built incorrectly"
+                                            showErrorDialog = true
+                                            viewModel.isLoading = false
+                                        }
+                                    }
                                 }
                             },
                             text = "Find Bridges",
@@ -429,7 +445,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                                         viewModel.isLoading = true
                                         viewModel.graphViewModel.Dijkstra()
                                         viewModel.isLoading = false
-                                    } catch (e: Exception) {
+                                    } catch (e: Throwable) {
                                         viewModel.apply {
                                             errorMessage = e.message ?: "Graph is built incorrectly"
                                             showErrorDialog = true
