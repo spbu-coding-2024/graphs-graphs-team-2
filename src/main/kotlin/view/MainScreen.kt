@@ -79,20 +79,20 @@ fun MainScreen(viewModel: MainScreenViewModel) {
     val navigator = LocalNavigator.currentOrThrow
     if (!viewModel.isLoading) {
         FloatingActionButton(
-            modifier = Modifier.width(40.dp).height(40.dp).zIndex(1f)
-                .offset(if (viewModel.showSideBar) 380.dp else 5.dp, 5.dp).pointerHoverIcon(
-                    PointerIcon(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))
-                ),
+            modifier =
+                Modifier.width(40.dp)
+                    .height(40.dp)
+                    .zIndex(1f)
+                    .offset(if (viewModel.showSideBar) 380.dp else 5.dp, 5.dp)
+                    .pointerHoverIcon(PointerIcon(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))),
             backgroundColor = CoolColors.DarkGray,
             contentColor = CoolColors.Purple,
-            onClick = {
-                viewModel.showSideBar = !viewModel.showSideBar
-            },
+            onClick = { viewModel.showSideBar = !viewModel.showSideBar },
         ) {
             Icon(
                 Icons.Filled.ArrowDropDown,
                 modifier = Modifier.rotate(if (viewModel.showSideBar) 90f else -90f),
-                contentDescription = null
+                contentDescription = null,
             )
         }
         Row(
@@ -103,11 +103,10 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 mutableStateOf(viewModel.graphViewModel.calculateScaleAndOffset())
             }
 
-
             AnimatedVisibility(
                 visible = viewModel.showSideBar,
                 enter = EnterTransition.None,
-                exit = ExitTransition.None
+                exit = ExitTransition.None,
             ) {
                 Column(
                     modifier =
@@ -139,7 +138,9 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                             fontFamily = FontFamily.Monospace,
                             color = CoolColors.DarkGray,
                             style =
-                                TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
+                                TextStyle(
+                                    textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)
+                                ),
                         )
                         Column(
                             horizontalAlignment = Alignment.End,
@@ -148,7 +149,8 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                             Icon(
                                 Icons.Filled.ArrowDropDown,
                                 contentDescription = null,
-                                modifier = Modifier.rotate(if (viewModel.showMenuState) 180f else 0f),
+                                modifier =
+                                    Modifier.rotate(if (viewModel.showMenuState) 180f else 0f),
                             )
                         }
                     }
@@ -160,7 +162,8 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     ) {
                         DropdownMenuItem(
                             onClick = {
-                                viewModel.showVerticesLabels.value = !viewModel.showVerticesLabels.value
+                                viewModel.showVerticesLabels.value =
+                                    !viewModel.showVerticesLabels.value
                             },
                             Modifier.height(45.dp)
                                 .fillMaxWidth()
@@ -257,7 +260,8 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                         if (viewModel.graphViewModel.isWeighted) {
                             DropdownMenuItem(
                                 onClick = {
-                                    viewModel.showEdgesWeights.value = !viewModel.showEdgesWeights.value
+                                    viewModel.showEdgesWeights.value =
+                                        !viewModel.showEdgesWeights.value
                                 },
                                 Modifier.height(45.dp)
                                     .fillMaxWidth()
@@ -336,7 +340,9 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                         fontFamily = FontFamily.Monospace,
                         textPadding = 3.dp,
                     )
-                    if (!viewModel.graphViewModel.isDirected && viewModel.graphViewModel.isWeighted) {
+                    if (
+                        !viewModel.graphViewModel.isDirected && viewModel.graphViewModel.isWeighted
+                    ) {
                         PurpleButton(
                             modifier =
                                 Modifier.clip(shape = RoundedCornerShape(15.dp))
@@ -468,7 +474,8 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                                     } catch (e: Exception) {
                                         viewModel.apply {
                                             viewModel.apply {
-                                                errorMessage = e.message ?: "Graph is built incorrectly"
+                                                errorMessage =
+                                                    e.message ?: "Graph is built incorrectly"
                                                 showInformationDialog = true
                                                 graphViewModel.firstIDFB = ""
                                                 graphViewModel.secondIDFB = ""
@@ -552,7 +559,9 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                             fontFamily = FontFamily.Monospace,
                             color = CoolColors.DarkGray,
                             style =
-                                TextStyle(textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)),
+                                TextStyle(
+                                    textGeometricTransform = TextGeometricTransform(0.3f, 0.3f)
+                                ),
                         )
                         Column(
                             horizontalAlignment = Alignment.End,
@@ -561,7 +570,8 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                             Icon(
                                 Icons.Filled.ArrowDropDown,
                                 contentDescription = null,
-                                modifier = Modifier.rotate(if (!viewModel.saveMenuState) -90f else 0f),
+                                modifier =
+                                    Modifier.rotate(if (!viewModel.saveMenuState) -90f else 0f),
                             )
                         }
                     }
