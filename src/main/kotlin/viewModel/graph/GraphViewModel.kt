@@ -269,13 +269,13 @@ class GraphViewModel(
     }
 
     private fun resetColors() {
-        edges.onEach { it.color = CoolColors.Purple }
-        vertices.onEach { it.color = CoolColors.Purple }
+        edges.onEach { it.color = CoolColors.DarkPurple }
+        vertices.onEach { it.color = CoolColors.DarkPurple }
     }
 
     private fun resetSizes() {
         vertices.onEach { it.radius = 25.dp }
-        edges.onEach { it.width = 1f }
+        edges.onEach { it.width = 2f }
     }
 
     private fun resetCords() {
