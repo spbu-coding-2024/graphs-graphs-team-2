@@ -2,7 +2,7 @@ package io
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import io.SQLiteExposed.SQLiteEXP
+import io.SQLiteExposed.SQLiteExposed
 import kotlin.collections.forEach
 import kotlin.to
 import model.Graph
@@ -10,7 +10,7 @@ import model.abstractGraph.AbstractVertex
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import viewModel.graph.GraphViewModel
 
-class SQLiteConverter(val connection: SQLiteEXP) {
+class SQLiteConverter(val connection: SQLiteExposed) {
 
     fun saveToSQLiteDB(viewModel: GraphViewModel, name: String) {
         var graphID = 0
@@ -18,12 +18,12 @@ class SQLiteConverter(val connection: SQLiteEXP) {
             val id = connection.addGraph(name, viewModel.isDirected, viewModel.isWeighted)
             graphID = id
         } catch (e: ExposedSQLException) {
-            throw e
+            error("Graph with name already exists")
         }
         try {
             connection.addAllVertices(graphID, viewModel.vertices)
         } catch (e: ExposedSQLException) {
-            throw e
+            error("Vertices adding went wrong")
         }
         connection.addAllEdges(graphID, viewModel.edges)
     }

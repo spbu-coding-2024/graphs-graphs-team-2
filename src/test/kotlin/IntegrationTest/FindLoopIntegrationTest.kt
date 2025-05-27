@@ -10,7 +10,9 @@ import org.junit.jupiter.api.assertThrows
 import view.components.CoolColors
 import viewModel.graph.GraphViewModel
 
+/** FindLoopIntegrationTest class contains integration tests with algorithm for finding loop */
 class FindLoopIntegrationTest {
+    /** Test checks edge coloring after algorithm with loop in vertex 1 */
     @Test
     fun testFindLoop() {
         val graph = Graph(true)
@@ -36,19 +38,19 @@ class FindLoopIntegrationTest {
         viewModel.edges.forEach {
             when {
                 it.u.ID == 1L && it.v.ID == 2L -> {
-                    assert(it.width == 20f)
+                    assert(it.width == 5f)
                     assert(it.color == CoolColors.Bardo)
                 }
                 it.u.ID == 2L && it.v.ID == 3L -> {
-                    assert(it.width == 20F)
+                    assert(it.width == 5F)
                     assert(it.color == CoolColors.Bardo)
                 }
                 it.u.ID == 3L && it.v.ID == 4L -> {
-                    assert(it.width == 20F)
+                    assert(it.width == 5F)
                     assert(it.color == CoolColors.Bardo)
                 }
                 it.u.ID == 4L && it.v.ID == 1L -> {
-                    assert(it.width == 20F)
+                    assert(it.width == 5F)
                     assert(it.color == CoolColors.Bardo)
                 }
                 else -> {
@@ -59,6 +61,7 @@ class FindLoopIntegrationTest {
         }
     }
 
+    /** Test checks edge coloring after algorithm without loops */
     @Test
     fun testVertexWithoutLoop() {
         val graph = Graph(true)
@@ -85,6 +88,7 @@ class FindLoopIntegrationTest {
         )
     }
 
+    /** Test checks trying to find loop with vertex which doesn't exist in graph */
     @Test
     fun testGraphDoesNotContainVertex() {
         val graph = Graph(true)

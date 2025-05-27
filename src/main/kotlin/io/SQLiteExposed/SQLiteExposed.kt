@@ -35,7 +35,7 @@ object Edges : IntIdTable() {
     val graph_id = integer("graph_id").references(Graphs.id, onDelete = ReferenceOption.CASCADE)
 }
 
-class SQLiteEXP(dbName: String) {
+class SQLiteExposed(dbName: String) {
     var dbc =
         Database.connect(
             "jdbc:sqlite:$dbName",
