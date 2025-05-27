@@ -136,9 +136,9 @@ class GraphViewModel(
         for (i in 0..way.size - 2) {
             val edges = Pair(way[i], way[i + 1]) to Pair(way[i + 1], way[i])
             _edges[edges.first]?.color = CoolColors.Bardo
-            _edges[edges.first]?.width = 5f
+            _edges[edges.first]?.width = 20f
             _edges[edges.second]?.color = CoolColors.Bardo
-            _edges[edges.second]?.width = 5f
+            _edges[edges.second]?.width = 20f
         }
     }
 
