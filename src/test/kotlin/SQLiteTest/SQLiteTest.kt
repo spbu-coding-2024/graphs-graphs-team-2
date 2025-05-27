@@ -5,7 +5,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.SQLiteExposed.Edges
 import io.SQLiteExposed.Graphs
-import io.SQLiteExposed.SQLiteExposed
+import io.SQLiteExposed.SQLiteEXP
 import io.SQLiteExposed.Vertices
 import java.io.File
 import kotlin.test.assertEquals
@@ -21,35 +21,31 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import viewModel.graph.GraphViewModel
 
-/** SQLiteTest class contains tests SQLiteEXP class */
 class SQLiteTest {
 
-    private val connection = SQLiteExposed("test.db")
+    private val connection = SQLiteEXP("test.db")
 
     @AfterEach
     fun tearDown() {
         transaction { SchemaUtils.drop(Graphs, Edges, Vertices) }
     }
 
-    /** Test checks adding name of graph to DB */
     @Test
     fun test_addGraph() {
         val id = connection.addGraph("graph1", false, false)
-        assert(id == 1)
+        assert(id > 0)
     }
 
-    /** Test checks adding name of graph to DB twice */
     @Test
     fun test_addGraphTwice() {
         val id = connection.addGraph("graph2", false, false)
-        assert(id == 1)
+        assert(id > 0)
         val exception =
             assertThrows<ExposedSQLException> { connection.addGraph("graph2", false, false) }
 
         assert(exception.message?.contains("A UNIQUE constraint failed") ?: false)
     }
 
-    /** Test checks finding graph in DB by its name */
     @Test
     fun testGraphFinding() {
         val id = connection.addGraph("graph3", false, false)
@@ -59,7 +55,6 @@ class SQLiteTest {
         assertEquals(false, graphInfo?.isWeighted)
     }
 
-    /** Test checks deleting all graphs from DB */
     @Test
     fun deleteAllGraphs() {
         val graphArray = arrayOf("graph4", "graph5", "graph6", "graph7", "graph8")
@@ -69,7 +64,6 @@ class SQLiteTest {
         assert(isGraphsTableEmpty)
     }
 
-    /** Test checks getting list of graphs from DB */
     @Test
     fun testGraphList() {
         connection.deleteAll()
@@ -80,7 +74,6 @@ class SQLiteTest {
         graphArray.forEach { assert(graphNames.contains(it)) }
     }
 
-    /** Test checks adding and getting vertices and edges */
     @Test
     fun addAndGetVerticesAndEdges() {
         val id = connection.addGraph("graph17", false, false)

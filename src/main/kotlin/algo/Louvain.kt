@@ -29,15 +29,19 @@ fun louvain(graphModelApp: model.Graph): Pair<Map<Long, Int>, Map<Pair<Long, Lon
         val target = nodeMap[edge.vertices.second.id]
         if (source != null && target != null) {
             val weight = edge.weight
-            val newEdge = graphModel.factory().newEdge(source, target, (weight.toFloat() * 100).toInt(), directed)
+            val newEdge =
+                graphModel
+                    .factory()
+                    .newEdge(source, target, (weight.toFloat() * 100).toInt(), directed)
             graph.addEdge(newEdge)
         }
     }
 
-    val modularity = Modularity().apply {
-        setResolution(1.0)
-        setRandom(false)
-    }
+    val modularity =
+        Modularity().apply {
+            setResolution(1.0)
+            setRandom(false)
+        }
 
     modularity.execute(graphModel)
 
@@ -58,10 +62,7 @@ fun louvain(graphModelApp: model.Graph): Pair<Map<Long, Int>, Map<Pair<Long, Lon
         val srcComm = src.getAttribute(Modularity.MODULARITY_CLASS) as? Int
         val tgtComm = tgt.getAttribute(Modularity.MODULARITY_CLASS) as? Int
         if (srcComm != null && srcComm == tgtComm) {
-            val key = Pair(
-                src.id.toString().toLong(),
-                tgt.id.toString().toLong()
-            )
+            val key = Pair(src.id.toString().toLong(), tgt.id.toString().toLong())
             communityMapEdge[key] = srcComm
         }
     }
