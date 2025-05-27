@@ -10,13 +10,9 @@ import org.junit.jupiter.api.assertThrows
 import view.components.CoolColors
 import viewModel.graph.GraphViewModel
 
-/**
- * FordBellmanIntegrationTest contains integration tests for Ford-Bellman algorithm
- */
+/** FordBellmanIntegrationTest contains integration tests for Ford-Bellman algorithm */
 class FordBellmanIntegrationTest {
-    /**
-     * Test checks path coloring in graph after Ford-Bellman algorithm
-     */
+    /** Test checks path coloring in graph after Ford-Bellman algorithm */
     @Test
     fun findShortestWayTest() {
         val graph = Graph(true, true)
@@ -65,9 +61,7 @@ class FordBellmanIntegrationTest {
         }
     }
 
-    /**
-     * Test checks coloring path with unreachable path in end
-     */
+    /** Test checks coloring path with unreachable path in end */
     @Test
     fun testUnreachableEnd() {
         val graph = Graph(true, true)

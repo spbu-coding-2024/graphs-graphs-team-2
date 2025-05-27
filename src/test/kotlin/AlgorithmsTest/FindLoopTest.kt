@@ -6,8 +6,8 @@ import model.Graph
 import org.junit.jupiter.api.Assertions.assertEquals
 
 /**
- * * FindLoopTest class contains unit tests for finding loop for vertex in directed and
- *   undirected graphs
+ * * FindLoopTest class contains unit tests for finding loop for vertex in directed and undirected
+ *   graphs
  */
 class FindLoopTest {
     /** Test finds loop for vertex with ID 1 in undirected graph. The correct loop is 1-2-3-1 */
@@ -46,6 +46,7 @@ class FindLoopTest {
         val loop = algoLoop.loop
         assert(loop.isEmpty)
     }
+
     /** In this test undirected graph doesn't contain loop with vertex 1 */
     @Test
     fun testFindLoopInUnDirectedGraphWithoutLoopWithVertex() {
@@ -62,6 +63,7 @@ class FindLoopTest {
         val loop = algoLoop.loop
         assert(loop.isEmpty)
     }
+
     /** Test finds loop for vertex with ID 1 in directed graph. The correct loop is 1-4-3-2-1 */
     @Test
     fun testFindLoopInDirectedGraph() {
@@ -83,7 +85,8 @@ class FindLoopTest {
         assertEquals(loop[3], 2L)
         assertEquals(loop[4], 1L)
     }
-    /** In this test directed graph doesn't contain any loop*/
+
+    /** In this test directed graph doesn't contain any loop */
     @Test
     fun testFindLoopInDirectedGraphWithoutLoops() {
         val graph = Graph(true)
@@ -98,6 +101,7 @@ class FindLoopTest {
         val loop = algoLoop.loop
         assert(loop.isEmpty)
     }
+
     /** In this test directed graph doesn't contain loop with vertex 1 */
     @Test
     fun testFindLoopInDirectedGraphWithoutLoopWithVertexVertex() {

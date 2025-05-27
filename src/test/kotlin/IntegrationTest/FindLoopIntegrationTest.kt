@@ -10,13 +10,9 @@ import org.junit.jupiter.api.assertThrows
 import view.components.CoolColors
 import viewModel.graph.GraphViewModel
 
-/**
- * FindLoopIntegrationTest class contains integration tests with algorithm for finding loop
- */
+/** FindLoopIntegrationTest class contains integration tests with algorithm for finding loop */
 class FindLoopIntegrationTest {
-    /**
-     * Test checks edge coloring after algorithm with loop in vertex 1
-     */
+    /** Test checks edge coloring after algorithm with loop in vertex 1 */
     @Test
     fun testFindLoop() {
         val graph = Graph(true)
@@ -64,9 +60,8 @@ class FindLoopIntegrationTest {
             }
         }
     }
-    /**
-     * Test checks edge coloring after algorithm without loops
-     */
+
+    /** Test checks edge coloring after algorithm without loops */
     @Test
     fun testVertexWithoutLoop() {
         val graph = Graph(true)
@@ -93,9 +88,7 @@ class FindLoopIntegrationTest {
         )
     }
 
-    /**
-     * Test checks trying to find loop with vertex which doesn't exist in graph
-     */
+    /** Test checks trying to find loop with vertex which doesn't exist in graph */
     @Test
     fun testGraphDoesNotContainVertex() {
         val graph = Graph(true)

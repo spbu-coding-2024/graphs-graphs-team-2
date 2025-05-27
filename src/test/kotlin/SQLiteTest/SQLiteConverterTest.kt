@@ -19,9 +19,7 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import viewModel.graph.GraphViewModel
 
-/**
- * SQLiteConverterTest class tests saving and loading graph
- */
+/** SQLiteConverterTest class tests saving and loading graph */
 class SQLiteConverterTest {
     private val connection = SQLiteExposed("test.db")
     private val converter = SQLiteConverter(connection)
@@ -31,9 +29,7 @@ class SQLiteConverterTest {
         transaction { SchemaUtils.drop(Graphs, Edges, Vertices) }
     }
 
-    /**
-     * Test checks saving and loading graph
-     */
+    /** Test checks saving and loading graph */
     @Test
     fun testSaveAndLoad() {
         val graph = Graph()
