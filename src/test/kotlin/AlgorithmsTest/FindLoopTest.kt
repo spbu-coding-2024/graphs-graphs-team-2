@@ -6,11 +6,11 @@ import model.Graph
 import org.junit.jupiter.api.Assertions.assertEquals
 
 /**
- * * FindLoopInUndirectedGraph class contains unit tests for find loop for vertex in directed and
- *   undirected graphs
+ * * FindLoopTest class contains unit tests for finding loop for vertex in directed and undirected
+ *   graphs
  */
 class FindLoopTest {
-    /** Test finds loop for vertex with ID 1. The correct loop is 1-2-3-1 */
+    /** Test finds loop for vertex with ID 1 in undirected graph. The correct loop is 1-2-3-1 */
     @Test
     fun testFindLoopInUndirectedGraph() {
         val graph = Graph()
@@ -31,7 +31,7 @@ class FindLoopTest {
         assertEquals(loop[3], 1L)
     }
 
-    /** In this test graph doesn't contain loop with vertex 1 */
+    /** In this test undirected graph doesn't contain loop with vertex 1 */
     @Test
     fun testFindLoopInUnDirectedGraphWithoutLoops() {
         val graph = Graph()
@@ -47,8 +47,9 @@ class FindLoopTest {
         assert(loop.isEmpty)
     }
 
+    /** In this test undirected graph doesn't contain loop with vertex 1 */
     @Test
-    fun testFindLoopInDirectedGraphWithoutLoopWithVertex() {
+    fun testFindLoopInUnDirectedGraphWithoutLoopWithVertex() {
         val graph = Graph()
         for (i in 1L..4L) {
             graph.addVertex(i, i.toString())
@@ -63,6 +64,7 @@ class FindLoopTest {
         assert(loop.isEmpty)
     }
 
+    /** Test finds loop for vertex with ID 1 in directed graph. The correct loop is 1-4-3-2-1 */
     @Test
     fun testFindLoopInDirectedGraph() {
         val graph = Graph(true)
@@ -84,6 +86,7 @@ class FindLoopTest {
         assertEquals(loop[4], 1L)
     }
 
+    /** In this test directed graph doesn't contain any loop */
     @Test
     fun testFindLoopInDirectedGraphWithoutLoops() {
         val graph = Graph(true)
@@ -99,8 +102,9 @@ class FindLoopTest {
         assert(loop.isEmpty)
     }
 
+    /** In this test directed graph doesn't contain loop with vertex 1 */
     @Test
-    fun testFindLoopInDirectedGraphWithoutLoopAndVertex() {
+    fun testFindLoopInDirectedGraphWithoutLoopWithVertexVertex() {
         val graph = Graph(true)
         for (i in 1L..4L) {
             graph.addVertex(i, i.toString())

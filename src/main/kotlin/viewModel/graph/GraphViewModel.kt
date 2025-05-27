@@ -222,11 +222,11 @@ class GraphViewModel(
             }
         for (el in way) {
             _edges[el]?.color = CoolColors.Bardo
-            _edges[el]?.width = 20f
+            _edges[el]?.width = 5f
             if (!isDirected) {
                 val reversedEdge = Pair(el.second, el.first)
                 _edges[reversedEdge]?.color = CoolColors.Bardo
-                _edges[reversedEdge]?.width = 20f
+                _edges[reversedEdge]?.width = 5f
             }
         }
     }
@@ -254,10 +254,10 @@ class GraphViewModel(
         for (i in 0..loop.size - 2) {
             val edges = Pair(loop[i + 1], loop[i]) to Pair(loop[i], loop[i + 1])
             _edges[edges.first]?.color = CoolColors.Bardo
-            _edges[edges.first]?.width = 20f
+            _edges[edges.first]?.width = 5f
             if (!isDirected) {
                 _edges[edges.second]?.color = CoolColors.Bardo
-                _edges[edges.second]?.width = 20f
+                _edges[edges.second]?.width = 5f
             }
         }
     }

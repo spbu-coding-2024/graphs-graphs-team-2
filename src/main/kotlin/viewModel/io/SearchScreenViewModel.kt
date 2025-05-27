@@ -2,7 +2,7 @@ package viewModel.io
 
 import androidx.compose.ui.unit.Dp
 import io.SQLiteConverter
-import io.SQLiteExposed.SQLiteEXP
+import io.SQLiteExposed.SQLiteExposed
 import java.io.File
 import java.nio.file.Paths
 import model.Graph
@@ -11,7 +11,7 @@ import org.jetbrains.exposed.exceptions.ExposedSQLException
 import viewModel.graph.GraphViewModel
 
 class SQLiteSearchScreenViewModel {
-    private val connection = SQLiteEXP(findPathForDB())
+    private val connection = SQLiteExposed(findPathForDB())
     private val converter = SQLiteConverter(connection)
     lateinit var graphList: MutableList<String>
 
