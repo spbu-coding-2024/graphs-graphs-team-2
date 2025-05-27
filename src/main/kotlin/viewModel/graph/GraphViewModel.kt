@@ -120,7 +120,7 @@ class GraphViewModel(
         algoBridges.findBridges()
         algoBridges.bridges.forEach { bridge ->
             _edges[bridge]?.color = CoolColors.Blue
-            _edges[bridge]?.width = 5f
+            _edges[bridge]?.width = 20f
         }
     }
 
