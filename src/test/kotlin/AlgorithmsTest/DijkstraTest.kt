@@ -3,6 +3,7 @@ package AlgorithmsTest
 import algo.AlgoDijkstra
 import java.util.stream.Stream
 import kotlin.random.Random
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import model.Graph
 import org.junit.jupiter.params.ParameterizedTest
@@ -136,5 +137,168 @@ class DijkstraTest {
             }
         }
         assertEquals(correctWeight, weightWayDijkstra)
+    }
+
+    @Test
+    fun `simple graph`() {
+        val graph = Graph(true, true)
+        graph.addVertex(1, "A")
+        graph.addVertex(2, "B")
+        graph.addVertex(3, "C")
+        graph.addEdge(1, 2, "A -> B", 4, 5F)
+        graph.addEdge(2, 3, "B -> C", 5, 3F)
+        graph.addEdge(1, 3, "A -> C", 6, 9F)
+
+        val algoDijkstra1 = AlgoDijkstra(graph, 1, 1)
+        algoDijkstra1.dijkstra(1)
+
+        assertEquals(null, algoDijkstra1.weightMinWay)
+
+        val algoDijkstra2 = AlgoDijkstra(graph, 1, 2)
+        algoDijkstra2.dijkstra(1)
+
+        assertEquals(5F, algoDijkstra2.weightMinWay)
+
+        val algoDijkstra3 = AlgoDijkstra(graph, 1, 3)
+        algoDijkstra3.dijkstra(1)
+
+        assertEquals(8F, algoDijkstra3.weightMinWay)
+    }
+
+    @Test
+    fun `graph with cycle`() {
+        val graph = Graph(true, true)
+        graph.addVertex(1, "A")
+        graph.addVertex(2, "B")
+        graph.addVertex(3, "C")
+        graph.addEdge(1, 2, "A -> B", 4, 2F)
+        graph.addEdge(2, 3, "B -> C", 5, 3F)
+        graph.addEdge(3, 1, "C -> A", 6, 1F)
+
+        val algoDijkstra1 = AlgoDijkstra(graph, 1, 1)
+        algoDijkstra1.dijkstra(1)
+
+        assertEquals(null, algoDijkstra1.weightMinWay)
+
+        val algoDijkstra2 = AlgoDijkstra(graph, 1, 2)
+        algoDijkstra2.dijkstra(1)
+
+        assertEquals(2F, algoDijkstra2.weightMinWay)
+
+        val algoDijkstra3 = AlgoDijkstra(graph, 1, 3)
+        algoDijkstra3.dijkstra(1)
+
+        assertEquals(5F, algoDijkstra3.weightMinWay)
+    }
+
+    @Test
+    fun `unconnected graph`() {
+        val graph = Graph(true, true)
+        graph.addVertex(1, "A")
+        graph.addVertex(2, "B")
+        graph.addVertex(3, "C")
+        graph.addVertex(4, "D")
+        graph.addEdge(1, 2, "A -> B", 5, 2F)
+        graph.addEdge(3, 4, "C -> D", 6, 4F)
+
+        val algoDijkstra1 = AlgoDijkstra(graph, 1, 2)
+        algoDijkstra1.dijkstra(1)
+
+        assertEquals(2F, algoDijkstra1.weightMinWay)
+
+        val algoDijkstra2 = AlgoDijkstra(graph, 1, 3)
+        algoDijkstra2.dijkstra(1)
+
+        assertEquals(null, algoDijkstra2.weightMinWay)
+
+        val algoDijkstra3 = AlgoDijkstra(graph, 1, 4)
+        algoDijkstra3.dijkstra(1)
+
+        assertEquals(null, algoDijkstra3.weightMinWay)
+    }
+
+    @Test
+    fun `multiple paths between nodes`() {
+        val graph = Graph(true, true)
+        graph.addVertex(1, "A")
+        graph.addVertex(2, "B")
+        graph.addVertex(3, "C")
+        graph.addEdge(1, 2, "A -> B", 4, 5F)
+        graph.addEdge(1, 3, "A -> C", 5, 2F)
+        graph.addEdge(3, 2, "C -> B", 6, 1F)
+
+        val algoDijkstra1 = AlgoDijkstra(graph, 1, 2)
+        algoDijkstra1.dijkstra(1)
+
+        assertEquals(3F, algoDijkstra1.weightMinWay)
+
+        val algoDijkstra2 = AlgoDijkstra(graph, 1, 3)
+        algoDijkstra2.dijkstra(1)
+
+        assertEquals(2F, algoDijkstra2.weightMinWay)
+    }
+
+    @Test
+    fun `graph with one node`() {
+        val graph = Graph(true, true)
+        graph.addVertex(1, "A")
+
+        val algoDijkstra1 = AlgoDijkstra(graph, 1, 1)
+        algoDijkstra1.dijkstra(1)
+
+        assertEquals(null, algoDijkstra1.weightMinWay)
+    }
+
+    @Test
+    fun `graph with zero weight`() {
+        val graph = Graph(true, true)
+        graph.addVertex(1, "A")
+        graph.addVertex(2, "B")
+        graph.addVertex(3, "C")
+        graph.addEdge(1, 2, "A -> B", 5, 0F)
+        graph.addEdge(2, 3, "C -> D", 6, 5F)
+
+        val algoDijkstra1 = AlgoDijkstra(graph, 1, 3)
+        algoDijkstra1.dijkstra(1)
+
+        assertEquals(5F, algoDijkstra1.weightMinWay)
+    }
+
+    @Test
+    fun `big graph`() {
+        val graph = Graph(true, true)
+        graph.addVertex(1, "A")
+        graph.addVertex(2, "B")
+        graph.addVertex(3, "C")
+        graph.addVertex(4, "D")
+        graph.addVertex(5, "E")
+        graph.addEdge(1, 2, "A -> B", 6, 4F)
+        graph.addEdge(1, 3, "A -> C", 7, 2F)
+        graph.addEdge(2, 3, "B -> C", 8, 5F)
+        graph.addEdge(2, 4, "B -> D", 9, 10F)
+        graph.addEdge(3, 4, "C -> D", 10, 3F)
+        graph.addEdge(3, 5, "C -> E", 11, 8F)
+        graph.addEdge(4, 5, "D -> E", 12, 1F)
+        graph.addEdge(5, 4, "E -> D", 13, 4F)
+
+        val algoDijkstra1 = AlgoDijkstra(graph, 1, 2)
+        algoDijkstra1.dijkstra(1)
+
+        assertEquals(4F, algoDijkstra1.weightMinWay)
+
+        val algoDijkstra2 = AlgoDijkstra(graph, 1, 3)
+        algoDijkstra2.dijkstra(1)
+
+        assertEquals(2F, algoDijkstra2.weightMinWay)
+
+        val algoDijkstra3 = AlgoDijkstra(graph, 1, 4)
+        algoDijkstra3.dijkstra(1)
+
+        assertEquals(5F, algoDijkstra3.weightMinWay)
+
+        val algoDijkstra4 = AlgoDijkstra(graph, 1, 5)
+        algoDijkstra4.dijkstra(1)
+
+        assertEquals(6F, algoDijkstra4.weightMinWay)
     }
 }

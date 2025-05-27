@@ -3,6 +3,7 @@ package AlgorithmsTest
 import algo.AlgoBridges
 import java.util.stream.Stream
 import kotlin.random.Random
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import model.Graph
 import org.junit.jupiter.params.ParameterizedTest
@@ -24,9 +25,9 @@ class FindBridgesTest {
                     }
 
                     val graph = Graph()
-                    val countOfComponents = Random.Default.nextInt(2, 100)
+                    val countOfComponents = Random.Default.nextInt(2, 10)
                     for (i in 0..<countOfComponents) {
-                        val countNodesInComponent = Random.Default.nextInt(1, 100)
+                        val countNodesInComponent = Random.Default.nextInt(1, 20)
                         val firstId = i * 1000
                         val lastId = i * 1000 + countNodesInComponent
                         if (countNodesInComponent == 2) {
@@ -68,7 +69,7 @@ class FindBridgesTest {
                     }
                     Arguments.of(graph, bridges)
                 }
-                .limit(250)
+                .limit(1000)
         }
     }
 
@@ -82,6 +83,143 @@ class FindBridgesTest {
         assertEquals(correctBridges.size, bridges.size)
 
         for (i in bridges) {
+            assertEquals(
+                correctBridges.contains(i) || correctBridges.contains(Pair(i.second, i.first)),
+                true,
+            )
+        }
+    }
+
+    @Test
+    fun `graph with one node`() {
+        val graph = Graph(false, true)
+        graph.addVertex(1, "A")
+
+        val algoBridges = AlgoBridges(graph)
+        algoBridges.findBridges()
+
+        assertEquals(0, algoBridges.bridges.size)
+    }
+
+    @Test
+    fun `graph with two node`() {
+        val graph = Graph(false, true)
+        graph.addVertex(1, "A")
+        graph.addVertex(2, "B")
+        graph.addEdge(1, 2, "A <-> B", 3, 3F)
+
+        val algoBridges = AlgoBridges(graph)
+        algoBridges.findBridges()
+
+        assertEquals(1, algoBridges.bridges.size)
+        assertEquals(
+            true,
+            (algoBridges.bridges[0].first == 1L && algoBridges.bridges[0].second == 2L) ||
+                (algoBridges.bridges[0].first == 2L && algoBridges.bridges[0].second == 1L),
+        )
+    }
+
+    @Test
+    fun `graph with cycle`() {
+        val graph = Graph(false, true)
+        graph.addVertex(1, "A")
+        graph.addVertex(2, "B")
+        graph.addVertex(3, "C")
+        graph.addEdge(1, 2, "A <-> B", 4, 3F)
+        graph.addEdge(1, 3, "A <-> C", 5, 3F)
+        graph.addEdge(2, 3, "B <-> C", 6, 3F)
+
+        val algoBridges = AlgoBridges(graph)
+        algoBridges.findBridges()
+
+        assertEquals(0, algoBridges.bridges.size)
+    }
+
+    @Test
+    fun `graph is tree`() {
+        val correctBridges = ArrayDeque<Pair<Long, Long>>()
+        correctBridges.add(Pair(1, 2))
+        correctBridges.add(Pair(2, 3))
+        correctBridges.add(Pair(3, 4))
+
+        val graph = Graph(false, true)
+        graph.addVertex(1, "A")
+        graph.addVertex(2, "B")
+        graph.addVertex(3, "C")
+        graph.addVertex(4, "D")
+        graph.addEdge(1, 2, "A <-> B", 5, 3F)
+        graph.addEdge(2, 3, "B <-> C", 6, 3F)
+        graph.addEdge(3, 4, "C <-> D", 7, 3F)
+
+        val algoBridges = AlgoBridges(graph)
+        algoBridges.findBridges()
+
+        assertEquals(3, algoBridges.bridges.size)
+
+        for (i in algoBridges.bridges) {
+            assertEquals(
+                correctBridges.contains(i) || correctBridges.contains(Pair(i.second, i.first)),
+                true,
+            )
+        }
+    }
+
+    @Test
+    fun `graph with several components`() {
+        val graph = Graph(false, true)
+        graph.addVertex(0, "A")
+        graph.addVertex(1, "B")
+        graph.addVertex(2, "C")
+        graph.addVertex(3, "D")
+        graph.addVertex(4, "E")
+        graph.addVertex(5, "G")
+        graph.addEdge(0, 1, "A <-> B", 6, 3F)
+        graph.addEdge(2, 3, "C <-> D", 7, 3F)
+        graph.addEdge(3, 4, "D <-> E", 8, 3F)
+        graph.addEdge(2, 4, "C <-> E", 8, 3F)
+
+        val algoBridges = AlgoBridges(graph)
+        algoBridges.findBridges()
+
+        assertEquals(1, algoBridges.bridges.size)
+        assertEquals(
+            true,
+            (algoBridges.bridges[0].first == 0L && algoBridges.bridges[0].second == 1L) ||
+                (algoBridges.bridges[0].first == 1L && algoBridges.bridges[0].second == 0L),
+        )
+    }
+
+    @Test
+    fun `graph with cycles and bridges`() {
+        val correctBridges = ArrayDeque<Pair<Long, Long>>()
+        correctBridges.add(Pair(0, 1))
+        correctBridges.add(Pair(1, 2))
+        correctBridges.add(Pair(2, 3))
+        correctBridges.add(Pair(3, 4))
+
+        val graph = Graph(false, true)
+        graph.addVertex(0, "A")
+        graph.addVertex(1, "B")
+        graph.addVertex(2, "C")
+        graph.addVertex(3, "D")
+        graph.addVertex(4, "E")
+        graph.addVertex(5, "F")
+        graph.addVertex(6, "G")
+        graph.addVertex(7, "H")
+        graph.addEdge(5, 6, "F <-> G", 8, 3F)
+        graph.addEdge(6, 7, "G <-> H", 9, 3F)
+        graph.addEdge(7, 5, "H <-> F", 10, 3F)
+        graph.addEdge(0, 1, "A <-> B", 11, 3F)
+        graph.addEdge(1, 2, "B <-> C", 12, 3F)
+        graph.addEdge(2, 3, "C <-> D", 13, 3F)
+        graph.addEdge(3, 4, "D <-> E", 14, 3F)
+        graph.addEdge(2, 7, "C <-> H", 14, 3F)
+        graph.addEdge(0, 5, "A <-> F", 14, 3F)
+
+        val algoBridges = AlgoBridges(graph)
+        algoBridges.findBridges()
+
+        for (i in algoBridges.bridges) {
             assertEquals(
                 correctBridges.contains(i) || correctBridges.contains(Pair(i.second, i.first)),
                 true,
