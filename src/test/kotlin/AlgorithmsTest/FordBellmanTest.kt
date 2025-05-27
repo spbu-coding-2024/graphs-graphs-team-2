@@ -6,7 +6,14 @@ import model.Graph
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
+/**
+ * FordBellmanTest class contains tests for Ford Bellman algorithm
+ * in directed and undirected graphs
+ */
 class FordBellmanTest {
+    /**
+     * Test finds the shortest path from vertex with ID 1 to vertex with ID 6
+     */
     @Test
     fun testFindTheShortestWay() {
         val graph = Graph(true, true)
@@ -28,7 +35,10 @@ class FordBellmanTest {
         assertEquals(way[1], Pair(2L, 5L))
         assertEquals(way[2], Pair(5L, 6L))
     }
-
+    /**
+     * Test finds the shortest path from vertex with ID 1 to vertex with ID 6
+     * with unreachable negative loop in graph
+     */
     @Test
     fun findTheShortestWayWIthUnreachableNegativeLoop() {
         val graph = Graph(true, true)
@@ -53,7 +63,10 @@ class FordBellmanTest {
         assertEquals(way[1], Pair(2L, 5L))
         assertEquals(way[2], Pair(5L, 6L))
     }
-
+    /**
+     * Test finds the shortest path from vertex with ID 1 to vertex with ID 6
+     * with negative loop in path
+     */
     @Test
     fun findTheShortestWayWIthNegativeLoopInPath() {
         val graph = Graph(true, true)
@@ -72,7 +85,9 @@ class FordBellmanTest {
         val exception = assertThrows<IllegalStateException> { algoFB.FordBellman() }
         assert(exception.message?.contains("Path contains negative loop") ?: false) {}
     }
-
+    /**
+     * Test checks for finding negative loop in start
+     */
     @Test
     fun testNegativeLoopInStart() {
         val graph = Graph(true, true)
@@ -86,7 +101,9 @@ class FordBellmanTest {
         val exception = assertThrows<IllegalStateException> { algoFB.FordBellman() }
         assert(exception.message?.contains("Graph contains negative loop") ?: false) {}
     }
-
+    /**
+     * Test checks for unreachable vertex of end from start vertex
+     */
     @Test
     fun testUnreachableEnd() {
         val graph = Graph(true, true)

@@ -18,12 +18,12 @@ class SQLiteConverter(val connection: SQLiteEXP) {
             val id = connection.addGraph(name, viewModel.isDirected, viewModel.isWeighted)
             graphID = id
         } catch (e: ExposedSQLException) {
-            throw e
+            error("Graph with name already exists")
         }
         try {
             connection.addAllVertices(graphID, viewModel.vertices)
         } catch (e: ExposedSQLException) {
-            throw e
+            error("Vertices adding went wrong")
         }
         connection.addAllEdges(graphID, viewModel.edges)
     }
