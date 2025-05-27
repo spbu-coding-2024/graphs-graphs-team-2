@@ -55,12 +55,12 @@ class FindBridgesIntegrationTest {
         viewModel.edges.forEach {
             when {
                 it.u.ID == 2L && it.v.ID == 3L -> {
-                    assert(it.width == 20F)
+                    assert(it.width == 5F)
                     assert(it.color == CoolColors.Blue)
                 }
 
                 it.u.ID == 3L && it.v.ID == 4L -> {
-                    assert(it.width == 20F)
+                    assert(it.width == 5F)
                     assert(it.color == CoolColors.Blue)
                 }
 

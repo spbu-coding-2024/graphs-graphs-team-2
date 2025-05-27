@@ -120,10 +120,10 @@ class GraphViewModel(
         algoBridges.findBridges()
         algoBridges.bridges.forEach { bridge ->
             _edges[bridge]?.color = CoolColors.Blue
-            _edges[bridge]?.width = 20f
+            _edges[bridge]?.width = 5f
             val reversedEdge = Pair(bridge.second, bridge.first)
             _edges[reversedEdge]?.color = CoolColors.Blue
-            _edges[reversedEdge]?.width = 20f
+            _edges[reversedEdge]?.width = 5f
         }
     }
 
@@ -139,10 +139,10 @@ class GraphViewModel(
         for (i in 0..way.size - 2) {
             val edges = Pair(way[i], way[i + 1]) to Pair(way[i + 1], way[i])
             _edges[edges.first]?.color = CoolColors.Bardo
-            _edges[edges.first]?.width = 20f
+            _edges[edges.first]?.width = 5f
             if (!isDirected) {
                 _edges[edges.second]?.color = CoolColors.Bardo
-                _edges[edges.second]?.width = 20f
+                _edges[edges.second]?.width = 5f
             }
         }
     }
