@@ -16,59 +16,59 @@ class FindBridgesTest {
         @JvmStatic
         fun graphGenerator(): Stream<Arguments> {
             return Stream.generate {
-                    val bridges = ArrayDeque<Pair<Long, Long>>()
+                val bridges = ArrayDeque<Pair<Long, Long>>()
 
-                    val components = ArrayDeque<Set<Int>>()
+                val components = ArrayDeque<Set<Int>>()
 
-                    val calculateEdgeId = { firstVertexId: Int, secondVertexId: Int ->
-                        firstVertexId * 100000 + secondVertexId
-                    }
-
-                    val graph = Graph()
-                    val countOfComponents = Random.Default.nextInt(2, 10)
-                    for (i in 0..<countOfComponents) {
-                        val countNodesInComponent = Random.Default.nextInt(1, 20)
-                        val firstId = i * 1000
-                        val lastId = i * 1000 + countNodesInComponent
-                        if (countNodesInComponent == 2) {
-                            bridges.add(firstId.toLong() to lastId.toLong() - 1)
-                        }
-                        val component = mutableSetOf<Int>()
-                        for (j in 0..<countNodesInComponent) {
-                            var id = Random.Default.nextInt(firstId, lastId)
-                            while (component.contains(id)) {
-                                id = Random.Default.nextInt(firstId, lastId)
-                            }
-                            graph.addVertex(id.toLong(), "")
-                            component.add(id)
-                        }
-                        component.forEach { firstVertex ->
-                            component.forEach { secondVertex ->
-                                if (firstVertex != secondVertex) {
-                                    graph.addEdge(
-                                        firstVertex.toLong(),
-                                        secondVertex.toLong(),
-                                        "",
-                                        calculateEdgeId(firstVertex, secondVertex).toLong(),
-                                    )
-                                }
-                            }
-                        }
-                        components.add(component)
-                    }
-                    for (i in 0..components.size - 2) {
-                        val firstVertex = components[i].random()
-                        val secondVertex = components[i + 1].random()
-                        graph.addEdge(
-                            firstVertex.toLong(),
-                            secondVertex.toLong(),
-                            "",
-                            calculateEdgeId(firstVertex, secondVertex).toLong(),
-                        )
-                        bridges.add(Pair(firstVertex.toLong(), secondVertex.toLong()))
-                    }
-                    Arguments.of(graph, bridges)
+                val calculateEdgeId = { firstVertexId: Int, secondVertexId: Int ->
+                    firstVertexId * 100000 + secondVertexId
                 }
+
+                val graph = Graph()
+                val countOfComponents = Random.Default.nextInt(2, 10)
+                for (i in 0..<countOfComponents) {
+                    val countNodesInComponent = Random.Default.nextInt(1, 20)
+                    val firstId = i * 1000
+                    val lastId = i * 1000 + countNodesInComponent
+                    if (countNodesInComponent == 2) {
+                        bridges.add(firstId.toLong() to lastId.toLong() - 1)
+                    }
+                    val component = mutableSetOf<Int>()
+                    for (j in 0..<countNodesInComponent) {
+                        var id = Random.Default.nextInt(firstId, lastId)
+                        while (component.contains(id)) {
+                            id = Random.Default.nextInt(firstId, lastId)
+                        }
+                        graph.addVertex(id.toLong(), "")
+                        component.add(id)
+                    }
+                    component.forEach { firstVertex ->
+                        component.forEach { secondVertex ->
+                            if (firstVertex != secondVertex) {
+                                graph.addEdge(
+                                    firstVertex.toLong(),
+                                    secondVertex.toLong(),
+                                    "",
+                                    calculateEdgeId(firstVertex, secondVertex).toLong(),
+                                )
+                            }
+                        }
+                    }
+                    components.add(component)
+                }
+                for (i in 0..components.size - 2) {
+                    val firstVertex = components[i].random()
+                    val secondVertex = components[i + 1].random()
+                    graph.addEdge(
+                        firstVertex.toLong(),
+                        secondVertex.toLong(),
+                        "",
+                        calculateEdgeId(firstVertex, secondVertex).toLong(),
+                    )
+                    bridges.add(Pair(firstVertex.toLong(), secondVertex.toLong()))
+                }
+                Arguments.of(graph, bridges)
+            }
                 .limit(1000)
         }
     }
@@ -112,10 +112,9 @@ class FindBridgesTest {
         algoBridges.findBridges()
 
         assertEquals(1, algoBridges.bridges.size)
-        assertEquals(
-            true,
+        assert(
             (algoBridges.bridges[0].first == 1L && algoBridges.bridges[0].second == 2L) ||
-                (algoBridges.bridges[0].first == 2L && algoBridges.bridges[0].second == 1L),
+                    (algoBridges.bridges[0].first == 2L && algoBridges.bridges[0].second == 1L),
         )
     }
 
@@ -182,18 +181,15 @@ class FindBridgesTest {
         algoBridges.findBridges()
 
         assertEquals(1, algoBridges.bridges.size)
-        assertEquals(
-            true,
+        assert(
             (algoBridges.bridges[0].first == 0L && algoBridges.bridges[0].second == 1L) ||
-                (algoBridges.bridges[0].first == 1L && algoBridges.bridges[0].second == 0L),
+                    (algoBridges.bridges[0].first == 1L && algoBridges.bridges[0].second == 0L),
         )
     }
 
     @Test
     fun `graph with cycles and bridges`() {
         val correctBridges = ArrayDeque<Pair<Long, Long>>()
-        correctBridges.add(Pair(0, 1))
-        correctBridges.add(Pair(1, 2))
         correctBridges.add(Pair(2, 3))
         correctBridges.add(Pair(3, 4))
 
@@ -213,16 +209,17 @@ class FindBridgesTest {
         graph.addEdge(1, 2, "B <-> C", 12, 3F)
         graph.addEdge(2, 3, "C <-> D", 13, 3F)
         graph.addEdge(3, 4, "D <-> E", 14, 3F)
-        graph.addEdge(2, 7, "C <-> H", 14, 3F)
-        graph.addEdge(0, 5, "A <-> F", 14, 3F)
+        graph.addEdge(2, 7, "C <-> H", 15, 3F)
+        graph.addEdge(0, 5, "A <-> F", 16, 3F)
 
         val algoBridges = AlgoBridges(graph)
         algoBridges.findBridges()
 
+        assertEquals(correctBridges.size, algoBridges.bridges.size)
+
         for (i in algoBridges.bridges) {
-            assertEquals(
-                correctBridges.contains(i) || correctBridges.contains(Pair(i.second, i.first)),
-                true,
+            assert(
+                correctBridges.contains(i) || correctBridges.contains(Pair(i.second, i.first))
             )
         }
     }

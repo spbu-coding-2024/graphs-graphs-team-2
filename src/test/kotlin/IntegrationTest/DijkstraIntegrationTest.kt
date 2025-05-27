@@ -14,20 +14,21 @@ class DijkstraIntegrationTest {
 
     @Test
     fun `dijkstra paints the path`() {
+
         val graph = Graph(true, true)
-        graph.addVertex(1, "A")
-        graph.addVertex(2, "B")
-        graph.addVertex(3, "C")
-        graph.addVertex(4, "D")
-        graph.addVertex(5, "E")
-        graph.addEdge(1, 2, "A -> B", 6, 4F)
-        graph.addEdge(1, 3, "A -> C", 7, 2F)
-        graph.addEdge(2, 3, "B -> C", 8, 5F)
-        graph.addEdge(2, 4, "B -> D", 9, 10F)
-        graph.addEdge(3, 4, "C -> D", 10, 3F)
-        graph.addEdge(3, 5, "C -> E", 11, 8F)
-        graph.addEdge(4, 5, "D -> E", 12, 1F)
-        graph.addEdge(5, 4, "E -> D", 13, 4F)
+        graph.addVertex(1L, "A")
+        graph.addVertex(2L, "B")
+        graph.addVertex(3L, "C")
+        graph.addVertex(4L, "D")
+        graph.addVertex(5L, "E")
+        graph.addEdge(1L, 2L, "A -> B", 6L, 4F)
+        graph.addEdge(1L, 3L, "A -> C", 7L, 2F)
+        graph.addEdge(2L, 3L, "B -> C", 8L, 5F)
+        graph.addEdge(2L, 4L, "B -> D", 9L, 10F)
+        graph.addEdge(3L, 4L, "C -> D", 10L, 3F)
+        graph.addEdge(3L, 5L, "C -> E", 11L, 8F)
+        graph.addEdge(4L, 5L, "D -> E", 12L, 1F)
+        graph.addEdge(5L, 4L, "E -> D", 13L, 4F)
 
         val placement = mutableMapOf<AbstractVertex, Pair<Dp, Dp>>()
 
@@ -71,8 +72,8 @@ class DijkstraIntegrationTest {
                 }
 
                 else -> {
-                    assert(it.width == 1F)
-                    assert(it.color == CoolColors.Purple)
+                    assert(it.width == 2F)
+                    assert(it.color == CoolColors.DarkPurple)
                 }
             }
         }

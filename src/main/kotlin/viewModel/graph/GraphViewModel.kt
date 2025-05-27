@@ -72,14 +72,14 @@ class GraphViewModel(
     private val _vertices =
         graph.vertices.associate { v ->
             v.id to
-                VertexViewModel(
-                    placement[v]?.first ?: Random.nextInt(0..800).dp,
-                    placement[v]?.second ?: Random.nextInt(0..600).dp,
-                    CoolColors.DarkPurple,
-                    v,
-                    showVerticesLabels,
-                    showVerticesIds,
-                )
+                    VertexViewModel(
+                        placement[v]?.first ?: Random.nextInt(0..800).dp,
+                        placement[v]?.second ?: Random.nextInt(0..600).dp,
+                        CoolColors.DarkPurple,
+                        v,
+                        showVerticesLabels,
+                        showVerticesIds,
+                    )
         }
 
     internal val isDirected: Boolean
@@ -97,16 +97,16 @@ class GraphViewModel(
                 _vertices[e.vertices.second.id]
                     ?: throw IllegalStateException("VertexView for ${e.vertices.second} not found")
             fst.ID to
-                snd.ID to
-                EdgeViewModel(
-                    fst,
-                    snd,
-                    CoolColors.DarkPurple,
-                    2f,
-                    e,
-                    showEdgesWeights,
-                    showEdgesLabels,
-                )
+                    snd.ID to
+                    EdgeViewModel(
+                        fst,
+                        snd,
+                        CoolColors.DarkPurple,
+                        2f,
+                        e,
+                        showEdgesWeights,
+                        showEdgesLabels,
+                    )
         }
 
     val vertices: Collection<VertexViewModel>
@@ -121,6 +121,9 @@ class GraphViewModel(
         algoBridges.bridges.forEach { bridge ->
             _edges[bridge]?.color = CoolColors.Blue
             _edges[bridge]?.width = 20f
+            val reversedEdge = Pair(bridge.second, bridge.first)
+            _edges[reversedEdge]?.color = CoolColors.Blue
+            _edges[reversedEdge]?.width = 20f
         }
     }
 
@@ -137,8 +140,10 @@ class GraphViewModel(
             val edges = Pair(way[i], way[i + 1]) to Pair(way[i + 1], way[i])
             _edges[edges.first]?.color = CoolColors.Bardo
             _edges[edges.first]?.width = 20f
-            _edges[edges.second]?.color = CoolColors.Bardo
-            _edges[edges.second]?.width = 20f
+            if (!isDirected) {
+                _edges[edges.second]?.color = CoolColors.Bardo
+                _edges[edges.second]?.width = 20f
+            }
         }
     }
 

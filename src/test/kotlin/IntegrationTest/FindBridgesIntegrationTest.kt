@@ -15,23 +15,23 @@ class FindBridgesIntegrationTest {
     @Test
     fun `findBridges paints the path`() {
         val graph = Graph(false, true)
-        graph.addVertex(0, "A")
-        graph.addVertex(1, "B")
-        graph.addVertex(2, "C")
-        graph.addVertex(3, "D")
-        graph.addVertex(4, "E")
-        graph.addVertex(5, "F")
-        graph.addVertex(6, "G")
-        graph.addVertex(7, "H")
-        graph.addEdge(5, 6, "F <-> G", 8, 3F)
-        graph.addEdge(6, 7, "G <-> H", 9, 3F)
-        graph.addEdge(7, 5, "H <-> F", 10, 3F)
-        graph.addEdge(0, 1, "A <-> B", 11, 3F)
-        graph.addEdge(1, 2, "B <-> C", 12, 3F)
-        graph.addEdge(2, 3, "C <-> D", 13, 3F)
-        graph.addEdge(3, 4, "D <-> E", 14, 3F)
-        graph.addEdge(2, 7, "C <-> H", 14, 3F)
-        graph.addEdge(0, 5, "A <-> F", 14, 3F)
+        graph.addVertex(0L, "A")
+        graph.addVertex(1L, "B")
+        graph.addVertex(2L, "C")
+        graph.addVertex(3L, "D")
+        graph.addVertex(4L, "E")
+        graph.addVertex(5L, "F")
+        graph.addVertex(6L, "G")
+        graph.addVertex(7L, "H")
+        graph.addEdge(5L, 6L, "F <-> G", 8L, 3F)
+        graph.addEdge(6L, 7L, "G <-> H", 9L, 3F)
+        graph.addEdge(7L, 5L, "H <-> F", 10L, 3F)
+        graph.addEdge(0L, 1L, "A <-> B", 11L, 3F)
+        graph.addEdge(1L, 2L, "B <-> C", 12L, 3F)
+        graph.addEdge(2L, 3L, "C <-> D", 13L, 3F)
+        graph.addEdge(3L, 4L, "D <-> E", 14L, 3F)
+        graph.addEdge(2L, 7L, "C <-> H", 15L, 3F)
+        graph.addEdge(0L, 5L, "A <-> F", 16L, 3F)
 
         val placement = mutableMapOf<AbstractVertex, Pair<Dp, Dp>>()
 
@@ -54,16 +54,6 @@ class FindBridgesIntegrationTest {
 
         viewModel.edges.forEach {
             when {
-                it.u.ID == 0L && it.v.ID == 1L -> {
-                    assert(it.width == 20F)
-                    assert(it.color == CoolColors.Blue)
-                }
-
-                it.u.ID == 1L && it.v.ID == 2L -> {
-                    assert(it.width == 20F)
-                    assert(it.color == CoolColors.Blue)
-                }
-
                 it.u.ID == 2L && it.v.ID == 3L -> {
                     assert(it.width == 20F)
                     assert(it.color == CoolColors.Blue)
@@ -75,8 +65,8 @@ class FindBridgesIntegrationTest {
                 }
 
                 else -> {
-                    assert(it.width == 1F)
-                    assert(it.color == CoolColors.Purple)
+                    assert(it.width == 2F)
+                    assert(it.color == CoolColors.DarkPurple)
                 }
             }
         }
