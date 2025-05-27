@@ -1,64 +1,68 @@
 package algo
 
-import org.gephi.graph.api.Graph
-import org.gephi.graph.api.GraphModel
-import org.gephi.graph.api.Node
+import org.gephi.graph.api.*
+import org.gephi.project.api.ProjectController
+import org.gephi.project.api.Workspace
 import org.gephi.statistics.plugin.Modularity
+import org.openide.util.Lookup
 
 fun louvain(graphModelApp: model.Graph): Pair<Map<Long, Int>, Map<Pair<Long, Long>, Int>> {
 
-    val graphModel = GraphModel.Factory.newInstance()
-    val graph: Graph
+    val projectController = Lookup.getDefault().lookup(ProjectController::class.java)
+    projectController.newProject()
+    val workspace: Workspace = projectController.currentWorkspace
 
-    if (graphModelApp.isDirected) {
-        graph = graphModel.directedGraph
-    } else {
-        graph = graphModel.undirectedGraph
-    }
+    val graphModel = Lookup.getDefault().lookup(GraphController::class.java).graphModel
+    val directed = graphModelApp.isDirected
+    val graph = if (directed) graphModel.directedGraph else graphModel.undirectedGraph
 
-    val nodes = mutableMapOf<Long, Node>()
+    val nodeMap = mutableMapOf<Long, Node>()
 
     graphModelApp.vertices.forEach { vertex ->
         val newNode = graphModel.factory().newNode(vertex.id.toString())
+        nodeMap[vertex.id] = newNode
         graph.addNode(newNode)
-        nodes.put(vertex.id, newNode)
     }
 
     graphModelApp.edges.forEach { edge ->
-        graph.addEdge(
-            graphModel
-                .factory()
-                .newEdge(
-                    nodes[edge.vertices.first.id],
-                    nodes[edge.vertices.second.id],
-                    (edge.weight * 100).toInt(),
-                    graphModelApp.isDirected,
-                )
-        )
+        val source = nodeMap[edge.vertices.first.id]
+        val target = nodeMap[edge.vertices.second.id]
+        if (source != null && target != null) {
+            val weight = edge.weight
+            val newEdge = graphModel.factory().newEdge(source, target, (weight.toFloat() * 100).toInt(), directed)
+            graph.addEdge(newEdge)
+        }
     }
 
-    val modularity: Modularity = Modularity()
-    modularity.setResolution(1.0)
-    modularity.setRandom(true)
-    modularity.execute(graph)
+    val modularity = Modularity().apply {
+        setResolution(1.0)
+        setRandom(false)
+    }
+
+    modularity.execute(graphModel)
 
     val communityMapVertex = mutableMapOf<Long, Int>()
     val communityMapEdge = mutableMapOf<Pair<Long, Long>, Int>()
 
-    graph.getNodes().forEach { node ->
-        val nodeId = node.id.toString().toLong()
-        val community = node.getAttribute(Modularity.MODULARITY_CLASS) as? Int ?: 0
-        communityMapVertex[nodeId] = community
+    graph.nodes.toArray().forEach { node ->
+        val id = node.id.toString().toLong()
+        val community = node.getAttribute(Modularity.MODULARITY_CLASS) as? Int
+        if (community != null) {
+            communityMapVertex[id] = community
+        }
     }
 
-    graph.getEdges().forEach { edge ->
-        val firstNode = edge.source
-        val secondNode = edge.target
-        val firstNodeCommunity = firstNode.getAttribute(Modularity.MODULARITY_CLASS) as? Int ?: 0
-        val secondNodeCommunity = secondNode.getAttribute(Modularity.MODULARITY_CLASS) as? Int ?: 0
-        if (firstNodeCommunity == secondNodeCommunity) {
-            val edgeId = Pair(firstNode.id.toString().toLong(), secondNode.id.toString().toLong())
-            communityMapEdge[edgeId] = firstNodeCommunity
+    graph.edges.toArray().forEach { edge ->
+        val src = edge.source
+        val tgt = edge.target
+        val srcComm = src.getAttribute(Modularity.MODULARITY_CLASS) as? Int
+        val tgtComm = tgt.getAttribute(Modularity.MODULARITY_CLASS) as? Int
+        if (srcComm != null && srcComm == tgtComm) {
+            val key = Pair(
+                src.id.toString().toLong(),
+                tgt.id.toString().toLong()
+            )
+            communityMapEdge[key] = srcComm
         }
     }
 
