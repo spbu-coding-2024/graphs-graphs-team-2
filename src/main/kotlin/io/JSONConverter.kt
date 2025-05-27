@@ -6,9 +6,9 @@ import model.Graph
 import model.abstractGraph.AbstractVertex
 import viewModel.graph.GraphViewModel
 
-class JsonConverter() {
+class JSONConverter() {
 
-    fun saveJson(graph: GraphViewModel): String {
+    fun toJSON(graph: GraphViewModel): String {
         val jsonSaver = Gson()
         try {
             val graphInfo = writeGraphInfo(graph)
@@ -21,7 +21,7 @@ class JsonConverter() {
         }
     }
 
-    fun loadJson(json: String): Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>> {
+    fun fromJSON(json: String): Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>> {
         val jsonReader = Gson()
         try {
             val info = jsonReader.fromJson(json, GraphInfo::class.java)

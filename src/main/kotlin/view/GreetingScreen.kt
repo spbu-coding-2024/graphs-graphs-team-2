@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,7 +21,7 @@ import view.components.ErrorDialog
 import view.components.PurpleButton
 import view.io.Neo4jView
 import view.io.SQLiteSearchView
-import view.io.loadFromJson
+import view.io.loadFromFile
 import viewModel.GreetingScreenViewModel
 import viewModel.io.Neo4jViewModel
 import viewModel.io.SQLiteSearchScreenViewModel
@@ -99,7 +97,7 @@ fun GreetingView(viewModel: GreetingScreenViewModel) {
                 )
             }
             if (viewModel.dataSystem == DataSystems.JSON) {
-                loadFromJson(viewModel, navigator) { viewModel.dataSystem = null }
+                loadFromFile(viewModel, navigator) { viewModel.dataSystem = null }
             }
             if (viewModel.dataSystem == DataSystems.SQLite) {
                 SQLiteSearchView(
