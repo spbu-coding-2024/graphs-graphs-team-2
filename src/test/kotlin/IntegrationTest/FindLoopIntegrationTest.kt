@@ -54,8 +54,8 @@ class FindLoopIntegrationTest {
                     assert(it.color == CoolColors.Bardo)
                 }
                 else -> {
-                    assert(it.width == 1F)
-                    assert(it.color == CoolColors.Purple)
+                    assert(it.width == 2F)
+                    assert(it.color == CoolColors.DarkPurple)
                 }
             }
         }
