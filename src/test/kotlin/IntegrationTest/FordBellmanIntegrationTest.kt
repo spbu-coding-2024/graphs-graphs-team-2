@@ -54,8 +54,8 @@ class FordBellmanIntegrationTest {
                     assert(it.color == CoolColors.Bardo)
                 }
                 else -> {
-                    assert(it.width == 1F)
-                    assert(it.color == CoolColors.Purple)
+                    assert(it.width == 2F)
+                    assert(it.color == CoolColors.DarkPurple)
                 }
             }
         }
@@ -86,8 +86,8 @@ class FordBellmanIntegrationTest {
         val exception = assertThrows<IllegalStateException> { viewModel.findPathByFordBellman() }
         assert(exception.message?.contains("Path does not exist") ?: false)
         viewModel.edges.forEach {
-            assert(it.width == 1F)
-            assert(it.color == CoolColors.Purple)
+            assert(it.width == 2F)
+            assert(it.color == CoolColors.DarkPurple)
         }
     }
 }
