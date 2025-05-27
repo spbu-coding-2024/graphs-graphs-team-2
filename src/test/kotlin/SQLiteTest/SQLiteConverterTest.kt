@@ -6,7 +6,7 @@ import androidx.compose.ui.unit.dp
 import io.SQLiteConverter
 import io.SQLiteExposed.Edges
 import io.SQLiteExposed.Graphs
-import io.SQLiteExposed.SQLiteEXP
+import io.SQLiteExposed.SQLiteExposed
 import io.SQLiteExposed.Vertices
 import java.io.File
 import kotlin.test.Test
@@ -19,8 +19,11 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import viewModel.graph.GraphViewModel
 
+/**
+ * SQLiteConverterTest class tests saving and loading graph
+ */
 class SQLiteConverterTest {
-    private val connection = SQLiteEXP("test.db")
+    private val connection = SQLiteExposed("test.db")
     private val converter = SQLiteConverter(connection)
 
     @AfterEach
@@ -28,6 +31,9 @@ class SQLiteConverterTest {
         transaction { SchemaUtils.drop(Graphs, Edges, Vertices) }
     }
 
+    /**
+     * Test checks saving and loading graph
+     */
     @Test
     fun testSaveAndLoad() {
         val graph = Graph()
