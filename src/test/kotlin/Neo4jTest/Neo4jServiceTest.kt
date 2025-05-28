@@ -9,6 +9,7 @@ import kotlin.random.Random
 import model.Graph
 import model.abstractGraph.AbstractVertex
 import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.params.ParameterizedTest
@@ -38,11 +39,6 @@ class Neo4jServiceTest {
             neo4j = Neo4jBuilders.newInProcessBuilder().withDisabledServer().build()
         }
 
-        @AfterAll
-        @JvmStatic
-        fun tearDown() {
-            neo4j.close()
-        }
 
         @DynamicPropertySource
         @JvmStatic
@@ -87,11 +83,16 @@ class Neo4jServiceTest {
                     }
                     Arguments.of(graph)
                 }
-                .limit(1)
+                .limit(10)
         }
     }
 
     @Autowired private lateinit var neo4jService: Neo4jService
+
+    @AfterEach
+    fun clearDatabase() {
+        neo4jService.clearDatabase()
+    }
 
     @ParameterizedTest(name = "test for Neo4j")
     @MethodSource("graphGenerator")
