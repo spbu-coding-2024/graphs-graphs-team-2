@@ -23,6 +23,13 @@ class MainScreenViewModel(graph: Graph, placement: Map<AbstractVertex, Pair<Dp?,
             _showErrorDialog.value = value
         }
 
+    private var _showSideBar = mutableStateOf(true)
+    var showSideBar
+        get() = _showSideBar.value
+        set(value) {
+            _showSideBar.value = value
+        }
+
     private var _showInformationDialog = mutableStateOf(false)
     var showInformationDialog
         get() = _showInformationDialog.value

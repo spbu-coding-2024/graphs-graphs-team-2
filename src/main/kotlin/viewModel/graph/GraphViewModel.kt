@@ -121,6 +121,9 @@ class GraphViewModel(
         algoBridges.bridges.forEach { bridge ->
             _edges[bridge]?.color = CoolColors.Blue
             _edges[bridge]?.width = 5f
+            val reversedEdge = Pair(bridge.second, bridge.first)
+            _edges[reversedEdge]?.color = CoolColors.Blue
+            _edges[reversedEdge]?.width = 5f
         }
     }
 
@@ -137,8 +140,10 @@ class GraphViewModel(
             val edges = Pair(way[i], way[i + 1]) to Pair(way[i + 1], way[i])
             _edges[edges.first]?.color = CoolColors.Bardo
             _edges[edges.first]?.width = 5f
-            _edges[edges.second]?.color = CoolColors.Bardo
-            _edges[edges.second]?.width = 5f
+            if (!isDirected) {
+                _edges[edges.second]?.color = CoolColors.Bardo
+                _edges[edges.second]?.width = 5f
+            }
         }
     }
 
@@ -269,13 +274,13 @@ class GraphViewModel(
     }
 
     private fun resetColors() {
-        edges.onEach { it.color = CoolColors.Purple }
-        vertices.onEach { it.color = CoolColors.Purple }
+        edges.onEach { it.color = CoolColors.DarkPurple }
+        vertices.onEach { it.color = CoolColors.DarkPurple }
     }
 
     private fun resetSizes() {
         vertices.onEach { it.radius = 25.dp }
-        edges.onEach { it.width = 1f }
+        edges.onEach { it.width = 2f }
     }
 
     private fun resetCords() {

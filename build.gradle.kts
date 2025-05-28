@@ -89,6 +89,7 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Exe, TargetFormat.Deb)
             packageName = "graphs"
             packageVersion = "1.0.0"
+            includeAllModules = true
         }
     }
 }

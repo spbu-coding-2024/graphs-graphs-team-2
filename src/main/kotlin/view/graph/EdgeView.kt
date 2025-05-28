@@ -46,7 +46,7 @@ fun EdgeView(viewModel: EdgeViewModel, isDirect: Boolean, modifier: Modifier = M
             color = viewModel.color,
         )
         if (isDirect) {
-            val arrowLength = r1.value / 2
+            val arrowLength = 13
             val arrowAngle = PI / 6
 
             val arrowBeginX = (indentX - arrowLength * cos(angle - arrowAngle)).toFloat()

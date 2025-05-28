@@ -48,7 +48,9 @@ fun VertexView(viewModel: VertexViewModel, modifier: Modifier = Modifier) {
     ) {
         if (viewModel.labelVisible) {
             Text(
-                modifier = Modifier.align(Alignment.Center).offset(0.dp, -viewModel.radius - 10.dp),
+                modifier =
+                    Modifier.align(Alignment.Center)
+                        .offset(0.dp, -viewModel.radius - 10.dp * (1 + viewModel.label.length / 5)),
                 text = viewModel.label,
                 color = viewModel.color,
             )
