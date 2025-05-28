@@ -20,101 +20,107 @@ class DijkstraTest {
             val firstId = 0
             val lastId = 100
             return Stream.generate {
-                val calculateEdgeId = { firstVertexId: Int, secondVertexId: Int ->
-                    firstVertexId * 1000 + secondVertexId
-                }
+                    val calculateEdgeId = { firstVertexId: Int, secondVertexId: Int ->
+                        firstVertexId * 1000 + secondVertexId
+                    }
 
-                val weightsOfEdges = mutableMapOf<Int, Int>()
+                    val weightsOfEdges = mutableMapOf<Int, Int>()
 
-                val graph = Graph(true, true)
-                val start = Random.Default.nextInt(firstId, lastId)
-                graph.addVertex(start.toLong(), "")
+                    val graph = Graph(true, true)
+                    val start = Random.Default.nextInt(firstId, lastId)
+                    graph.addVertex(start.toLong(), "")
 
-                var end = Random.Default.nextInt(firstId, lastId)
-                while (end == start) {
-                    end = Random.Default.nextInt(firstId, lastId)
-                }
+                    var end = Random.Default.nextInt(firstId, lastId)
+                    while (end == start) {
+                        end = Random.Default.nextInt(firstId, lastId)
+                    }
 
-                graph.addVertex(end.toLong(), "")
+                    graph.addVertex(end.toLong(), "")
 
-                val minWaysWeights = Array(lastId + 1) { if (it == start) 0F else infinity }
-                val parent = Array(lastId + 1) { infinity.toInt() }
-                val countOfWays = Random.Default.nextInt(5, 20)
-                val maxWeight = 5000
+                    val minWaysWeights = Array(lastId + 1) { if (it == start) 0F else infinity }
+                    val parent = Array(lastId + 1) { infinity.toInt() }
+                    val countOfWays = Random.Default.nextInt(5, 20)
+                    val maxWeight = 5000
 
-                for (i in 0..countOfWays) {
-                    var totalWeight = 0F
-                    var oldVertex = start
-                    do {
-                        var newVertex = Random.Default.nextInt(firstId, lastId)
-                        while (newVertex == oldVertex) {
-                            newVertex = Random.Default.nextInt(firstId, lastId)
-                        }
-                        graph.addVertex(newVertex.toLong(), "")
+                    for (i in 0..countOfWays) {
+                        var totalWeight = 0F
+                        var oldVertex = start
+                        do {
+                            var newVertex = Random.Default.nextInt(firstId, lastId)
+                            while (newVertex == oldVertex) {
+                                newVertex = Random.Default.nextInt(firstId, lastId)
+                            }
+                            graph.addVertex(newVertex.toLong(), "")
 
-                        val edge = graph.addEdge(
-                            oldVertex.toLong(),
-                            newVertex.toLong(),
-                            "",
-                            calculateEdgeId(oldVertex, newVertex).toLong(),
-                            Random.Default.nextInt(100, 1000).toFloat(),
-                        )
-                        val weight = edge.weight.toInt()
-                        weightsOfEdges.put(calculateEdgeId(oldVertex, newVertex), weight)
-                        totalWeight += weight
+                            val edge =
+                                graph.addEdge(
+                                    oldVertex.toLong(),
+                                    newVertex.toLong(),
+                                    "",
+                                    calculateEdgeId(oldVertex, newVertex).toLong(),
+                                    Random.Default.nextInt(100, 1000).toFloat(),
+                                )
+                            val weight = edge.weight.toInt()
+                            weightsOfEdges.put(calculateEdgeId(oldVertex, newVertex), weight)
+                            totalWeight += weight
 
-                        if (totalWeight < minWaysWeights[newVertex]) {
-                            minWaysWeights[newVertex] = totalWeight
-                            parent[newVertex] = oldVertex
-                            val vertexForChangeWeight = ArrayDeque<Int>()
-                            vertexForChangeWeight.add(newVertex)
-                            do {
-                                val currentVertex = vertexForChangeWeight.get(0)
-                                vertexForChangeWeight.remove(currentVertex)
-                                graph.edges.forEach { edge ->
-                                    if (edge.vertices.first.id.toInt() == currentVertex) {
-                                        if (minWaysWeights[currentVertex] + edge.weight < minWaysWeights[edge.vertices.second.id.toInt()]) {
-                                            minWaysWeights[edge.vertices.second.id.toInt()] =
-                                                minWaysWeights[currentVertex] + edge.weight
-                                            parent[edge.vertices.second.id.toInt()] = currentVertex
-                                            vertexForChangeWeight.add(
-                                                edge.vertices.second.id.toInt()
-                                            )
+                            if (totalWeight < minWaysWeights[newVertex]) {
+                                minWaysWeights[newVertex] = totalWeight
+                                parent[newVertex] = oldVertex
+                                val vertexForChangeWeight = ArrayDeque<Int>()
+                                vertexForChangeWeight.add(newVertex)
+                                do {
+                                    val currentVertex = vertexForChangeWeight.get(0)
+                                    vertexForChangeWeight.remove(currentVertex)
+                                    graph.edges.forEach { edge ->
+                                        if (edge.vertices.first.id.toInt() == currentVertex) {
+                                            if (
+                                                minWaysWeights[currentVertex] + edge.weight <
+                                                    minWaysWeights[edge.vertices.second.id.toInt()]
+                                            ) {
+                                                minWaysWeights[edge.vertices.second.id.toInt()] =
+                                                    minWaysWeights[currentVertex] + edge.weight
+                                                parent[edge.vertices.second.id.toInt()] =
+                                                    currentVertex
+                                                vertexForChangeWeight.add(
+                                                    edge.vertices.second.id.toInt()
+                                                )
+                                            }
                                         }
                                     }
-                                }
-                            } while (vertexForChangeWeight.isNotEmpty())
-                        } else {
-                            totalWeight = minWaysWeights[newVertex]
-                        }
-                        oldVertex = newVertex
-                    } while (totalWeight < maxWeight && oldVertex != end)
-                    if (oldVertex != end) {
-                        val edge = graph.addEdge(
-                            oldVertex.toLong(),
-                            end.toLong(),
-                            "",
-                            calculateEdgeId(oldVertex, end).toLong(),
-                            Random.Default.nextInt(100, 1000).toFloat(),
-                        )
-                        val weight = edge.weight.toInt()
-                        weightsOfEdges.put(calculateEdgeId(oldVertex, end), weight)
-                        totalWeight += weight
-                        if (totalWeight < minWaysWeights[end]) {
-                            minWaysWeights[end] = totalWeight
-                            parent[end] = oldVertex
+                                } while (vertexForChangeWeight.isNotEmpty())
+                            } else {
+                                totalWeight = minWaysWeights[newVertex]
+                            }
+                            oldVertex = newVertex
+                        } while (totalWeight < maxWeight && oldVertex != end)
+                        if (oldVertex != end) {
+                            val edge =
+                                graph.addEdge(
+                                    oldVertex.toLong(),
+                                    end.toLong(),
+                                    "",
+                                    calculateEdgeId(oldVertex, end).toLong(),
+                                    Random.Default.nextInt(100, 1000).toFloat(),
+                                )
+                            val weight = edge.weight.toInt()
+                            weightsOfEdges.put(calculateEdgeId(oldVertex, end), weight)
+                            totalWeight += weight
+                            if (totalWeight < minWaysWeights[end]) {
+                                minWaysWeights[end] = totalWeight
+                                parent[end] = oldVertex
+                            }
                         }
                     }
+                    Arguments.of(graph, start, end, minWaysWeights[end])
                 }
-                Arguments.of(graph, start, end, minWaysWeights[end])
-            }.limit(1000)
+                .limit(1000)
         }
     }
 
     /**
-     * test accepts a randomly generated graph.
-     * during the graph generation, the shortest path is calculated.
-     * test checks the correctness of the path that the dijkstra will give
+     * test accepts a randomly generated graph. during the graph generation, the shortest path is
+     * calculated. test checks the correctness of the path that the dijkstra will give
      */
     @ParameterizedTest(name = "test for dijkstra")
     @MethodSource("graphGenerator")
@@ -238,7 +244,6 @@ class DijkstraTest {
         assertEquals(null, algoDijkstra3.weightMinWay)
     }
 
-
     /**
      *        6
      *     A ──→ D      Test finds the shortest path from:
@@ -277,12 +282,7 @@ class DijkstraTest {
         assertEquals(5F, algoDijkstra3.weightMinWay)
     }
 
-
-    /**
-     * Test finds the shortest path from:
-     * A -> A = null
-     * in graph with one node.
-     */
+    /** Test finds the shortest path from: A -> A = null in graph with one node. */
     @Test
     fun `graph with one node`() {
         val graph = Graph(true, true)
@@ -295,11 +295,8 @@ class DijkstraTest {
     }
 
     /**
-     * A ──→ B ──→ C
-     *   0      5
-     * Test finds the shortest path from:
-     * A -> B = 0, A -> C = 5
-     * in graph with zero weight edge.
+     * A ──→ B ──→ C 0 5 Test finds the shortest path from: A -> B = 0, A -> C = 5 in graph with
+     * zero weight edge.
      */
     @Test
     fun `graph with zero weight`() {

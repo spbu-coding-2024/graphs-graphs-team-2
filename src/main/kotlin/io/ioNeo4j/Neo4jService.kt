@@ -92,9 +92,9 @@ class Neo4jService(
 
         return Pair(graph, placement)
     }
-    fun clearDatabase(){
+
+    fun clearDatabase() {
         writeRepo.deleteAll()
         readRepo.deleteAll()
     }
 }
-

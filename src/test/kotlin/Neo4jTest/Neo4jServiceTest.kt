@@ -8,7 +8,6 @@ import java.util.stream.Stream
 import kotlin.random.Random
 import model.Graph
 import model.abstractGraph.AbstractVertex
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeAll
@@ -38,7 +37,6 @@ class Neo4jServiceTest {
         fun setupNeo4j() {
             neo4j = Neo4jBuilders.newInProcessBuilder().withDisabledServer().build()
         }
-
 
         @DynamicPropertySource
         @JvmStatic
@@ -76,7 +74,7 @@ class Neo4jServiceTest {
                                     secondId.toLong(),
                                     "${calculateEdgeId(firstId, secondId)}",
                                     calculateEdgeId(firstId, secondId).toLong(),
-                                    if(graph.isWeighted) Random.nextFloat() else 1.0f,
+                                    if (graph.isWeighted) Random.nextFloat() else 1.0f,
                                 )
                             }
                         }
@@ -95,9 +93,8 @@ class Neo4jServiceTest {
     }
 
     /**
-     * The test takes a randomly generated graph.
-     * The test loads it into the database,
-     * then reads it from there and compares it with the original.
+     * The test takes a randomly generated graph. The test loads it into the database, then reads it
+     * from there and compares it with the original.
      */
     @ParameterizedTest(name = "test for Neo4j")
     @MethodSource("graphGenerator")

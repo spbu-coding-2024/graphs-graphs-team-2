@@ -12,7 +12,6 @@ import viewModel.graph.GraphViewModel
 
 class FindBridgesIntegrationTest {
 
-
     /**
      *       A ------ B    Test finds bridges in graph ( C -- D, D -- E)
      *       |        |    and checks whether the desired edges have been colored and enlarged,
