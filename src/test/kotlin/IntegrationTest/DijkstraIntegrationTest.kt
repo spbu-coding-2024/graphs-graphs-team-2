@@ -12,6 +12,21 @@ import viewModel.graph.GraphViewModel
 
 class DijkstraIntegrationTest {
 
+    /**
+     *           A              Test finds the shortest path from A -> E ( A -> C -> D -> E)
+     *         /   \            and checks whether the desired edges have been colored and enlarged,
+     *       4/     \2          and whether the rest have remained the same.
+     *       /       \
+     *      ↓         ↓
+     *      B ---5--→  C
+     *       \        / \
+     *       10\    /3   \8
+     *          \  /      \
+     *           ↓↓        ↓
+     *            D --1--→ E
+     *            ↑        |
+     *            |<---4---|
+     */
     @Test
     fun `dijkstra paints the path`() {
 
