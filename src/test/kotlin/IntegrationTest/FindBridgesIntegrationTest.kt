@@ -12,6 +12,17 @@ import viewModel.graph.GraphViewModel
 
 class FindBridgesIntegrationTest {
 
+
+    /**
+     *       A ------ B    Test finds bridges in graph ( C -- D, D -- E)
+     *       |        |    and checks whether the desired edges have been colored and enlarged,
+     *       |        |
+     *       F        C -- D -- E
+     *      | \      /
+     *      |  \    /      and whether the rest have remained the same.
+     *      |   \  /
+     *      G -- H
+     */
     @Test
     fun `findBridges paints the path`() {
         val graph = Graph(false, true)
