@@ -57,7 +57,7 @@ class Neo4jServiceTest {
                     val countOfNodes = Random.nextInt(10, 100)
                     val firstId = 0
                     val lastId = countOfNodes
-                    val graph = Graph(true, true)
+                    val graph = Graph(Random.nextBoolean(), Random.nextBoolean())
                     val nodes = mutableSetOf<Int>()
 
                     for (i in 0..countOfNodes) {
@@ -76,7 +76,7 @@ class Neo4jServiceTest {
                                     secondId.toLong(),
                                     "${calculateEdgeId(firstId, secondId)}",
                                     calculateEdgeId(firstId, secondId).toLong(),
-                                    Random.nextFloat(),
+                                    if(graph.isWeighted) Random.nextFloat() else 1.0f,
                                 )
                             }
                         }
