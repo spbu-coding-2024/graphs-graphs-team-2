@@ -94,6 +94,11 @@ class Neo4jServiceTest {
         neo4jService.clearDatabase()
     }
 
+    /**
+     * The test takes a randomly generated graph.
+     * The test loads it into the database,
+     * then reads it from there and compares it with the original.
+     */
     @ParameterizedTest(name = "test for Neo4j")
     @MethodSource("graphGenerator")
     fun `test write and read random graph`(correctGraph: Graph) {
