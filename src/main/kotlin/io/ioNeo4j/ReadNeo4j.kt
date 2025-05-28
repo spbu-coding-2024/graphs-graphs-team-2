@@ -6,6 +6,7 @@ import model.abstractGraph.AbstractVertex
 import org.springframework.boot.builder.SpringApplicationBuilder
 
 fun ReadNeo4j(
+    uri: String,
     username: String,
     password: String,
 ): Pair<Graph, Map<AbstractVertex, Pair<Dp?, Dp?>?>> {
@@ -13,6 +14,7 @@ fun ReadNeo4j(
         SpringApplicationBuilder(Neo4jApplication::class.java)
             .properties(
                 mapOf(
+                    "spring.neo4j.uri" to uri,
                     "spring.neo4j.authentication.username" to username,
                     "spring.neo4j.authentication.password" to password,
                 )
