@@ -17,6 +17,7 @@ class Neo4jService(
     private val readRepo: ReadRepositoryNeo4j,
 ) {
     fun writeData(graphViewModel: GraphViewModel) {
+        clearDatabase()
         val allVertex = mutableMapOf<Long, VertexNeo4j>()
         graphViewModel.vertices.forEach { vertex ->
             allVertex.put(
