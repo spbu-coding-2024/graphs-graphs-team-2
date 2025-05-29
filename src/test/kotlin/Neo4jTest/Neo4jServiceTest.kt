@@ -8,7 +8,7 @@ import java.util.stream.Stream
 import kotlin.random.Random
 import model.Graph
 import model.abstractGraph.AbstractVertex
-import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.params.ParameterizedTest
@@ -38,12 +38,6 @@ class Neo4jServiceTest {
             neo4j = Neo4jBuilders.newInProcessBuilder().withDisabledServer().build()
         }
 
-        @AfterAll
-        @JvmStatic
-        fun tearDown() {
-            neo4j.close()
-        }
-
         @DynamicPropertySource
         @JvmStatic
         fun neo4jProperties(registry: DynamicPropertyRegistry) {
@@ -61,7 +55,7 @@ class Neo4jServiceTest {
                     val countOfNodes = Random.nextInt(10, 100)
                     val firstId = 0
                     val lastId = countOfNodes
-                    val graph = Graph(true, true)
+                    val graph = Graph(Random.nextBoolean(), Random.nextBoolean())
                     val nodes = mutableSetOf<Int>()
 
                     for (i in 0..countOfNodes) {
@@ -80,19 +74,28 @@ class Neo4jServiceTest {
                                     secondId.toLong(),
                                     "${calculateEdgeId(firstId, secondId)}",
                                     calculateEdgeId(firstId, secondId).toLong(),
-                                    Random.nextFloat(),
+                                    if (graph.isWeighted) Random.nextFloat() else 1.0f,
                                 )
                             }
                         }
                     }
                     Arguments.of(graph)
                 }
-                .limit(1)
+                .limit(10)
         }
     }
 
     @Autowired private lateinit var neo4jService: Neo4jService
 
+    @AfterEach
+    fun clearDatabase() {
+        neo4jService.clearDatabase()
+    }
+
+    /**
+     * The test takes a randomly generated graph. The test loads it into the database, then reads it
+     * from there and compares it with the original.
+     */
     @ParameterizedTest(name = "test for Neo4j")
     @MethodSource("graphGenerator")
     fun `test write and read random graph`(correctGraph: Graph) {

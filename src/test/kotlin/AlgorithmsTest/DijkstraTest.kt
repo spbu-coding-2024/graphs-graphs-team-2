@@ -118,6 +118,10 @@ class DijkstraTest {
         }
     }
 
+    /**
+     * test accepts a randomly generated graph. during the graph generation, the shortest path is
+     * calculated. test checks the correctness of the path that the dijkstra will give
+     */
     @ParameterizedTest(name = "test for dijkstra")
     @MethodSource("graphGenerator")
     fun `check for random graph`(graph: Graph, start: Int, end: Int, correctWeight: Float) {
@@ -139,6 +143,14 @@ class DijkstraTest {
         assertEquals(correctWeight, weightWayDijkstra)
     }
 
+    /**
+     *     A      Test finds the shortest path from:
+     *    / \     A -> A = null, A -> B = 5, A -> C = 8
+     *  5/   \9   in simple graph.
+     *  ↓     ↓
+     *  B ──→ C
+     *     3
+     */
     @Test
     fun `simple graph`() {
         val graph = Graph(true, true)
@@ -165,6 +177,14 @@ class DijkstraTest {
         assertEquals(8F, algoDijkstra3.weightMinWay)
     }
 
+    /**
+     *     A     Test finds the shortest path from:
+     *    / ↑    A -> A = null, A -> B = 2, A -> C = 5
+     *  2/   \1  in graph with cycle
+     *  ↓     \
+     *  B ──→ C
+     *     3
+     */
     @Test
     fun `graph with cycle`() {
         val graph = Graph(true, true)
@@ -191,6 +211,13 @@ class DijkstraTest {
         assertEquals(5F, algoDijkstra3.weightMinWay)
     }
 
+    /**
+     *     2
+     *  A ──→ B    Test finds the shortest path from:
+     *             A -> B = 2, A -> C = null, A -> D = null
+     *  C ──→ D    in graph with unreachable way
+     *     4
+     */
     @Test
     fun `unconnected graph`() {
         val graph = Graph(true, true)
@@ -217,27 +244,45 @@ class DijkstraTest {
         assertEquals(null, algoDijkstra3.weightMinWay)
     }
 
+    /**
+     *        6
+     *     A ──→ D      Test finds the shortest path from:
+     *    / \    ↑      A -> B = 4, A -> C = 3, A -> D = 5
+     *  5/   \3  /2     in graph with multiple path between:
+     *  ↓     ↓ /       A -> D, A -> B.
+     *  B ←── C
+     *     1
+     */
     @Test
     fun `multiple paths between nodes`() {
         val graph = Graph(true, true)
         graph.addVertex(1, "A")
         graph.addVertex(2, "B")
         graph.addVertex(3, "C")
-        graph.addEdge(1, 2, "A -> B", 4, 5F)
-        graph.addEdge(1, 3, "A -> C", 5, 2F)
-        graph.addEdge(3, 2, "C -> B", 6, 1F)
+        graph.addVertex(4, "D")
+        graph.addEdge(1, 2, "A -> B", 5, 5F)
+        graph.addEdge(1, 3, "A -> C", 6, 3F)
+        graph.addEdge(3, 2, "C -> B", 7, 1F)
+        graph.addEdge(1, 4, "A -> D", 7, 6F)
+        graph.addEdge(3, 4, "C -> D", 7, 2F)
 
         val algoDijkstra1 = AlgoDijkstra(graph, 1, 2)
         algoDijkstra1.dijkstra(1)
 
-        assertEquals(3F, algoDijkstra1.weightMinWay)
+        assertEquals(4F, algoDijkstra1.weightMinWay)
 
         val algoDijkstra2 = AlgoDijkstra(graph, 1, 3)
         algoDijkstra2.dijkstra(1)
 
-        assertEquals(2F, algoDijkstra2.weightMinWay)
+        assertEquals(3F, algoDijkstra2.weightMinWay)
+
+        val algoDijkstra3 = AlgoDijkstra(graph, 1, 4)
+        algoDijkstra3.dijkstra(1)
+
+        assertEquals(5F, algoDijkstra3.weightMinWay)
     }
 
+    /** Test finds the shortest path from: A -> A = null in graph with one node. */
     @Test
     fun `graph with one node`() {
         val graph = Graph(true, true)
@@ -249,6 +294,10 @@ class DijkstraTest {
         assertEquals(null, algoDijkstra1.weightMinWay)
     }
 
+    /**
+     * A ──→ B ──→ C 0 5 Test finds the shortest path from: A -> B = 0, A -> C = 5 in graph with
+     * zero weight edge.
+     */
     @Test
     fun `graph with zero weight`() {
         val graph = Graph(true, true)
@@ -256,14 +305,34 @@ class DijkstraTest {
         graph.addVertex(2, "B")
         graph.addVertex(3, "C")
         graph.addEdge(1, 2, "A -> B", 5, 0F)
-        graph.addEdge(2, 3, "C -> D", 6, 5F)
+        graph.addEdge(2, 3, "B -> C", 6, 5F)
 
         val algoDijkstra1 = AlgoDijkstra(graph, 1, 3)
         algoDijkstra1.dijkstra(1)
 
         assertEquals(5F, algoDijkstra1.weightMinWay)
+
+        val algoDijkstra2 = AlgoDijkstra(graph, 1, 2)
+        algoDijkstra2.dijkstra(1)
+
+        assertEquals(0F, algoDijkstra2.weightMinWay)
     }
 
+    /**
+     *           A              Test finds the shortest path from:
+     *         /   \            A -> B = 4, A -> C = 2, A -> D = 5, A -> E = 6
+     *       4/     \2          in graph with cycle and multiple path between nodes.
+     *       /       \
+     *      ↓         ↓
+     *      B ---5--→  C
+     *       \        / \
+     *       10\    /3   \8
+     *          \  /      \
+     *           ↓↓        ↓
+     *            D --1--→ E
+     *            ↑        |
+     *            |<---4---|
+     */
     @Test
     fun `big graph`() {
         val graph = Graph(true, true)
