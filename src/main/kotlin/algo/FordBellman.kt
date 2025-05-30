@@ -14,6 +14,9 @@ class FordBellman(val graph: Graph, val firstVertexId: Long, val secondVertexId:
     val pathFromStartToEnd = LinkedHashSet<Pair<Long, Long>>()
 
     fun FordBellman(): Boolean {
+        if (firstVertexId == secondVertexId) {
+            return false
+        }
         val isReachable = checkReachability()
         if (!isReachable) {
             return false
@@ -34,10 +37,10 @@ class FordBellman(val graph: Graph, val firstVertexId: Long, val secondVertexId:
             }
         }
         var currentId = secondVertexId
-        var prevId: Long = path[currentId] ?: return false
+        var prevId = 0L
         val visited = mutableMapOf<Long, Boolean>()
-        visited[currentId] = true
-        while (prevId != firstVertexId) {
+
+        do {
             prevId = path[currentId] ?: return false
             if (visited[prevId] == true) {
                 throw IllegalStateException("Path contains negative loop")
@@ -45,7 +48,7 @@ class FordBellman(val graph: Graph, val firstVertexId: Long, val secondVertexId:
             visited[prevId] = true
             pathFromStartToEnd.addFirst(prevId to currentId)
             currentId = prevId
-        }
+        } while (prevId != firstVertexId)
 
         for (e in graphMap) {
             val d1 = distance[e.key]
