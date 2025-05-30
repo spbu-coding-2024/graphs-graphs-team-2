@@ -17,6 +17,7 @@ class Neo4jService(
     private val readRepo: ReadRepositoryNeo4j,
 ) {
     fun writeData(graphViewModel: GraphViewModel) {
+        clearDatabase()
         val allVertex = mutableMapOf<Long, VertexNeo4j>()
         graphViewModel.vertices.forEach { vertex ->
             allVertex.put(
@@ -91,28 +92,9 @@ class Neo4jService(
 
         return Pair(graph, placement)
     }
+
+    fun clearDatabase() {
+        writeRepo.deleteAll()
+        readRepo.deleteAll()
+    }
 }
-
-// fun main() {
-// val context = runApplication<Neo4jApplication>()
-// val neo4jService = context.getBean(Neo4jService::class.java)
-
-// val graph = Graph(true, true)
-// val dima = graph.addVertex(1, label = "Dima")
-// val egor = graph.addVertex(2, label = "Egor")
-// val ulia = graph.addVertex(3, label = "Ulia")
-// graph.addEdge(1, 2, "Friend", 4, 10.0F)
-// graph.addEdge(1, 3, "Friend", 5, 10.0F)
-// graph.addEdge(2, 3, "BoyFriend", 6, 10.0F)
-// val placement = mapOf(
-// dima to Pair(10.0.dp, 10.0.dp), egor to Pair(20.0.dp, 20.0.dp), ulia to Pair(30.0.dp, 30.0.dp)
-// )
-
-// var graphViewModel =
-// GraphViewModel(graph, placement, mutableStateOf(false), mutableStateOf(false),
-// mutableStateOf(false))
-
-// neo4jService.writeData(graphViewModel)
-// val graphViewModel = neo4jService.readData()
-// print("1")
-// }
