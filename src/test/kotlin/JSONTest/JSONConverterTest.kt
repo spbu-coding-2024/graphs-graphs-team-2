@@ -1,0 +1,202 @@
+package JSONTest
+
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import io.JSONConverter
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import model.Graph
+import model.abstractGraph.AbstractVertex
+import org.junit.jupiter.api.Test
+import viewModel.graph.GraphViewModel
+
+class JSONConverterTest {
+    private lateinit var graph: Graph
+    private lateinit var graphViewModel: GraphViewModel
+    private val converter = JSONConverter()
+
+    /**
+     * Translation into the JSON format of a weighted directed graph with two vertices and an edge
+     * between them.
+     */
+    @Test
+    fun `simple weighted directed convert to JSON`() {
+        graph = Graph(direction = true, weight = true)
+        val firstVertex = graph.addVertex(0, "A")
+        val secondVertex = graph.addVertex(1, "B")
+        graph.addEdge(0, 1, "a", 0, 2f)
+        val placement = mapOf(firstVertex to Pair(1.dp, 2.dp), secondVertex to Pair(343.dp, 500.dp))
+
+        val showVerticesLabels = mutableStateOf(false)
+        val showVerticesIds = mutableStateOf(false)
+        val showEdgesWeights = mutableStateOf(false)
+        val showEdgesLabels = mutableStateOf(false)
+        graphViewModel =
+            GraphViewModel(
+                graph,
+                placement,
+                showVerticesLabels,
+                showVerticesIds,
+                showEdgesWeights,
+                showEdgesLabels,
+            )
+
+        val actualResult = converter.toJSON(graphViewModel)
+        val expectedResult =
+            "{\"direction\":true,\"weight\":true," +
+                "\"vertices\":{\"0\":{\"label\":\"A\",\"x\":{\"value\":1.0},\"y\":{\"value\":2.0}}," +
+                "\"1\":{\"label\":\"B\",\"x\":{\"value\":343.0},\"y\":{\"value\":500.0}}}," +
+                "\"edges\":{\"0\":{\"label\":\"a\",\"from\":0,\"to\":1,\"weight\":2.0}}}"
+
+        assertEquals(expectedResult, actualResult)
+    }
+
+    /**
+     * Translation from the JSON format of a weighted directed graph with two vertices, an edge
+     * between them and the specified coordinates.
+     */
+    @Test
+    fun `simple weighted directed convert from JSON`() {
+        val jsonFormat =
+            "{\"direction\":true,\"weight\":true," +
+                "\"vertices\":{\"0\":{\"label\":\"A\",\"x\":{\"value\":1.0},\"y\":{\"value\":2.0}}," +
+                "\"1\":{\"label\":\"B\",\"x\":{\"value\":343.0},\"y\":{\"value\":500.0}}}," +
+                "\"edges\":{\"0\":{\"label\":\"a\",\"from\":0,\"to\":1,\"weight\":2.0}}}"
+
+        graph = Graph(direction = true, weight = true)
+        val firstVertex = graph.addVertex(0, "A")
+        val secondVertex = graph.addVertex(1, "B")
+        graph.addEdge(0, 1, "a", 0, 2f)
+        val expectedPlacement =
+            mapOf(firstVertex to Pair(1.dp, 2.dp), secondVertex to Pair(343.dp, 500.dp))
+
+        val (actualGraph, actualPlacement) = converter.fromJSON(jsonFormat)
+
+        assert(actualGraph.isDirected)
+        assert(actualGraph.isWeighted)
+
+        assertContentEquals(graph.edges, actualGraph.edges)
+
+        assertContentEquals(graph.vertices, actualGraph.vertices)
+
+        assertEquals(expectedPlacement.size, actualPlacement.size)
+        expectedPlacement.forEach { assertEquals(it.value, actualPlacement[it.key]) }
+    }
+
+    /**
+     * Translation from the JSON format of a graph without specifying direction and weighting with
+     * two vertices, an edge between them and the specified coordinates. The resulting graph must be
+     * unweighted and undirected.
+     */
+    @Test
+    fun `convert from JSON without weight and direction tags`() {
+        val jsonFormat =
+            "{\"vertices\":{\"0\":{\"label\":\"A\",\"x\":{\"value\":1.0},\"y\":{\"value\":2.0}}," +
+                "\"1\":{\"label\":\"B\",\"x\":{\"value\":343.0},\"y\":{\"value\":500.0}}}," +
+                "\"edges\":{\"0\":{\"label\":\"a\",\"from\":0,\"to\":1}}}"
+
+        graph = Graph(direction = false, weight = false)
+        val firstVertex = graph.addVertex(0, "A")
+        val secondVertex = graph.addVertex(1, "B")
+        graph.addEdge(0, 1, "a", 0)
+        val expectedPlacement =
+            mapOf(firstVertex to Pair(1.dp, 2.dp), secondVertex to Pair(343.dp, 500.dp))
+
+        val (actualGraph, actualPlacement) = converter.fromJSON(jsonFormat)
+
+        assert(!actualGraph.isDirected)
+        assert(!actualGraph.isWeighted)
+
+        assertContentEquals(graph.edges, actualGraph.edges)
+
+        assertContentEquals(graph.vertices, actualGraph.vertices)
+
+        assertEquals(expectedPlacement.size, actualPlacement.size)
+        expectedPlacement.forEach { assertEquals(it.value, actualPlacement[it.key]) }
+    }
+
+    /**
+     * Translation from the JSON format of a graph without specifying direction, weighting and
+     * coordinates with two vertices and edge between them. The resulting graph must be unweighted,
+     * undirected and null-value coordinates.
+     */
+    @Test
+    fun `convert from JSON without weight and direction tags and cords`() {
+        val jsonFormat =
+            "{\"vertices\":{\"0\":{\"label\":\"A\"}," +
+                "\"1\":{\"label\":\"B\"}}," +
+                "\"edges\":{\"0\":{\"label\":\"a\",\"from\":0,\"to\":1}}}"
+
+        graph = Graph(direction = false, weight = false)
+        val firstVertex = graph.addVertex(0, "A")
+        val secondVertex = graph.addVertex(1, "B")
+        graph.addEdge(0, 1, "a", 0)
+        val expectedPlacement: Map<AbstractVertex, Pair<Dp?, Dp?>?> =
+            mapOf(firstVertex to Pair(null, null), secondVertex to Pair(null, null))
+
+        val (actualGraph, actualPlacement) = converter.fromJSON(jsonFormat)
+
+        assert(!actualGraph.isDirected)
+        assert(!actualGraph.isWeighted)
+
+        assertContentEquals(graph.edges, actualGraph.edges)
+
+        assertContentEquals(graph.vertices, actualGraph.vertices)
+
+        assertEquals(expectedPlacement.size, actualPlacement.size)
+        expectedPlacement.forEach { assertEquals(it.value, actualPlacement[it.key]) }
+    }
+
+    /**
+     * Converting from JSON format string with incorrect data must fall with Illegal State
+     * Exception.
+     */
+    @Test
+    fun `incorrect input`() {
+        val jsonFormat = "json is top format"
+        assertFailsWith<IllegalStateException> { converter.fromJSON(jsonFormat) }
+    }
+
+    /**
+     * An integration test in which the user first stores his graph from the JSON format and then
+     * loads it back. The graph should not change.
+     */
+    @Test
+    fun `integration converter test`() {
+        graph = Graph(direction = true, weight = true)
+        val firstVertex = graph.addVertex(0, "A")
+        val secondVertex = graph.addVertex(1, "B")
+        graph.addEdge(0, 1, "a", 0, 2f)
+        val expectedPlacement =
+            mapOf(firstVertex to Pair(1.dp, 2.dp), secondVertex to Pair(343.dp, 500.dp))
+
+        val showVerticesLabels = mutableStateOf(false)
+        val showVerticesIds = mutableStateOf(false)
+        val showEdgesWeights = mutableStateOf(false)
+        val showEdgesLabels = mutableStateOf(false)
+        graphViewModel =
+            GraphViewModel(
+                graph,
+                expectedPlacement,
+                showVerticesLabels,
+                showVerticesIds,
+                showEdgesWeights,
+                showEdgesLabels,
+            )
+
+        val jsonFormat = converter.toJSON(graphViewModel)
+        val (actualGraph, actualPlacement) = converter.fromJSON(jsonFormat)
+
+        assertEquals(graph.isDirected, actualGraph.isDirected)
+        assertEquals(graph.isWeighted, actualGraph.isWeighted)
+
+        assertContentEquals(graph.edges, actualGraph.edges)
+
+        assertContentEquals(graph.vertices, actualGraph.vertices)
+
+        assertEquals(expectedPlacement.size, actualPlacement.size)
+        expectedPlacement.forEach { assertEquals(it.value, actualPlacement[it.key]) }
+    }
+}
