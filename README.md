@@ -1,7 +1,7 @@
 # Graph Visualizer
-
+![tests](https://github.com/spbu-coding-2024/graphs-graphs-team-2/actions/workflows/build.yml/badge.svg)
 ## About
-This application allows you to visualize algorithms on a graph from a database (SQLiTe/Neo4j) or a file (JSON format).
+This application allows you to visualize algorithms on a graph from a database [SQLiTe](https://github.com/spbu-coding-2024/graphs-graphs-team-2/blob/main/src/main/kotlin/io/SQLiteExposed/SQLiteFormat.md)/[Neo4j](https://github.com/spbu-coding-2024/graphs-graphs-team-2/blob/main/src/main/kotlin/io/ioNeo4j/Neo4jFormat.md)) or a file ([JSON format](https://github.com/spbu-coding-2024/graphs-graphs-team-2/blob/main/src/main/kotlin/io/ioJSON/JSONFormat.md)).
 ## Features
 - Load (store) graph from (to) database / JSON-file
 #### Algorithms:
